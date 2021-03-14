@@ -25,6 +25,11 @@ function Infected:create(x,y,z)
     setElementPosition(self.source,self.x,self.y,self.z)
     setElementDimension(self.source,1)
 
+    --SET DATA
+    for k,v in pairs(table) do
+        Data:setData(self.source,k,v)
+    end
+
     return self;
 
 end

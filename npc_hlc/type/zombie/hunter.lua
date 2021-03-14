@@ -9,6 +9,7 @@ setmetatable( hunter, zombie );
 
 function hunter:create(x,y,z)
     outputDebugString("CREATE hunter "..x..y..z);
+    
     local table = {
         skin = 54,
         category = "zombie",
@@ -24,6 +25,11 @@ function hunter:create(x,y,z)
     setElementModel(self.source,self.skin)
     setElementPosition(self.source,self.x,self.y,self.z)
     setElementDimension(self.source,1)
+
+    --SET DATA
+    for k,v in pairs(table) do
+        Data:setData(self.source,k,v)
+    end
 
     return self;
 
