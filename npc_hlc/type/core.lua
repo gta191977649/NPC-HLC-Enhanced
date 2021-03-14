@@ -19,7 +19,7 @@ function creature:create()
         source = createPed(0,0,0,3);
     }, creature );
 
-    table.insert(creatures,self.source)
+    table.insert(creatures,self)
     setElementParent(self.source,otherElements) -- bind to parent for data system
     setElementData(self.source,"creature",true) -- use for other resources to fliter
 
