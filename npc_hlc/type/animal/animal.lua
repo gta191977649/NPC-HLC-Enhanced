@@ -1,21 +1,23 @@
 --SECOND LEVEL TYPE : ANIMAL
-animal = {};
+
+animal = {
+    category = "animal",
+};
 animal.__index = animal;
 setmetatable( animal, creature );
 
---[[
-animal = creature:create()
-function animal:create()
-    outputDebugString("CREATE ANIMAL TYPE");
-    local table = {
-        type = "animal",
-    }
-    local self = setmetatable(table,{__index = self});
-    return self;
+function animal:create(skin,x,y,z)
 
-end
-]]
+    outputDebugString("CREATE ANIMAL");
 
-function animal:printFoot()
-    outputDebugString("i am 4 foot of:"..tostring(self.category));
+    o = creature:create(skin,x,y,z)
+    
+    self.__index = self;
+
+    --outputDebugString("TRY TO COPY FROM "..inspect(getmetatable(o)))
+
+    setmetatable(o,self);
+    
+
+    return o;
 end
