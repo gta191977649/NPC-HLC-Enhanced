@@ -1,3 +1,5 @@
+--客户端：任务执行函数
+
 performTask = {}
 
 function performTask.walkToPos(npc,task)

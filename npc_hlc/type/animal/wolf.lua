@@ -59,6 +59,8 @@ function wolfKing:create(x,y,z)
     Data:setData(self.source,"name",self.name);
     Data:setData(self.source,"level",self.level);
 
+    setElementModel(self.source,11);
+
     return o
 end
 function wolfKing:show()

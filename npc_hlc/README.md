@@ -21,24 +21,24 @@ exports.npc_hlc:functionName(arguments)
 
 The list of all functions exported by NPC HLC:
 ```
-enableHLCForNPC (npc, walkspeed, accuracy, drivespeed)
+enableHLCForNPC (npc, walkspeed, accuracy, drivespeed) 开启NPC功能
 
-Server-only function
+Server-only function 服务器端函数
 
 Enables high-level control functionality for the specified ped. This is the first function which must be called before using other functions on the ped.
 
     npc: The ped you want to enable the HLC for
-    walkspeed: Walking speed of the ped. Can be "walk", "run", "sprint" and "sprintfast". Default value: "run"
-    accuracy: Weapon accuracy of the ped. Can range from 0 (worst) to 1 (best). Default value: 1
-    drivespeed: Maximum driving speed of the ped. Measured in GTA velocity units. Default value: 40/180
+    walkspeed: Walking speed of the ped. Can be "walk", "run", "sprint" and "sprintfast". Default value: "run" 移动速度
+    accuracy: Weapon accuracy of the ped. Can range from 0 (worst) to 1 (best). Default value: 1 武器精准度
+    drivespeed: Maximum driving speed of the ped. Measured in GTA velocity units. Default value: 40/180 驾驶速度
 
 Returns true if HLC was enabled for the ped, false if it is already enabled or invalid arguments were given.
 ```
 
 ```
-disableHLCForNPC (npc)
+disableHLCForNPC (npc) 关闭NPC攻
 
-Server-only function
+Server-only function 服务器端函数
 
 Disables high-level control functionality for specified ped. After doing so, you cannot use other HLC functions on the ped unless you re-enable it using enableHLCForNPC.
 
@@ -48,7 +48,7 @@ Returns true if HLC was disabled for the ped, false if it was not enabled before
 ```
 
 ```
-isHLCEnabled (npc)
+isHLCEnabled (npc) --判断NPC功能是否开启
 
 Server and client function
 
@@ -60,7 +60,7 @@ Returns true if HLC is enabled for the ped, false if it is not or invalid argume
 ```
 
 ```
-setNPCWalkSpeed (npc, speed)
+setNPCWalkSpeed (npc, speed) --服务器：设置NPC移动速度
 
 Server-only function
 
@@ -85,7 +85,7 @@ Returns walking speed of the ped or false if invalid arguments were given.
 ```
 
 ```
-setNPCWeaponAccuracy (npc, accuracy)
+setNPCWeaponAccuracy (npc, accuracy) --设置武器精准度
 
 Server-only function
 
@@ -110,7 +110,7 @@ Returns accuracy of the ped or false if invalid arguments were given.
 ```
 
 ```
-setNPCDriveSpeed (npc, speed)
+setNPCDriveSpeed (npc, speed) --设置驾驶速度
 
 Server-only function
 
@@ -135,7 +135,7 @@ Returns driving speed of the ped or false if invalid arguments were given.
 ```
 
 ```
-addNPCTask (npc, task)
+addNPCTask (npc, task) --增加NPC任务
 
 Server-only function
 
@@ -148,7 +148,7 @@ Returns true if the task was added, false if invalid arguments were given.
 ```
 
 ```
-clearNPCTasks (npc)
+clearNPCTasks (npc) --清理NPC所有任务
 
 Server-only function
 
@@ -160,7 +160,7 @@ Returns true if sequence was cleared, false if invalid arguments were given.
 ```
 
 ```
-setNPCTask (npc, task)
+setNPCTask (npc, task) --重设任务（清理原有任务序列，增加新的任务从而使新任务立刻执行）
 
 Server-only function
 
@@ -174,23 +174,23 @@ Returns true if the task was set, false if invalid arguments were given.
 
 ## Events
 ```
-"npc_hlc:onNPCTaskDone" (task)
+"npc_hlc:onNPCTaskDone" (task) -- 事件：NPC单个任务完成时
 
 Server-side event
 
 Gets triggered when the ped completes the task.
 
     source: The ped which completed the task
-    task: The task which was completed
+    task: The task which was completed 整个任务信息
 ```
 
 ## Task data format
 
 The task is a table which stores the task name on the first index and a few parameters on the following indices.
 
-Tasks list:
+Tasks list: 任务列表
 ```
-{"walkToPos", x, y, z, distance}
+{"walkToPos", x, y, z, distance} 移动到坐标
 
 Walk straight towards the specified point until the distance is short enough.
 
@@ -199,7 +199,7 @@ Walk straight towards the specified point until the distance is short enough.
 ```
 
 ```
-{"walkAlongLine", x1, y1, z1, x2, y2, z2, offset, enddistance}
+{"walkAlongLine", x1, y1, z1, x2, y2, z2, offset, enddistance} --沿着直线前进
 
 Walk along the line until the ped is near enough to the ending point.
 
@@ -210,7 +210,7 @@ Walk along the line until the ped is near enough to the ending point.
 ```
 
 ```
-{"walkAroundBend", x0, y0, x1, y1, z1, x2, y2, z2, offset, enddistance}
+{"walkAroundBend", x0, y0, x1, y1, z1, x2, y2, z2, offset, enddistance} --弧形移动
 
 Walk along the arc until the ped is near enough to the ending point.
 
@@ -222,7 +222,7 @@ Walk along the arc until the ped is near enough to the ending point.
 ```
 
 ```
-{"driveToPos", x, y, z, distance}
+{"driveToPos", x, y, z, distance} --驾驶到坐标
 
 Drive straight towards the specified point until the distance is short enough.
 
@@ -231,7 +231,7 @@ Drive straight towards the specified point until the distance is short enough.
 ```
 
 ```
-{"driveAlongLine", x1, y1, z1, x2, y2, z2, offset, enddistance}
+{"driveAlongLine", x1, y1, z1, x2, y2, z2, offset, enddistance} --沿着直线驾驶
 
 Drive along the line until the ped is near enough to the ending point.
 
@@ -242,7 +242,7 @@ Drive along the line until the ped is near enough to the ending point.
 ```
 
 ```
-{"driveAroundBend", x0, y0, x1, y1, z1, x2, y2, z2, offset, enddistance}
+{"driveAroundBend", x0, y0, x1, y1, z1, x2, y2, z2, offset, enddistance} --弧形驾驶
 
 Drive along the arc until the ped is near enough to the ending point.
 
@@ -254,7 +254,7 @@ Drive along the arc until the ped is near enough to the ending point.
 ```
 
 ```
-{"walkFollowElement", followed, distance}
+{"walkFollowElement", followed, distance} -- 跟随
 
 Try to stay in the range of the specified element.
 
@@ -263,7 +263,7 @@ Try to stay in the range of the specified element.
 ```
 
 ```
-{"shootPoint", x, y, z}
+{"shootPoint", x, y, z} --攻击坐标
 
 Shoot at the specified point.
 
@@ -271,7 +271,7 @@ Shoot at the specified point.
 ```
 
 ```
-{"shootElement", target}
+{"shootElement", target} --攻击目标
 
 Shoot at the specified element.
 
@@ -279,7 +279,7 @@ Shoot at the specified element.
 ```
 
 ```
-{"killPed", target, shootdist, followdist}
+{"killPed", target, shootdist, followdist} -- 尝试击杀
 
 Shoot at the ped and try to stay in range.
 
@@ -289,7 +289,7 @@ Shoot at the ped and try to stay in range.
 ```
 
 ```
-{"waitForGreenLight", direction}
+{"waitForGreenLight", direction} -- 等待绿灯
 
 Do nothing until a certain traffic light state. In addition to what direction parameter sets, the task will also be completed if all lights are yellow or turned off.
 
@@ -301,7 +301,7 @@ Do nothing until a certain traffic light state. In addition to what direction pa
 The following example creates a ped at the center of the map. The ped walks to the north and then to the east.
 ```
 local ped = createPed(0, 0, 0, 3) --create the ped
-exports.npc_hlc:enableNPCForHLC(ped) --make HLC functions work on the ped
+exports.npc_hlc:enableHLCForNPC(ped) --make HLC functions work on the ped
 exports.npc_hlc:addNPCTask(ped, {"walkAlongLine", 0, 0, 3, 0, 20, 3, 2, 4}) --walk 20 units to the north
 exports.npc_hlc:addNPCTask(ped, {"walkAlongLine", 0, 20, 3, 20, 20, 3, 2, 4}) --walk 20 units to the east
 ```

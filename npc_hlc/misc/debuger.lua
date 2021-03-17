@@ -23,6 +23,13 @@ function debugCreature()
                 local length = dxGetTextWidth(text,1,"clear")
 				dxDrawText(text,x-length/2-sW*0.01,y*0.8, x+length/2+sW*0.01, y+sH*0.03, textcolor,1, "clear", "center", "center")
 			end
+
+            --TEST getPositionFromElementOffset
+            --local lx,ly,lz = getPositionFromElementOffset(creature,-2,0,0) --left
+            --local lx,ly,lz = getPositionFromElementOffset(creature,2,0,0) --right
+            local lx,ly,lz = getPositionFromElementOffset(creature,0,2,0) --front
+            --local lx,ly,lz = getPositionFromElementOffset(creature,-2,2,0) --lf
+            dxDrawLine3D( cX,cY,cZ, lx,ly,lz,tocolor ( 0, 0, 255, 255 ),1 )
         end
 
     end

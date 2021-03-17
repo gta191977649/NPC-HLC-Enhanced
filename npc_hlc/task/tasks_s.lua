@@ -1,3 +1,6 @@
+--服务器端：执行任务
+--如果NPC存在同步者，则跳过服务器执行部分，因为于客户端执行
+
 performTask = {}
 
 function performTask.enterToVehicle(npc,task,maxtime)

@@ -1,3 +1,5 @@
+--服务器：基础任务管理
+
 UPDATE_INTERVAL_MS = 2000
 UPDATE_INTERVAL_MS_INV = 1/UPDATE_INTERVAL_MS
 UPDATE_INTERVAL_S = UPDATE_INTERVAL_MS*0.001
@@ -8,6 +10,7 @@ function initNPCControl()
 	setTimer(cycleNPCs,UPDATE_INTERVAL_MS,0)
 end
 
+--服务器：循环NPC
 function cycleNPCs()
 	check_cols = get("npc_hlc.server_colchecking") == "true" and "true" or nil
 	if check_cols then
@@ -19,6 +22,7 @@ function cycleNPCs()
 		end
 	end
 
+	--决定syncer？
 	for npc,exists in pairs(all_npcs) do
 		if isHLCEnabled(npc) then
 			local syncer = getElementSyncer(getPedOccupiedVehicle(npc) or npc)
@@ -39,6 +43,7 @@ function cycleNPCs()
 	end
 	local this_time = getTickCount()
 	local gamespeed = getGameSpeed()
+	--未同步的NPC交给服务器来同步？
 	for npc,unsynced in pairs(unsynced_npcs) do
 		if getElementHealth(getPedOccupiedVehicle(npc) or npc) >= 1 then
 			local time_diff = (this_time-getNPCLastUpdateTime(npc))*gamespeed
@@ -69,11 +74,13 @@ function cycleNPCs()
 	end
 end
 
+--服务器：NPC执行下一个任务
 function setNPCTaskToNext(npc)
 	local thistask = getElementData(npc,"npc_hlc:thistask")
 	setElementData(npc,"npc_hlc:thistask",thistask+1)
 end
 
+--服务器：任务完成
 function cleanUpDoneTasks(dataname,oldval)
 	if notrigger then return end
 	if not oldval or dataname ~= "npc_hlc:thistask" then return end

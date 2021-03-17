@@ -1,4 +1,6 @@
-UPDATE_COUNT = 30
+--客户端：基础任务管理
+
+UPDATE_COUNT = 30 --循环间隔
 UPDATE_INTERVAL_MS = 200
 
 function initNPCControl()
@@ -6,6 +8,7 @@ function initNPCControl()
 	setTimer ( cycleNPCs, UPDATE_COUNT, 0)
 end
 
+--客户端：循环NPC任务
 function cycleNPCs()
 	for pednum,npc in ipairs(getElementsByType("ped",root,true)) do
 		if getElementData(npc,"npc_hlc") then
@@ -62,6 +65,7 @@ function cycleNPCs_old()
 	end
 end
 
+--客户端：NPC执行下一个任务
 function setNPCTaskToNext(npc)
 	setElementData(
 		npc,"npc_hlc:thistask",
@@ -69,4 +73,3 @@ function setNPCTaskToNext(npc)
 		true
 	)
 end
-

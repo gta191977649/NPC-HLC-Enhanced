@@ -1,3 +1,5 @@
+--服务器：验证任务参数是否正确
+
 taskValid = {}
 
 function taskValid.walkToPos(task)
