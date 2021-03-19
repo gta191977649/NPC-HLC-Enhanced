@@ -1,3 +1,5 @@
+--JUNE 的生物DEBUG 显示器
+
 local otherElements = getElementByID("otherElements") -- we would need that aswell for binding handlers.
 sW,sH = guiGetScreenSize();
 
@@ -8,6 +10,12 @@ function debugCreature()
     for _,creature in pairs(getElementsByType("ped",otherElements,true)) do
         --outputChatBox("c:"..tostring(inspect(creature)))
         if isElement(creature) and getElementType(creature)=="ped" then
+
+
+            ------------------DEBUG VISIBLE/HEAR -----------------
+            find,s,v = checkFind(creature) -- TODO 优化：这里应该直接提取本地的NPC数据，否则每帧执行一次复杂的checkFind函数
+            -----------
+
             local cX,cY,cZ = getElementPosition( creature )
             local x,y = getScreenFromWorldPosition(cX,cY,cZ) --TO SCREEN POS
 
@@ -20,6 +28,23 @@ function debugCreature()
                 local text = "Category:"..tostring(Data:getData(creature,"category") or "MISS CATEGORY")
                 text = text .. "\n".."Type:"..tostring(Data:getData(creature,"type") or "MISS TYPE")
                 text = text .. "\n".."Name:"..tostring(Data:getData(creature,"name") or "MISS TYPE")
+
+                ----------------checkFind
+                --[[
+                if s or v then 
+                    text = text.."\n";
+                    if s then 
+                        text = text.."听到";
+                    end
+                    if v then
+                        text = text.." 看到";
+                    end
+                else 
+                    text = text.."\n ";
+                end
+                ]]
+                ----------------
+
                 local length = dxGetTextWidth(text,1,"clear")
 				dxDrawText(text,x-length/2-sW*0.01,y*0.8, x+length/2+sW*0.01, y+sH*0.03, textcolor,1, "clear", "center", "center")
 			end
@@ -27,9 +52,10 @@ function debugCreature()
             --TEST getPositionFromElementOffset
             --local lx,ly,lz = getPositionFromElementOffset(creature,-2,0,0) --left
             --local lx,ly,lz = getPositionFromElementOffset(creature,2,0,0) --right
-            local lx,ly,lz = getPositionFromElementOffset(creature,0,2,0) --front
+            local lx,ly,lz = getPositionFromElementOffset(creature,0,5,0) --front
             --local lx,ly,lz = getPositionFromElementOffset(creature,-2,2,0) --lf
             dxDrawLine3D( cX,cY,cZ, lx,ly,lz,tocolor ( 0, 0, 255, 255 ),1 )
+
         end
 
     end

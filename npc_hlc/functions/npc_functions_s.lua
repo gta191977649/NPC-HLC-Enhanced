@@ -108,8 +108,8 @@ function setNPCDriveSpeed(npc,speed)
 end
 
 ------------------------------------------------
-
 function addNPCTask(npc,task)
+	outputChatBox("addNPCTask:"..tostring(task[1]));
 	if not npc or not all_npcs[npc] then
 		outputDebugString("Invalid ped argument",2)
 		return false
@@ -129,6 +129,8 @@ function addNPCTask(npc,task)
 	setElementData(npc,"npc_hlc:lasttask",lasttask)
 	return true
 end
+addEvent("npc > addTask",true)
+addEventHandler("npc > addTask",resourceRoot,addNPCTask,false)
 
 function clearNPCTasks(npc)
 	if not npc or not all_npcs[npc] then
@@ -164,6 +166,7 @@ end
 
 function isTaskValid(task)
 	local taskFunc = taskValid[task[1]]
+	--outputChatBox(tostring(taskFunc))
 	return taskFunc and taskFunc(task) or false
 end
 

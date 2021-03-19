@@ -14,6 +14,7 @@
     <script src="task/valid_tasks_s.lua" type="server" />
     <script src="task/tasks_s.lua" type="server" />
     <script src="task/tasks_c.lua" type="client" cache="false"/>
+    <script src="sensor/sensor_c.lua" type="client" cache="false"/><!--视听觉-->
     <script src="actions_s.lua" type="server" />
     <script src="actions_c.lua" type="client" cache="false"/>
 

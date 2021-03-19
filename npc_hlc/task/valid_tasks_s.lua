@@ -57,7 +57,7 @@ end
 function taskValid.killPed(task)
 	local element,shootdist,followdist = task[2],task[3],task[4]
 	return
-		isElement(element) and getElementType(element) == "ped" and
+		isElement(element) and ( getElementType(element) == "ped" or getElementType(element) == "player" ) and
 		tonumber(shootdist) and tonumber(followdist) and true or false
 end
 

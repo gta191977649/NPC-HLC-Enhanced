@@ -1,9 +1,10 @@
 w = wolf:create(3,3,3)
 w2 = wolf:create(5,3,3)
+
 --w:debug()
 --w:show()
 
-wK = wolfKing:create(4,3,3)
+--wK = wolfKing:create(4,3,3)
 --k:debug()
 --k:show()
 --w:speak()
@@ -26,21 +27,23 @@ function initTester()
     local k = 1
     
     --创建猎人
+    --[[
     local ped = createPed(0, 0, 0, 3) --create the ped
     giveWeapon(ped,22,999,true)
     setElementDimension(ped,1);
-    enableHLCForNPC(ped) --make HLC functions work on the ped
-
+    --enableHLCForNPC(ped) --make HLC functions work on the ped
+    ]]
 
     for c,creature in pairs(creatures) do
         setTimer(function()
             --DEBUG
-            local type = "run"
+            local type = "sprintfast"
             if Data:getData(c,"name")~= "Wolf Crew" then
-                type = "run"
+                type = "sprintfast"
             end
             enableHLCForNPC(c,type,0.99,1) --make HLC functions work on the ped
 
+            --[[
             if c~= wK:getElement() then
                 addNPCTask(c,{"walkFollowElement",wK:getElement(), 1})
             else
@@ -53,6 +56,7 @@ function initTester()
             end
 
             addEventHandler("npc_hlc:onNPCTaskDone",c,taskDone)
+            ]]
 
         end,3000*k,1)
         k = k + 1;

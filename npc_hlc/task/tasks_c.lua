@@ -79,7 +79,7 @@ end
 function performTask.killPed(npc,task)
 	if isPedInVehicle(npc) then return true end
 	local target,shootdist,followdist = task[2],task[3],task[4]
-	if not isElement(target) or getElementHealth(target) < 1 then return true end
+	if not isElement(target) or getElementHealth(target) < 1 then return true end -- 注意这里有个生命值检测
 	local x,y,z = getElementPosition(npc)
 	local tx,ty,tz = getElementPosition(target)
 	local dx,dy = tx-x,ty-y

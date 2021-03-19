@@ -335,6 +335,7 @@ function obstacleCheck(hitModel)
 	return true
 end
 
+--更多用于车的射线检测
 function createRaycast(element,type)
 	local px,py,pz = getElementPosition(element)
 	local x0, y0, z0, x1, y1, z1 = getElementBoundingBox( element )
