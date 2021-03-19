@@ -4,11 +4,11 @@
 
 
     <script src="common.lua" type="shared" cache="false"/>
-    <script src="npc_hlc_s.lua" type="server" />
-    <script src="npc_hlc_c.lua" type="client" cache="false"/>
-    <script src="npc_functions_s.lua" type="server" />
-    <script src="npc_functions.lua" type="server" />
-    <script src="npc_functions.lua" type="client" cache="false"/>
+    <script src="functions/npc_hlc_s.lua" type="server" />
+    <script src="functions/npc_hlc_c.lua" type="client" cache="false"/>
+    <script src="functions/npc_functions_s.lua" type="server" />
+    <script src="functions/npc_functions.lua" type="server" />
+    <script src="functions/npc_functions.lua" type="client" cache="false"/>
     <script src="task/control_npc_s.lua" type="server" />
     <script src="task/control_npc_c.lua" type="client" cache="false"/>
     <script src="task/valid_tasks_s.lua" type="server" />

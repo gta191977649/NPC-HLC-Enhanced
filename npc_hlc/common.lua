@@ -38,6 +38,8 @@ function controlVehicleDirCancel(npc)
     setPedControlState (npc,"vehicle_left", false )
 end
 
+--TODO 这里需要根据行走模式判断用动作还是按键行走
+
 function controlPedRight(npc)
     setPedControlState (npc,"right", true )
     setPedControlState (npc,"left", false )

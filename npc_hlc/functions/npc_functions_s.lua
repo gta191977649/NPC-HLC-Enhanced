@@ -1,3 +1,4 @@
+--NPC初始化
 function enableHLCForNPC(npc,walkspeed,accuracy,drivespeed)
 	if not isElement(npc) or getElementType(npc) ~= "ped" then
 		outputDebugString("Invalid ped argument",2)
@@ -27,8 +28,8 @@ function enableHLCForNPC(npc,walkspeed,accuracy,drivespeed)
 		end
 	end
 
-	addEventHandler("onElementDataChange",npc,cleanUpDoneTasks)
-	addEventHandler("onElementDestroy",npc,destroyNPCInformationOnDestroy)
+	addEventHandler("onElementDataChange",npc,cleanUpDoneTasks) --绑定data变化函数到npc
+	addEventHandler("onElementDestroy",npc,destroyNPCInformationOnDestroy)--绑定清理函数到NPC
 	all_npcs[npc] = true
 	setElementData(npc,"npc_hlc",true)
 	addNPCToUnsyncedList(npc)
@@ -40,6 +41,7 @@ function enableHLCForNPC(npc,walkspeed,accuracy,drivespeed)
 	return true
 end
 
+--NPC反初始化
 function disableHLCForNPC(npc)
 	if not isElement(npc) or getElementType(npc) ~= "ped" then
 		outputDebugString("Invalid ped argument",2)

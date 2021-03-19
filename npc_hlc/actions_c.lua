@@ -1,3 +1,6 @@
+--重要：客户端 基本ACTIONS
+--这里是NPC的最基础行为
+
 DGS = exports.dgs
 AI = {}
 AI.config = {
@@ -9,15 +12,17 @@ AI.config = {
 	decision_timeout = 500,
 	decision_walk_timeout = 1000
 }
+--AI决定
 AI.decisions = {
-	"IDLE",
-	"FORWARD_AVOID_OBSTCLE",
+	"IDLE",--1
+	"FORWARD_AVOID_OBSTCLE",--2
 	"BACKWARD_AVOID_OBSTCLE",
 	"WAIT_OBSTCLE",
-	"WALK_OBSTCLE_RIGHT",
+	"WALK_OBSTCLE_RIGHT", --5
 	"WALK_OBSTCLE_LEFT",
 	"WALK_OBSTCLE_BACK",
 }
+--调试模式
 debug = false
 local mathCos = math.cos
 local mathSin = math.sin
@@ -82,7 +87,7 @@ function stopNPCDrivingActions(npc)
 	setPedControlState(npc,"vehicle_right",false)
 end
 
-
+--客户端 创建NPC射线
 function createPedRaycast(element,type) 
 	local px,py,pz = getElementPosition(element)
 	local x0, y0, z0, x1, y1, z1 = getElementBoundingBox( element )
@@ -111,40 +116,42 @@ function createPedRaycast(element,type)
 	end
 end
 
+--客户端：让NPC移动到坐标（X,Y）通过操纵按键的方式而不是设置动作
 function makeNPCWalkToPos(npc,x,y)
 	local speed = getNPCWalkSpeed(npc)
 	
-	-- injected ai logic
+	-- injected ai logic 初始化AI参数
 	initalAIParameter(npc)
-	AI[npc].task = getNPCCurrentTask(npc)[1]
+	AI[npc].task = getNPCCurrentTask(npc)[1] -- 获取NPC的首个任务
 	local px,py,pz = getElementPosition(npc)
 	local cameraAngle = math.deg(mathAtan2(x-px,y-py))
-	setPedCameraRotation(npc,cameraAngle)
+	setPedCameraRotation(npc,cameraAngle) -- 设置NPC转向？
 
-
+	--检测三个方向的射线碰撞情况
 	local ray_eye_l = createPedRaycast(npc,"raycast_eye_l")
 	local ray_eye_m = createPedRaycast(npc,"raycast_eye_m")
 	local ray_eye_r = createPedRaycast(npc,"raycast_eye_r")
 
 	local currentTick = getTickCount()
 
-	if AI[npc].decision == AI.decisions[1] then
+	if AI[npc].decision == AI.decisions[1] then -- 从IDLE状态开始
+
 		if ray_eye_l and ray_eye_r and ray_eye_m or ray_eye_l and ray_eye_r then 
 			AI[npc].decision = AI.decisions[7]
 			AI[npc].lastDecisionTick = currentTick
 		end
 		
-		if ray_eye_l or ray_eye_l and ray_eye_m then 
+		if ray_eye_l or ray_eye_l and ray_eye_m then --碰撞到左边或者碰撞到左+前
 			--controlPedRight(npc)
-			AI[npc].decision = AI.decisions[5]
+			AI[npc].decision = AI.decisions[5] --向右
 			AI[npc].lastDecisionTick = currentTick
 		end
-		if ray_eye_r or ray_eye_r and ray_eye_m then 
+		if ray_eye_r or ray_eye_r and ray_eye_m then --碰撞到右边或者碰撞到右+前
 			--controlPedLeft(npc)
-			AI[npc].decision = AI.decisions[6]
+			AI[npc].decision = AI.decisions[6] -- 向左
 			AI[npc].lastDecisionTick = currentTick
 		end
-		if ray_eye_m then 
+		if ray_eye_m then -- 碰撞到前面，随机左转或者右转
 			local dir = math.random(1,2)
 			if dir == 1 then
 				AI[npc].decision = AI.decisions[5]
@@ -156,15 +163,15 @@ function makeNPCWalkToPos(npc,x,y)
 			end
 		end
 
-		if isElementInWater(npc) then 
+		if isElementInWater(npc) then -- NPC落水后
 			local angle = 360-math.deg(math.atan2(x-px,y-py))
 			setPedRotation(npc,angle)
 		end
 
 	end
 
-	-- ai decision
-	if AI[npc].decision == AI.decisions[5] then 
+	-- ai decision 根据AI决策执行行为
+	if AI[npc].decision == AI.decisions[5] then -- 向右
 		controlPedRight(npc)
 		--setPedCameraRotation(npc,cameraAngle + 90)
 		if not ray_eye_l or AI[npc].lastDecisionTick ~= nil and currentTick - AI[npc].lastDecisionTick >= AI.config.decision_walk_timeout then
@@ -172,7 +179,7 @@ function makeNPCWalkToPos(npc,x,y)
 		end
 		
 	end
-	if AI[npc].decision == AI.decisions[6] then 
+	if AI[npc].decision == AI.decisions[6] then --向左
 		controlPedLeft(npc)
 		--setPedCameraRotation(npc,cameraAngle - 90)
 		if not ray_eye_r or currentTick - AI[npc].lastDecisionTick >= AI.config.decision_walk_timeout then
@@ -180,7 +187,7 @@ function makeNPCWalkToPos(npc,x,y)
 		end
 		
 	end
-	if AI[npc].decision == AI.decisions[7] then 
+	if AI[npc].decision == AI.decisions[7] then --后退
 		controlPedBack(npc)
 		--setPedCameraRotation(npc,cameraAngle + 180)
 		if currentTick - AI[npc].lastDecisionTick >= AI.config.decision_walk_timeout then
@@ -204,6 +211,7 @@ function makeNPCWalkToPos(npc,x,y)
 	)
 end
 
+--客户端：NPC步行到车边后上车
 function makeNPCEnterToVehicle(npc,vehicle,seat)
 	print("[C] Set setPedEnterVehicle")
 	local x,y,z = getElementPosition(npc)
@@ -217,6 +225,7 @@ function makeNPCEnterToVehicle(npc,vehicle,seat)
 	end
 end
 
+--客户端：NPC离开车
 function makeNPCExitFromVehicle(npc)
 	if not getPedOccupiedVehicle(npc) then return false end
 	setPedExitVehicle (npc)
@@ -240,6 +249,7 @@ function makeNPCWalkAroundBend(npc,x0,y0,x1,y1,x2,y2,off)
 	makeNPCWalkToPos(npc,destx,desty)
 end
 
+--客户端：NPC射击坐标
 function makeNPCShootAtPos(npc,x,y,z)
 	local sx,sy,sz = getElementPosition(npc)
 	x,y,z = x-sx,y-sy,z-sz
@@ -255,7 +265,7 @@ function makeNPCShootAtPos(npc,x,y,z)
 	yx,yy,yz = yx*ymult,yy*ymult,yz*ymult
 	x,y,z = x*mult,y*mult,z*mult
 
-	setPedAimTarget(npc,sx+xx+yx+x,sy+xy+yy+y,sz+xz+yz+z)
+	setPedAimTarget(npc,sx+xx+yx+x,sy+xy+yy+y,sz+xz+yz+z) -- 射击坐标
 	if isPedInVehicle(npc) then
 		setPedControlState(npc,"vehicle_fire",not getPedControlState(npc,"vehicle_fire"))
 	else
@@ -264,6 +274,8 @@ function makeNPCShootAtPos(npc,x,y,z)
 	end
 end
 
+--客户端：NPC设计element
+--TODO:当前设计的是NPC或者PED的头部，不适合动物
 function makeNPCShootAtElement(npc,target)
 	local x,y,z = getElementPosition(target)
 	local vx,vy,vz = getElementVelocity(target)
@@ -279,6 +291,7 @@ function makeNPCShootAtElement(npc,target)
 	makeNPCShootAtPos(npc,x+vx,y+vy,z+vz)
 end
 
+--客户端：设置AI参数
 function initalAIParameter(npc)
 	if AI[npc] == nil then
 		AI[npc] = {}
@@ -300,6 +313,8 @@ function initalAIParameter(npc)
 		end)
 	end
 end
+
+--判断路
 function isModelObstcle(model_id)
 	local dff = engineGetModelNameFromID(model_id) -- check if not road
 	
@@ -312,6 +327,7 @@ function isModelObstcle(model_id)
 	end
 	return true
 end
+
 function obstacleCheck(hitModel)
 	if hitModel~= nil and tonumber(hitModel) then 
 		return isModelObstcle(hitModel)
