@@ -11,9 +11,9 @@ setmetatable( wolf, animal );
 
 function wolf:create(x,y,z)
 
-    outputDebugString("CREATE WOLF");
+    --outputDebugString("CREATE WOLF");
     --outputDebugString("CREATE WOLF AT "..x..","..y..","..z);
-    o = animal:create(14,x,y,z)
+    local o = animal:create(14,x,y,z)
     setmetatable(o,self);
     self.__index = self;
 

@@ -102,6 +102,7 @@ function removeEmptySquares()
 	end
 end
 
+--计算countPopulationInSquares里的PED数量
 function countPopulationInSquares(trtype)
 	for element,exists in pairs(population[trtype]) do
 		if getElementType(element) ~= "ped" or not isPedInVehicle(element) then

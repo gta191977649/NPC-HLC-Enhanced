@@ -62,7 +62,8 @@
     <export function="clearNPCTasks" type="server" http="false" />
     <export function="setNPCTask" type="server" http="false" />
     
-    
+    <export function="createCreature" type="server" http="false" />
+
     <settings>
         <setting name="*server_colchecking" value="false" />
     </settings>

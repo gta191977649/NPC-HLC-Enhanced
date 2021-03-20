@@ -8,9 +8,9 @@ setmetatable( animal, creature );
 
 function animal:create(skin,x,y,z)
 
-    outputDebugString("CREATE ANIMAL");
+    --outputDebugString("CREATE ANIMAL");
 
-    o = creature:create(skin,x,y,z)
+    local o = creature:create(skin,x,y,z)
     
     self.__index = self;
 

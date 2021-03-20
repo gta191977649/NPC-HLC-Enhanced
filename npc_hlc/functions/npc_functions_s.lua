@@ -170,3 +170,12 @@ function isTaskValid(task)
 	return taskFunc and taskFunc(task) or false
 end
 
+--2021
+--创建生物
+function createCreature(type,x,y,z,dim)
+	outputDebugString("TRY CALL createCreature:"..tostring(type));
+	local c = wolf:create(x,y,z) -- 不要使用预留名creature..不然BUG
+	local cElement = c:getElement();
+	enableHLCForNPC(cElement,"sprintfast",0.99,1)
+	return cElement;
+end

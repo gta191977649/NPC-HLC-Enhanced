@@ -52,9 +52,9 @@ function debugCreature()
             --TEST getPositionFromElementOffset
             --local lx,ly,lz = getPositionFromElementOffset(creature,-2,0,0) --left
             --local lx,ly,lz = getPositionFromElementOffset(creature,2,0,0) --right
-            local lx,ly,lz = getPositionFromElementOffset(creature,0,5,0) --front
+            --local lx,ly,lz = getPositionFromElementOffset(creature,0,5,0) --front
             --local lx,ly,lz = getPositionFromElementOffset(creature,-2,2,0) --lf
-            dxDrawLine3D( cX,cY,cZ, lx,ly,lz,tocolor ( 0, 0, 255, 255 ),1 )
+            --dxDrawLine3D( cX,cY,cZ, lx,ly,lz,tocolor ( 0, 0, 255, 255 ),1 )
 
         end
 

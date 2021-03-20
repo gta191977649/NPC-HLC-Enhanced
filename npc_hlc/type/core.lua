@@ -17,9 +17,9 @@ creature.__index = creature;
 --创建
 function creature:create(skin,x,y,z)
 
-    outputDebugString("TRY CREATE creature ");
+    --outputDebugString("TRY CREATE creature ");
 
-    o = {}
+    local o = {}
     setmetatable(o,self);
     self.__index = self;
 

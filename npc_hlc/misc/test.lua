@@ -1,5 +1,4 @@
-w = wolf:create(3,3,3)
-w2 = wolf:create(5,3,3)
+--createCreature("wolf",3,3,3)
 
 --w:debug()
 --w:show()
@@ -34,16 +33,14 @@ function initTester()
     --enableHLCForNPC(ped) --make HLC functions work on the ped
     ]]
 
+    --c1 = createCreature("wolf",3,3,3)
+    --c2 = createCreature("wolf",4,3,3)
+
+    --[[
     for c,creature in pairs(creatures) do
         setTimer(function()
-            --DEBUG
-            local type = "sprintfast"
-            if Data:getData(c,"name")~= "Wolf Crew" then
-                type = "sprintfast"
-            end
-            enableHLCForNPC(c,type,0.99,1) --make HLC functions work on the ped
 
-            --[[
+
             if c~= wK:getElement() then
                 addNPCTask(c,{"walkFollowElement",wK:getElement(), 1})
             else
@@ -56,11 +53,12 @@ function initTester()
             end
 
             addEventHandler("npc_hlc:onNPCTaskDone",c,taskDone)
-            ]]
+
 
         end,3000*k,1)
         k = k + 1;
     end
+    --]]
 
 end
 addEventHandler("onResourceStart",resourceRoot,initTester)
