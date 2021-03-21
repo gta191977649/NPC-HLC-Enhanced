@@ -31,6 +31,13 @@ function performTask.walkFollowElement(npc,task,maxtime)
 	return maxtime
 end
 
+--2021 NEW
+--TODO 不是很明白含义
+function performTask.awayFromElement(npc,task,maxtime)
+	setElementPosition(npc,getElementPosition(npc))
+	return maxtime
+end
+
 function performTask.shootPoint(npc,task,maxtime)
 	setElementPosition(npc,getElementPosition(npc))
 	return maxtime

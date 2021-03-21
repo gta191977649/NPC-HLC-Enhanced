@@ -263,6 +263,16 @@ Try to stay in the range of the specified element.
 ```
 
 ```
+{"awayFromElement", element, angledistance,safedistance} -- 远离目标，改变方向距离，安全距离
+
+Try to away from the specified element.
+
+    element: The element to away from
+    angledistance: The min distance to the element 改变方向的最小距离
+    safedistance: 停止动作的安全距离
+```
+
+```
 {"shootPoint", x, y, z} --攻击坐标
 
 Shoot at the specified point.

@@ -59,9 +59,8 @@ function debugCreature()
                 color = tocolor(255,0,0)
             else
                 color = tocolor(0,255,0)
-            end 
+            end
             
-            --缺点：无法随角色转身
             local rx,ry,rz =  getElementRotation(creature)
             for a = -angle/2,angle/2,30 do 
                 

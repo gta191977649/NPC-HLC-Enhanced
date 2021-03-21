@@ -159,15 +159,16 @@ function sensorChecks()
 							if not haveTask then -- 同时存在C/S 端
 								outputChatBox("NPC NO TASK ,SO KILL ME")
 								--triggerServerEvent("npc > addTask",resourceRoot,npc,{"walkFollowElement",localPlayer, 1})
-								triggerServerEvent("npc > addTask",resourceRoot,npc,{"killPed",localPlayer,3,1})
+								--triggerServerEvent("npc > addTask",resourceRoot,npc,{"killPed",localPlayer,3,1})
+								triggerServerEvent("npc > addTask",resourceRoot,npc,{"awayFromElement",localPlayer,0.1,200})
 							end
 						else
 							if haveTask then
-								outputChatBox("NPC GIVE UP TO KILL ME");
-								triggerServerEvent("npc > clearTask",resourceRoot,npc)
+								--outputChatBox("NPC GIVE UP TO KILL ME");
+								--triggerServerEvent("npc > clearTask",resourceRoot,npc)
 
 								--丢失目标，应该去丢失时的玩家位置
-								
+
 							end
 						end
 

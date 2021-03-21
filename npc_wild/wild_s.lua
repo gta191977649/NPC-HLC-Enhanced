@@ -106,6 +106,7 @@ function SpawnWildCreature()
             --outputDebugString("spawn:"..tostring(spawn))
             if spawn and isElement(thePlayer) then
 
+                --TODO 用复用函数替换
                 --产生随机位置
                 local xcoord = 0
                 local ycoord = 0

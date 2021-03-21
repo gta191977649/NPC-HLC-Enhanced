@@ -47,22 +47,54 @@ function performTask.walkAroundBend(npc,task)
 	local angle = getAngleInBend(x,y,x0,y0,x1,y1,x2,y2)+enddist/len
 	if angle >= math.pi*0.5 then return true end
 
-	
 	makeNPCWalkAroundBend(npc,x0,y0,x1,y1,x2,y2,off)
 end
 
 function performTask.walkFollowElement(npc,task)
 	if isPedInVehicle(npc) then return true end
-	local followed,mindist = task[2],task[3]
+	local followed,mindist = task[2],task[3] -- 获取远离目标，最小距离
 	if not isElement(followed) then return true end
 	local x,y = getElementPosition(npc)
 	local fx,fy = getElementPosition(followed)
 	local dx,dy = fx-x,fy-y
-	if dx*dx+dy*dy > mindist*mindist then
+	if dx*dx+dy*dy > mindist*mindist then -- 如果平面距离
 		makeNPCWalkToPos(npc,fx,fy)
 	else
 		stopAllNPCActions(npc)
 	end
+end
+
+--NEW 2021
+--TODO 没有躲避其他玩家
+function performTask.awayFromElement(npc,task)
+	--outputChatBox("[C] performTask.awayFromElement"); -- 执行频率挺高
+	if isPedInVehicle(npc) then return true end
+	
+	local element,mindist,safedist = task[2],task[3],task[4]
+	if not isElement(element) then return true end
+	local x,y = getElementPosition(npc) -- 获取NPC坐标
+	local fx,fy = getElementPosition(element) --获取远离目标坐标
+	local ax,ay = 0,0; -- 生成一个离玩家比较远的点
+	local dx,dy = fx-x,fy-y -- 获取平面距离
+
+	offset = Vector3(-dx,-dy,0):getNormalized()*safedist; -- 获取远离玩家方向的模向量*安全距离
+	ax = x + offset:getX();
+	ay = y + offset:getY();
+	--outputChatBox("ax:"..tostring(ax).." ay:"..tostring(ay))
+
+	if dx*dx+dy*dy < mindist*mindist then -- 太近了我要改变方向
+
+		-- 如果太靠近就反向奔跑
+		--outputChatBox("ITS TOO FAR")
+		--ax,ay = x,y + randomCoord(50,100);
+
+	elseif dx*dx+dy*dy > safedist*safedist then -- 足够安全了
+		--outputChatBox("I AM SAFE");
+		stopAllNPCActions(npc) -- 我要休息
+	else
+		makeNPCWalkToPos(npc,ax,ay) -- 继续跑
+	end
+
 end
 
 function performTask.shootPoint(npc,task)

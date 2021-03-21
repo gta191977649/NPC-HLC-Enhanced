@@ -4,6 +4,7 @@ function isHLCEnabled(npc)
 end
 
 --客户端：检测NPC是否存在任务
+--TODO：参考getNPCCurrentTask
 function isNPCHaveTask(npc)
 	if not isElement(npc) then
 		outputDebugString("Invalid ped argument",2)
