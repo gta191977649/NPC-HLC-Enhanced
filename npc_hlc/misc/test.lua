@@ -33,7 +33,7 @@ function initTester()
     --enableHLCForNPC(ped) --make HLC functions work on the ped
     ]]
 
-    --c1 = createCreature("wolf",3,3,3)
+    c1 = createCreature("wolf",-1462.775390625,2600.77734375,55.6875)
     --c2 = createCreature("wolf",4,3,3)
 
     --[[

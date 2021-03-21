@@ -23,6 +23,66 @@ function checkLOSChance(distance,value)
 	return myExp
 end
 
+--[[
+-- Calculate angle between vec1 and vec2
+function Angle(vec1, vec2)
+    -- Calculate the angle by applying law of cosines
+    return math.acos(vec1:dot(vec2)/(vec1.length*vec2.length))
+end
+
+function checkVisibleEX(npc)
+	local x,y,z = getElementPosition(npc)
+	local px,py,pz = getElementPosition(localPlayer)
+
+	--local dis = getDistanceBetweenPoints3D() Vector3.Distance(transform.position, Targer.position);//求得距离
+
+	local rx,ry,rz = getElementRotation(npc) 
+	local forward = Vector3(rx,ry,rz):getNormalized();
+
+	local npcPos = Vector3(x,y,z)
+	local targetPos = Vector3(px,py,pz);
+	local angle = Angle(forward, targetPos-npcPos);
+	outputDebugString(tostring(angle));
+	return angle;
+end
+]]
+
+--核心：视野检测
+--解释：检测能否被该npc看到
+function checkVisible(npc)
+	local visible = false
+	local angle = 90 -- 视野角度
+	local radius = 10 -- 视野长度
+	--var cosAngle = Mathf.Cos(Mathf.Deg2Rad * angle * 0.5f); //以一位单位，取得Cos角度
+	local cosAngle = math.cos(math.pi/180*angle*0.5)
+	
+	local x,y,z = getElementPosition(npc)
+	local circleCenter = Vector3(x,y,z);
+	local px,py,pz = getElementPosition(localPlayer)
+	local targetPos = Vector3(px,py,pz);
+	local disV = targetPos - circleCenter;--从圆心到目标的方向
+	local dis = disV:getLength()
+	local dis2 = dis*dis--长度平方和
+
+	if dis2<radius*radius then 
+		disV:setZ(0)
+		disV = disV:getNormalized()
+		
+		local npcMatrix = npc.matrix;
+		local forward = npcMatrix:getForward();
+
+		--outputDebugString(tostring(inspect(forward)))
+		local cosResult = forward:dot(disV);
+		--outputChatBox("cosResult:"..tostring(cosResult))
+		if (cosResult - cosAngle) >=0 then 
+			visible = true
+		end
+	end
+	--outputChatBox("visible:"..tostring(visible))
+	return visible;
+end
+
+
 --核心：检测能否找到(看或者听到)本地玩家
 --参数：目标NPC
 function checkFind(npc)
@@ -55,10 +115,8 @@ function checkFind(npc)
 	end
 
 	-- Visibility Detection
-	-- 僵尸最大视野45
-	local col = getElementData(npc,"viewcol");
 	--outputChatBox(tostring(checkFind));
-	if isclear and col and isElementWithinColShape(localPlayer,col) then
+	if isclear and checkVisible(npc) then
 		--local LOSChance = checkLOSChance(distance,visibility)
 		--if math.random(0,100) < LOSChance then
 		--		targetByVisibility = true
@@ -75,8 +133,8 @@ function checkFind(npc)
 
 	if targetBySound or targetByVisibility then
 		canFind = true 
+		--outputChatBox("targetBySound:"..tostring(targetBySound)..",targetByVisibility:"..tostring(targetByVisibility));
 	end
-	--outputChatBox("targetBySound:"..tostring(targetBySound)..",targetByVisibility:"..tostring(targetByVisibility));
 	--canFind = false --debug
 	return canFind,targetBySound,targetByVisibility
 
@@ -96,6 +154,7 @@ function sensorChecks()
 
 						--判定能否 找到/听/看到 玩家
 						local canFind,hear,visible = checkFind(npc);
+						local haveTask = isNPCHaveTask(npc);
 						--outputChatBox("canFind:"..tostring(canFind).." hear:"..tostring(hear)..",visible:"..tostring(visible));
 						
 						if canFind then
@@ -103,7 +162,16 @@ function sensorChecks()
 							--addNPCTask(npc,{"walkFollowElement",localPlayer,1})
 							--call(npc_hlc,"addNPCTask",npc,{"walkFollowElement",localPlayer,1})
 							--triggerServerEvent("npc > addTask",resourceRoot,npc,{"walkFollowElement",localPlayer,2})
-							triggerServerEvent("npc > addTask",resourceRoot,npc,{"killPed",localPlayer,100,1})
+
+							if not haveTask then -- 同时存在C/S 端
+								outputChatBox("NPC NO TASK ,SO KILL ME")
+								triggerServerEvent("npc > addTask",resourceRoot,npc,{"killPed",localPlayer,100,1})
+							end
+						else
+							if haveTask then
+								outputChatBox("NPC GIVE UP TO KILL ME");
+								triggerServerEvent("npc > clearTask",resourceRoot,npc)
+							end
 						end
 
 				-- end

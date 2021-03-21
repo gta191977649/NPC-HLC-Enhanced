@@ -28,7 +28,7 @@ function debugCreature()
                 local text = "Category:"..tostring(Data:getData(creature,"category") or "MISS CATEGORY")
                 text = text .. "\n".."Type:"..tostring(Data:getData(creature,"type") or "MISS TYPE")
                 text = text .. "\n".."Name:"..tostring(Data:getData(creature,"name") or "MISS TYPE")
-
+                text = text .. "\n".."Visble:"..tostring(checkVisible(creature))
                 ----------------checkFind
                 --[[
                 if s or v then 
@@ -52,10 +52,18 @@ function debugCreature()
             --TEST getPositionFromElementOffset
             --local lx,ly,lz = getPositionFromElementOffset(creature,-2,0,0) --left
             --local lx,ly,lz = getPositionFromElementOffset(creature,2,0,0) --right
-            --local lx,ly,lz = getPositionFromElementOffset(creature,0,5,0) --front
-            --local lx,ly,lz = getPositionFromElementOffset(creature,-2,2,0) --lf
-            --dxDrawLine3D( cX,cY,cZ, lx,ly,lz,tocolor ( 0, 0, 255, 255 ),1 )
+            local f_x,f_y,f_z = getPositionFromElementOffset(creature,0,5,0) --front
+            local lf_x,lf_y,lf_z = getPositionFromElementOffset(creature,-5,5,0) --lf
+            local rf_x,rf_y,rf_z = getPositionFromElementOffset(creature,5,5,0) --rf
 
+            if find then
+                color = tocolor(255,0,0)
+            else
+                color = tocolor(0,255,0)
+            end 
+            --dxDrawLine3D( cX,cY,cZ, f_x,f_y,f_z,color,1 )
+            dxDrawLine3D( cX,cY,cZ, lf_x,lf_y,lf_z,color,1 )
+            dxDrawLine3D( cX,cY,cZ, rf_x,rf_y,rf_z,color,1 )
         end
 
     end

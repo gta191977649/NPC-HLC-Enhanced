@@ -132,6 +132,7 @@ end
 addEvent("npc > addTask",true)
 addEventHandler("npc > addTask",resourceRoot,addNPCTask,false)
 
+--服务器函数：清理NPC任务
 function clearNPCTasks(npc)
 	if not npc or not all_npcs[npc] then
 		outputDebugString("Invalid ped argument",2)
@@ -147,7 +148,10 @@ function clearNPCTasks(npc)
 	removeElementData(npc,"npc_hlc:lasttask")
 	return true
 end
+addEvent("npc > clearTask",true)
+addEventHandler("npc > clearTask",resourceRoot,clearNPCTasks,false)
 
+--服务器：设置NPC任务
 function setNPCTask(npc,task)
 	if not npc or not all_npcs[npc] then
 		outputDebugString("Invalid ped argument",2)
@@ -164,6 +168,7 @@ function setNPCTask(npc,task)
 	return true
 end
 
+--服务器：检测任务是否可用
 function isTaskValid(task)
 	local taskFunc = taskValid[task[1]]
 	--outputChatBox(tostring(taskFunc))
@@ -171,6 +176,22 @@ function isTaskValid(task)
 end
 
 --2021
+
+--服务器：检测NPC是否存在任务
+function isNPCHaveTask(npc)
+	if not npc or not all_npcs[npc] then
+		outputDebugString("Invalid ped argument",2)
+		return false
+	end
+	--thistask 是数字
+	local thistask = getElementData(npc,"npc_hlc:thistask")
+	if not thistask then
+		return false
+	else
+		return true
+	end 
+end
+
 --创建生物
 function createCreature(type,x,y,z,dim)
 	outputDebugString("TRY CALL createCreature:"..tostring(type));
