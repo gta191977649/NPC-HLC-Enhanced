@@ -84,6 +84,10 @@ function performTask.killPed(npc,task)
 	local tx,ty,tz = getElementPosition(target)
 	local dx,dy = tx-x,ty-y
 	local distsq = dx*dx+dy*dy
+
+	--outputChatBox("distsq:"..tostring(distsq));
+	--outputChatBox("shootdist:"..tostring(shootdist*shootdist));
+
 	if distsq < shootdist*shootdist then
 		makeNPCShootAtElement(npc,target)
 		setPedRotation(npc,-math.deg(math.atan2(dx,dy)))

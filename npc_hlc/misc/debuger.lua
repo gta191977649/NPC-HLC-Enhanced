@@ -26,8 +26,10 @@ function debugCreature()
 
 			if tonumber(x) and tonumber(y) then
                 local text = "Category:"..tostring(Data:getData(creature,"category") or "MISS CATEGORY")
-                text = text .. "\n".."Type:"..tostring(Data:getData(creature,"type") or "MISS TYPE")
-                text = text .. "\n".."Name:"..tostring(Data:getData(creature,"name") or "MISS TYPE")
+                --text = text .. "\n".."Type:"..tostring(Data:getData(creature,"type") or "MISS TYPE")
+                --text = text .. "\n".."Name:"..tostring(Data:getData(creature,"name") or "MISS TYPE")
+                text = text .. "\n".."Speed:"..tostring(Data:getData(creature,"speed") or "MISS SPEED")
+                text = text .. "\n".."HP:"..tostring(getElementHealth(creature) or "MISS SPEED")
                 text = text .. "\n".."Visble:"..tostring(checkVisible(creature))
                 ----------------checkFind
                 --[[
@@ -49,21 +51,24 @@ function debugCreature()
 				dxDrawText(text,x-length/2-sW*0.01,y*0.8, x+length/2+sW*0.01, y+sH*0.03, textcolor,1, "clear", "center", "center")
 			end
 
-            --TEST getPositionFromElementOffset
-            --local lx,ly,lz = getPositionFromElementOffset(creature,-2,0,0) --left
-            --local lx,ly,lz = getPositionFromElementOffset(creature,2,0,0) --right
-            local f_x,f_y,f_z = getPositionFromElementOffset(creature,0,5,0) --front
-            local lf_x,lf_y,lf_z = getPositionFromElementOffset(creature,-5,5,0) --lf
-            local rf_x,rf_y,rf_z = getPositionFromElementOffset(creature,5,5,0) --rf
+            --这里需要从客户端获取服务端的数据
+            local radius = Data:getData(creature,"fovDistance")
+            local angle = Data:getData(creature,"fovAngle")
 
             if find then
                 color = tocolor(255,0,0)
             else
                 color = tocolor(0,255,0)
             end 
-            --dxDrawLine3D( cX,cY,cZ, f_x,f_y,f_z,color,1 )
-            dxDrawLine3D( cX,cY,cZ, lf_x,lf_y,lf_z,color,1 )
-            dxDrawLine3D( cX,cY,cZ, rf_x,rf_y,rf_z,color,1 )
+            
+            --缺点：无法随角色转身
+            local rx,ry,rz =  getElementRotation(creature)
+            for a = -angle/2,angle/2,30 do 
+                
+                local x,y,z = getPositionFromOffsetByPosRot(cX,cY,cZ,rx,ry,rz+a,0,radius,0)
+                dxDrawLine3D( cX,cY,cZ, x,y,z,color,1 )
+            end
+
         end
 
     end

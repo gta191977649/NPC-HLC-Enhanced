@@ -3,6 +3,11 @@ function initNPCHLC()
 	unsynced_npcs = {}
 	last_update = {}
 	initNPCControl()
+	--
+	cType = {}
+	cType["wolf"] = wolf
+	cType["bear"] = bear
+	cType["puma"] = puma
 end
 addEventHandler("onResourceStart",resourceRoot,initNPCHLC)
 

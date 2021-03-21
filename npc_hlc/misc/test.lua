@@ -33,9 +33,9 @@ function initTester()
     --enableHLCForNPC(ped) --make HLC functions work on the ped
     ]]
 
-    c1 = createCreature("wolf",-1462.775390625,2600.77734375,55.6875)
-    --c2 = createCreature("wolf",4,3,3)
-
+    c1 = createCreature("wolf",240.1689453125,2500.109375,16.484375)
+    c2 = createCreature("bear",261.3671875,2487.5546875,16.484375)
+    c3 = createCreature("puma",284.236328125,2534.7548828125,16.818849563599)
     --[[
     for c,creature in pairs(creatures) do
         setTimer(function()

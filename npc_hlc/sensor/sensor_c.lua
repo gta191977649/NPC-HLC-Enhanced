@@ -29,31 +29,21 @@ function Angle(vec1, vec2)
     -- Calculate the angle by applying law of cosines
     return math.acos(vec1:dot(vec2)/(vec1.length*vec2.length))
 end
-
-function checkVisibleEX(npc)
-	local x,y,z = getElementPosition(npc)
-	local px,py,pz = getElementPosition(localPlayer)
-
-	--local dis = getDistanceBetweenPoints3D() Vector3.Distance(transform.position, Targer.position);//求得距离
-
-	local rx,ry,rz = getElementRotation(npc) 
-	local forward = Vector3(rx,ry,rz):getNormalized();
-
-	local npcPos = Vector3(x,y,z)
-	local targetPos = Vector3(px,py,pz);
-	local angle = Angle(forward, targetPos-npcPos);
-	outputDebugString(tostring(angle));
-	return angle;
-end
 ]]
 
 --核心：视野检测
 --解释：检测能否被该npc看到
 function checkVisible(npc)
+
 	local visible = false
-	local angle = 90 -- 视野角度
-	local radius = 10 -- 视野长度
-	--var cosAngle = Mathf.Cos(Mathf.Deg2Rad * angle * 0.5f); //以一位单位，取得Cos角度
+
+	--这里需要从客户端获取服务端的数据
+	local radius = Data:getData(npc,"fovDistance")
+	local angle = Data:getData(npc,"fovAngle")
+
+	--outputDebugString("fovD:"..tostring(radius))
+	--outputDebugString("fovA:"..tostring(angle))
+
 	local cosAngle = math.cos(math.pi/180*angle*0.5)
 	
 	local x,y,z = getElementPosition(npc)
@@ -64,10 +54,10 @@ function checkVisible(npc)
 	local dis = disV:getLength()
 	local dis2 = dis*dis--长度平方和
 
-	if dis2<radius*radius then 
+	if dis2 < radius*radius then 
 		disV:setZ(0)
 		disV = disV:getNormalized()
-		
+
 		local npcMatrix = npc.matrix;
 		local forward = npcMatrix:getForward();
 
@@ -95,12 +85,14 @@ function checkFind(npc)
 	local Nx,Ny,Nz = getElementPosition( npc )
 	local Px,Py,Pz = getElementPosition( localPlayer )
 
-	local isclear = isLineOfSightClear (Nx, Ny, Nz+1, Nx, Ny, Nz +1, true, true, false, true, false, false, false) -- 二者之间没有遮挡
-	local sound,visibility = Player:getSoundAndVisibilityLevel(); -- 获取玩家的噪音和可见度（可能需要整合）
+	local isclear = isLineOfSightClear (Nx, Ny, Nz+1, Px, Py, Pz +1, true, true, false, true, false, false, false) -- 二者之间没有遮挡
+	--local sound,visibility = Player:getSoundAndVisibilityLevel(); -- 获取玩家的噪音和可见度（可能需要整合）
 	local distance = getDistanceBetweenPoints3D(Px, Py, Pz, Nx, Ny, Nz);
 
 	-------------------------看见/听见玩家检测2.0
-	-- Noise Detection
+	-- 暂时不检测听力
+	-- Noise Detection 
+	--[[
 	if distance <= sound/4 then
 		if sound >= 80 then
 			targetBySound = true		
@@ -113,6 +105,7 @@ function checkFind(npc)
 	else
 			targetBySound = false
 	end
+	]]
 
 	-- Visibility Detection
 	--outputChatBox(tostring(checkFind));
@@ -165,12 +158,16 @@ function sensorChecks()
 
 							if not haveTask then -- 同时存在C/S 端
 								outputChatBox("NPC NO TASK ,SO KILL ME")
-								triggerServerEvent("npc > addTask",resourceRoot,npc,{"killPed",localPlayer,100,1})
+								--triggerServerEvent("npc > addTask",resourceRoot,npc,{"walkFollowElement",localPlayer, 1})
+								triggerServerEvent("npc > addTask",resourceRoot,npc,{"killPed",localPlayer,3,1})
 							end
 						else
 							if haveTask then
 								outputChatBox("NPC GIVE UP TO KILL ME");
 								triggerServerEvent("npc > clearTask",resourceRoot,npc)
+
+								--丢失目标，应该去丢失时的玩家位置
+								
 							end
 						end
 

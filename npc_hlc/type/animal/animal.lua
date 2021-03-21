@@ -17,6 +17,10 @@ function animal:create(skin,x,y,z)
     --outputDebugString("TRY TO COPY FROM "..inspect(getmetatable(o)))
 
     setmetatable(o,self);
+
+    for k,v in pairs(animal) do 
+        Data:setData(self.source,k,v)
+    end
     
 
     return o;

@@ -1,52 +1,27 @@
 --SECOND LEVEL TYPE : ANIMAL
-
-bear = {};
+bear = {
+    name = "Bear", --名
+    type = "bear", --原型
+    skin = 12,
+    attack = 25,
+    fovDistance = 15, --视野距离（熊瞎子）
+    fovAngle = 120, --视野角度
+    speed = "run",
+};
 bear.__index = bear;
-
 setmetatable( bear, animal );
 
---bear = animal:create()
-
 function bear:create(x,y,z)
-    outputDebugString("CREATE BEAR "..x..y..z);
     
-    local table = {
-        skin = 12,
-        category = "animal",
-        type = "bear",
-        x = x,
-        y = y,
-        z = z,
-        attack = 20,
-        source = creature:create();
-    }
-    local self = setmetatable(table,bear);
+    local o = animal:create(bear.skin,x,y,z)
+    setmetatable(o,self);
+    self.__index = self;
 
-    setElementModel(self.source,self.skin)
-    setElementPosition(self.source,self.x,self.y,self.z)
-    setElementDimension(self.source,1)
-
-    --SET DATA
-    for k,v in pairs(table) do
+    for k,v in pairs(bear) do 
         Data:setData(self.source,k,v)
     end
+    return o;
 
-    return self;
 
 end
 
-function bear:printAttack()
-    outputDebugString(tostring(self.type).." attack:"..tostring(self.attack));
-end
-
-
-
-
---c:debug();
---a:debug();
---w:debug();
-
---c:speak();
---a:speak();
---w:speak();
---w:printAttack();

@@ -284,8 +284,8 @@ Shoot at the specified element.
 Shoot at the ped and try to stay in range.
 
     target: The ped to shoot at
-    shootdist: Maximum shooting distance
-    followdist: The distance at which to start walking towards the target
+    shootdist: Maximum shooting distance 小于这个距离开火
+    followdist: The distance at which to start walking towards the target 大于这个距离跟随
 ```
 
 ```
