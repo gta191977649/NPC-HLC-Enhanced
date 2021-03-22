@@ -5,27 +5,30 @@ function initNPCControl()
 	--addEventHandler("onClientPreRender",root,cycleNPCs)
 	setTimer ( cycleNPCs, UPDATE_COUNT, 0)
 end
-
+Async:setPriority("low")
 function cycleNPCs()
-	for pednum,npc in ipairs(getElementsByType("ped",root,true)) do
-		if getElementData(npc,"npc_hlc") then
-			if getElementHealth(getPedOccupiedVehicle(npc) or npc) >= 1 then
-				local thistask = getElementData(npc,"npc_hlc:thistask")
-				if thistask then
-					local task = getElementData(npc,"npc_hlc:task."..thistask)
-					if task then
-						if performTask[task[1]](npc,task) then
-							setNPCTaskToNext(npc)
+	local data = getElementsByType("ped",root,true)
+	Async:foreach(data, function(npc,pednum) 
+		if npc ~= nil and isElement(npc) then
+			if getElementData(npc,"npc_hlc") then
+				if getElementHealth(getPedOccupiedVehicle(npc) or npc) >= 1 then
+					local thistask = getElementData(npc,"npc_hlc:thistask")
+					if thistask then
+						local task = getElementData(npc,"npc_hlc:task."..thistask)
+						if task then
+							if performTask[task[1]](npc,task) then
+								setNPCTaskToNext(npc)
+							end
+						else
+							stopAllNPCActions(npc)
 						end
 					else
 						stopAllNPCActions(npc)
 					end
-				else
-					stopAllNPCActions(npc)
 				end
 			end
 		end
-	end
+	end)
 end
 
 function cycleNPCs_old()
@@ -61,6 +64,7 @@ function cycleNPCs_old()
 		end
 	end
 end
+
 
 function setNPCTaskToNext(npc)
 	setElementData(
