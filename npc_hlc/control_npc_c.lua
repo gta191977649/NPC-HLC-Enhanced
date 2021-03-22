@@ -1,12 +1,14 @@
 UPDATE_COUNT = 30
 UPDATE_INTERVAL_MS = 200
-
+local cycleNPCs
 function initNPCControl()
 	--addEventHandler("onClientPreRender",root,cycleNPCs)
-	setTimer ( cycleNPCs, UPDATE_COUNT, 0)
+	--setTimer ( cycleNPCs, UPDATE_COUNT, 0)
+	cycleNPCs()
 end
+--Async:setDebug(true)
 Async:setPriority("low")
-function cycleNPCs()
+cycleNPCs = function()
 	local data = getElementsByType("ped",root,true)
 	Async:foreach(data, function(npc,pednum) 
 		if npc ~= nil and isElement(npc) then
@@ -28,6 +30,8 @@ function cycleNPCs()
 				end
 			end
 		end
+	end,function() 
+		setTimer ( cycleNPCs, UPDATE_COUNT,1)
 	end)
 end
 
