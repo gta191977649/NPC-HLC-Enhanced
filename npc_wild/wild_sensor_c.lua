@@ -1,8 +1,8 @@
 --注意，目前的target只可能是玩家
 function wildFind(npc,target)
-	outputChatBox(tostring(inspect(npc)).." find new target "..tostring(inspect(target)));
 	--根据两者关系决定动物的行为
 	local npc_name = Data:getData(npc,"name")
+	outputChatBox(tostring(inspect(npc)).." find new target "..tostring(inspect(target))..tostring(npc_name));
 	if npc_name == "Wolf Crew" or npc_name == "Bear" then
 		triggerServerEvent("npc > addTask",npcRoot,npc,{"killPed",target,3,1})
 	else
