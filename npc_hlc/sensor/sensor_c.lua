@@ -72,7 +72,6 @@ function checkVisible(npc)
 	return visible;
 end
 
-
 --核心：检测能否找到(看或者听到)本地玩家
 --参数：目标NPC
 function checkFind(npc)
@@ -149,27 +148,57 @@ function sensorChecks()
 						local canFind,hear,visible = checkFind(npc);
 						local haveTask = isNPCHaveTask(npc);
 						--outputChatBox("canFind:"..tostring(canFind).." hear:"..tostring(hear)..",visible:"..tostring(visible));
-						
+
+						local targets = Data:getData(npc,"targets"); -- 获取我的目标表
+						local targets = table.check( targets )
+
 						if canFind then
 							--outputChatBox("localPlayer:"..tostring(inspect(getPlayerName(localPlayer))).." been Find");
 							--addNPCTask(npc,{"walkFollowElement",localPlayer,1})
 							--call(npc_hlc,"addNPCTask",npc,{"walkFollowElement",localPlayer,1})
 							--triggerServerEvent("npc > addTask",resourceRoot,npc,{"walkFollowElement",localPlayer,2})
 
-							if not haveTask then -- 同时存在C/S 端
-								outputChatBox("NPC NO TASK ,SO KILL ME")
+							--if not haveTask then -- 同时存在C/S 端
+								--outputChatBox("NPC NO TASK ,SO CALL FIND ME")
 								--triggerServerEvent("npc > addTask",resourceRoot,npc,{"walkFollowElement",localPlayer, 1})
 								--triggerServerEvent("npc > addTask",resourceRoot,npc,{"killPed",localPlayer,3,1})
-								triggerServerEvent("npc > addTask",resourceRoot,npc,{"awayFromElement",localPlayer,0.1,200})
-							end
+								--triggerServerEvent("npc > addTask",resourceRoot,npc,{"awayFromElement",localPlayer,0.1,200})
+								
+								--如果不存在目标或者目标中没有它，尝试发现
+								if table.isEmpty(targets) or ( not table.haveValue(targets,localPlayer) ) then 
+									--targets 为空,增加首个目标
+
+									table.insert(targets,localPlayer)
+									Data:setData(npc,"targets",targets);--更新客户端数据
+
+									triggerEvent("npc > findTarget",root,npc,localPlayer);
+
+								end
+							--end
 						else
-							if haveTask then
-								--outputChatBox("NPC GIVE UP TO KILL ME");
+
+							--outputChatBox(tostring(table.haveValue(targets,localPlayer)))
+
+							if table.haveValue(targets,localPlayer) then
+
+								for k,v in pairs(targets)do
+									if v == localPlayer then
+										table.remove(targets,k)
+									end
+								end
+
+								Data:setData(npc,"targets",targets);--更新客户端数据
+
+								triggerEvent("npc > lostTarget",root,npc,localPlayer);
+							end
+
+							--outputChatBox("NPC GIVE UP TO KILL ME");
+							--if haveTask then
+								--
 								--triggerServerEvent("npc > clearTask",resourceRoot,npc)
 
 								--丢失目标，应该去丢失时的玩家位置
-
-							end
+							--end
 						end
 
 				-- end

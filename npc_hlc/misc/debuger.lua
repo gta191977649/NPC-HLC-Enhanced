@@ -24,13 +24,19 @@ function debugCreature()
                 textcolor = tocolor(0,255,0)
             end
 
+            --targets
+            local targets = Data:getData(creature,"targets") or {}; -- 获取我的目标表
+
 			if tonumber(x) and tonumber(y) then
-                local text = "Category:"..tostring(Data:getData(creature,"category") or "MISS CATEGORY")
+                local text = "Name:"..tostring(Data:getData(creature,"name") or "MISS TYPE")
                 --text = text .. "\n".."Type:"..tostring(Data:getData(creature,"type") or "MISS TYPE")
-                --text = text .. "\n".."Name:"..tostring(Data:getData(creature,"name") or "MISS TYPE")
-                text = text .. "\n".."Speed:"..tostring(Data:getData(creature,"speed") or "MISS SPEED")
-                text = text .. "\n".."HP:"..tostring(getElementHealth(creature) or "MISS SPEED")
+                --text = text .. "\nCategory:"..tostring(Data:getData(creature,"category") or "MISS CATEGORY")
+                --text = text .. "\n".."Speed:"..tostring(Data:getData(creature,"speed") or "MISS SPEED")
+                --text = text .. "\n".."HP:"..tostring(getElementHealth(creature) or "MISS SPEED")
                 text = text .. "\n".."Visble:"..tostring(checkVisible(creature))
+                text = text .. "\n".."targets:"..tostring(inspect(targets))
+                if(isNPCHaveTask(creature))then text = text .. "\n".."task:"..tostring(inspect(getNPCCurrentTask(creature))) end -- 对外的写法
+                --if AI and AI[creature] and AI[creature].task then text = text .. "\n".."task:"..tostring(inspect(AI[creature].task)) end
                 ----------------checkFind
                 --[[
                 if s or v then 

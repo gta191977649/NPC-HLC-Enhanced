@@ -1,7 +1,7 @@
 wilds = {} --记录所有野生动物
 
 function InitWildCreature()
-    setTimer ( SpawnWildCreature, 5000, 0 ) --直接开启在玩家周围随机产生僵尸
+    setTimer ( SpawnWildCreature, 5000, 0 ) --直接开启在玩家周围随机产生动物
     setTimer ( clearFarCreature, 5000, 0) --KEEPS ALL THE CRETURES CLOSE TO PLAYERS
 end
 addEventHandler("onResourceStart", getRootElement(), InitWildCreature)
@@ -30,7 +30,15 @@ end
 function spawnCreature(x,y,z)
     --outputChatBox("spawnCreature");
     --create
-    local c = NPC:createCreature("wolf",x,y,z)
+    local random = math.random(1,2)
+
+    if random == 1 then 
+        spawn_type = "wolf"
+    else
+        spawn_type = "bear"
+    end
+
+    local c = NPC:createCreature(spawn_type,x,y,z)
     table.insert(wilds,c)
 
     --减少区域库存
@@ -88,16 +96,16 @@ function SpawnWildCreature()
 						--outputChatBox(tostring(count).."+"..tostring(count).." vs maxZombie:"..tostring(maxCreature));
 						if count >= maxCreature then 
 							spawn = false
-							outputChatBox("MAX CREATURE , WE ARE SAFE NOW")
+							--outputChatBox("MAX CREATURE , WE ARE SAFE NOW")
 						end
 					else 
 						--库存耗尽，不再产生僵尸
-                        outputChatBox("NO LEFT , WE ARE SAFE NOW")
+                        --outputChatBox("NO LEFT , WE ARE SAFE NOW")
 						spawn = false
 					end
 
 				else
-                    outputChatBox("NO ZONE , WE ARE SAFE NOW")
+                    --outputChatBox("NO ZONE , WE ARE SAFE NOW")
                     --丢失zone信息
                     spawn = false
                 end 
@@ -198,11 +206,11 @@ function clearFarCreature()
 				--Zomb_delete (theCreature)
                 destroyElement(theCreature)
                 table.remove(wilds,key)
+
+                outputChatBox("clearFarCreature left:"..tostring(#wilds));
+
 			end
 		end
 	end
-
-    outputChatBox("clearFarCreature left:"..tostring(#wilds));
-
 
 end

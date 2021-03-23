@@ -64,6 +64,7 @@
     
     <export function="createCreature" type="server" http="false" />
     <export function="isNPCHaveTask" type="shared" http="false" />
+    <export function="getNPCCurrentTask" type="client" http="false" />
 
     <settings>
         <setting name="*server_colchecking" value="false" />

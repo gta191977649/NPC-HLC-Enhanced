@@ -34,8 +34,14 @@ function initTester()
     ]]
 
     c1 = createCreature("wolf",240.1689453125,2500.109375,16.484375)
+    c3 = createCreature("puma",284.236328125,2534.7548828125,16.818849563599)
+    --[[
+    
     c2 = createCreature("bear",261.3671875,2487.5546875,16.484375)
     c3 = createCreature("puma",284.236328125,2534.7548828125,16.818849563599)
+    ]]
+
+
     --[[
     for c,creature in pairs(creatures) do
         setTimer(function()

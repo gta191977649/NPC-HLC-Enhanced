@@ -167,6 +167,8 @@ function setNPCTask(npc,task)
 	setElementData(npc,"npc_hlc:lasttask",1)
 	return true
 end
+addEvent("npc > setTask",true)
+addEventHandler("npc > setTask",resourceRoot,setNPCTask,false)
 
 --服务器：检测任务是否可用
 function isTaskValid(task)
@@ -202,7 +204,7 @@ function createCreature(type,x,y,z,dim)
 	local cElement = c:getElement();
 
 	--反绑定
-	setElementData(cElement,"creature",c);
+	setElementData(cElement,"creature",type);
 	creatures[cElement] = self;
 
 	speed = Data:getData(cElement,"speed")
