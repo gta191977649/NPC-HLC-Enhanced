@@ -20,9 +20,9 @@ function debugCreature()
             
 
             local textcolor = tocolor(255,255,255)
-            if Data:getData(creature,"name")~= "Wolf Crew" then
-                textcolor = tocolor(0,255,0)
-            end
+            --if Data:getData(creature,"name")~= "Wolf Crew" then
+            --    textcolor = tocolor(0,255,0)
+            --end
 
             --distance
             local pX,pY,pZ = getElementPosition( localPlayer )
@@ -39,12 +39,16 @@ function debugCreature()
                 --text = text .. "\n".."HP:"..tostring(getElementHealth(creature) or "MISS SPEED")
                 --text = text .. "\n".."Visble:"..tostring(checkVisible(creature))
                 --text = text .. "\n".."targets:"..tostring(inspect(targets))
-                text = text .. "\n".."Target:"..tostring(inspect(Data:getData(creature,"target")) or "MISS TARGET")
-                text = text .. "\n".."Gang:"..tostring(Data:getData(creature,"gang") or "MISS GANG")
+                --text = text .. "\n".."Target:"..tostring(inspect(Data:getData(creature,"target")) or "MISS TARGET")
+                --text = text .. "\n".."Gang:"..tostring(Data:getData(creature,"gang") or "MISS GANG")
                 --text = text .. "\n".."Distance:"..tostring(distance)
                 --text = text .. "\n".."Ammo:"..tostring(getPedTotalAmmo(creature))
                 --text = text .. "\n".."Accuracy:"..tostring(Data:getData(creature,"accuracy") or "MISS accuracy")
-                --if(isNPCHaveTask(creature))then text = text .. "\n".."task:"..tostring(inspect(getNPCCurrentTask(creature))) end -- 对外的写法
+                --text = text .. "\n"..inspect(creature).." thistask:"..tostring(getElementData(creature,"npc_hlc:thistask")) 
+                if(isNPCHaveTask(creature)) then 
+                   --text = text .. "\n".."task:"..tostring(inspect(getNPCCurrentTask(creature))) 
+                end -- 对外的写法
+                
             
                 ----------------checkFind
                 --[[

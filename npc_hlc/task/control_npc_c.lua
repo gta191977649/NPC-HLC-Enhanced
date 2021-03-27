@@ -16,6 +16,7 @@ function cycleNPCs()
 			if getElementHealth(getPedOccupiedVehicle(npc) or npc) >= 1 then
 				local thistask = getElementData(npc,"npc_hlc:thistask")
 				if thistask then
+					--outputDebugString("cycleNPCs:"..tostring(inspect(getElementData(npc,"npc_hlc:task.1"))))
 					local task = getElementData(npc,"npc_hlc:task."..thistask)
 					if task then
 						if performTask[task[1]](npc,task) then
@@ -67,10 +68,15 @@ function cycleNPCs_old()
 end
 
 --客户端：NPC执行下一个任务
+--似乎thistask>lastask才能触发taskDone
 function setNPCTaskToNext(npc)
-	setElementData(
-		npc,"npc_hlc:thistask",
-		getElementData(npc,"npc_hlc:thistask")+1,
-		true
-	)
+	--outputDebugString("client setNPCTaskToNext");
+	--[[
+	local lasttask = getElementData(npc,"npc_hlc:thistask");
+	local thistask = getElementData(npc,"npc_hlc:thistask")+1
+	if thistask > lasttask then thistask = lasttask end
+	setElementData(npc,"npc_hlc:thistask",thistask)
+	]]
+	local thistask = getElementData(npc,"npc_hlc:thistask")
+	setElementData(npc,"npc_hlc:thistask",thistask+1)
 end

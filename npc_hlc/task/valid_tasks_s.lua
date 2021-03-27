@@ -6,6 +6,12 @@ function taskValid.walkToPos(task)
 	local x,y,z,dist = task[2],task[3],task[4],task[5]
 	return tonumber(x) and tonumber(y) and tonumber(z) and tonumber(dist) and true or false
 end
+
+--2021
+function taskValid.hangOut(task)
+	return true
+end
+
 function taskValid.enterToVehicle(task)
 	--print("[S] enterToVehicle task check")
 	local vehicle,seat = task[2],task[3]
@@ -40,14 +46,17 @@ function taskValid.walkAroundBend(task)
 end
 
 function taskValid.walkFollowElement(task)
-	local element,dist,safedist = task[2],task[3],task[4]
-	return isElement(element) and getElementPosition(element) and tonumber(dist) and tonumber(safedist) and true or false
+	outputDebugString("walkFollowElement")
+	local element,dist = task[2],task[3]
+	return isElement(element) and getElementPosition(element) and tonumber(dist) and true or false
 end
 
 --2021 NEW
 function taskValid.awayFromElement(task)
-	local element,dist = task[2],task[3]
-	return isElement(element) and getElementPosition(element) and tonumber(dist) and true or false
+	outputDebugString("walkFollowElement")
+	local element,dist,safedist = task[2],task[3],task[4]
+	return isElement(element) and getElementPosition(element) and tonumber(dist) and tonumber(safedist) and true or false
+
 end
 
 --2021 NEW

@@ -12,6 +12,47 @@ function performTask.walkToPos(npc,task)
 	if dist < dest_dist*dest_dist then return true end
 	makeNPCWalkToPos(npc,destx,desty)
 end
+
+--NEW 2021
+--闲逛任务
+--TODO 可以做成和IDLE之间互相转换，但是不好，因为部分NPC可能不转换
+function performTask.hangOut(npc,task)
+	--outputChatBox("[C] performTask.hangOut"); 
+	if isPedInVehicle(npc) then return true end
+
+	if getNPCWalkSpeed(npc) ~="walk" then
+		--outputChatBox("set walk for hangOut");
+		IFP:syncAnimation(npc);--强制清理一次动作
+		triggerServerEvent("npc > setWalkSpeed",resourceRoot,npc,"walk") -- 设置闲逛速度
+	end
+
+	local x,y = task[2],task[3]
+	local destx,desty = task[4],task[5]
+
+	local nX,nY = getElementPosition(npc);
+	local dist = getDistanceBetweenPoints2D(nX,nY,destx,desty);
+
+	local dest_dist = 1 -- 最小距离
+
+	--靠近目的地
+	if dist < dest_dist*dest_dist then 
+		--PLAN A  --可以任务完成
+		--return true
+		--outputDebugString("dist:"..tostring(dist).." vs "..tostring(dest_dist*dest_dist))
+		--PLAN B 产生新的目标 OR 自动切换进入IDLE模式
+		
+		--PLAN B2 再次进入IDLE动作
+		--local category = Data:getData(npc,"category");
+		--triggerServerEvent("npc > setTask",resourceRoot,npc,{"doAnim", category,"idle",-1,false,false,true})
+		return true
+		--return true
+
+	else
+		makeNPCWalkToPos(npc,destx,desty)
+	end
+
+end
+
 function performTask.enterToVehicle(npc,task)
 	print("[C] performTask.enterToVehicle")
 	if isPedInVehicle(npc) then return true end
@@ -61,6 +102,7 @@ function performTask.walkFollowElement(npc,task)
 		makeNPCWalkToPos(npc,fx,fy)
 	else
 		stopAllNPCActions(npc)
+		return true
 	end
 end
 
@@ -105,23 +147,10 @@ function performTask.doAnim(npc,task)
 	--注意：第一次执行的时候是获取不到的
 	--string anim, string block, int time, bool loop, bool updatePosition, bool interruptable, bool freezeLastFrame, int blendTime, bool restoreTaskOnAnimEnd
 	lastBlock,lastAnimation,time,loop = getPedAnimation(npc)
-	--outputDebugString("[C] performTask.doAnim:"..tostring(lastBlock).." "..tostring(lastAnimation).." time:"..tostring(time).." loop:"..tostring(loop));
+	--outputChatBox("[C] performTask.doAnim:"..tostring(lastBlock).." "..tostring(lastAnimation).." time:"..tostring(time).." loop:"..tostring(loop));
 
-	--[[
-	--失败
-    for k=0,4 do
-        local a,b,c,d = getPedTask ( getLocalPlayer(), "primary", k )
-        outputDebugString ( "Primary task #"..k.." is "..tostring(a).." -> "..tostring(b).." -> "..tostring(c).." -> "..tostring(d).." -> ")
-    end
-    for k=0,5 do
-        local a,b,c,d = getPedTask ( getLocalPlayer(), "secondary", k )
-        outputDebugString ( "Secondary task #"..k.." is "..tostring(a).." -> "..tostring(b).." -> "..tostring(c).." -> "..tostring(d).." -> ")    
-    end
-	]]
-
-	
 	--outputChatBox(inspect(task))
-	local block,anim,time,loop,updatePosition,interruptable,freezeLastFrame = task[2],task[3],task[4],task[5],task[6]
+	local block,anim,time,loop,updatePosition,interruptable,freezeLastFrame = task[3],task[4],task[5],task[6],task[7]
 	--outputDebugString(lastBlock);
 	--outputDebugString(block);
 	--outputDebugString(lastAnimation);
@@ -133,25 +162,41 @@ function performTask.doAnim(npc,task)
 		return false
 	else
 
-		--outputChatBox("set new anim to:"..tostring(anim));
+		--[[
+		if anim == "idle" then
+			--IDLE 动作部分情况下会闲逛...
+			chance = math.random(1,2)
+			if chance < 2 then
+				outputChatBox("try to hangOut");
+				local x,y = getElementPosition(npc);
+				local xcoord,ycoord = math.randomCoord(5,10)
+				local tx,ty = x+xcoord,y+ycoord
+				triggerServerEvent("npc > setTask",resourceRoot,npc,{"hangOut",x,y,tx,ty})
+				return false  -- 不继续执行
+			end
+
+		end
+			outputChatBox("try to:"..tostring(anim));
+		]]
 
 		if time == nil then time = -1 end
 		if loop == nil then loop = true end
 		if updatePosition == nil then updatePosition = true end
 		if interruptable == nil then interruptable = true end
 		if freezeLastFrame == nil then freezeLastFrame = false end --默认不冻住玩家
-
+	
 		IFP:syncAnimationLib(npc,block,anim,time,loop,updatePosition,interruptable,freezeLastFrame);
-
-		--TODO 如果不是loop模式，动作结束后才返回true
-		--TODO 这样才能完成序列动作
-		if loop then
-			--return true
-		else
-			--return true
-		end
+		
 	end
 
+	--时间检测
+	--IDLE 执行10秒后结束
+	past = getTickCount()-task[2]
+	if anim =="idle" and  past > 5*1000 then
+		--outputChatBox("time past:"..tostring(past));
+		return true
+	end
+	
 end
 
 function performTask.shootPoint(npc,task)

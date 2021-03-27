@@ -65,25 +65,3 @@ function getPositionFromOffsetByRotMatrix(x,y,z,offx,offy,offz,m11,m12,m13,m21,m
 	return offx*m11+offy*m21+offz*m31+x,offx*m12+offy*m22+offz*m32+y,offx*m13+offy*m23+offz*m33+z
 end
 
---NEW 随机坐标
-function randomCoord(min,max)
-    
-	--产生随机位置
-    local xcoord = 0
-    local ycoord = 0
-    local xdirection = math.random(1,2)
-    if xdirection == 1 then
-        xcoord = math.random(min,max)
-    else
-        xcoord = math.random(-max,-min)
-    end
-    
-	local ydirection = math.random(1,2)
-    if ydirection == 1 then
-        ycoord = math.random(min,max)
-    else
-        ycoord = math.random(-max,-min)
-    end
-
-	return xcoord,ycoord
-end

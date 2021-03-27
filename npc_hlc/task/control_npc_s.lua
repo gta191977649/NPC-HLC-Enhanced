@@ -50,8 +50,10 @@ function cycleNPCs()
 			while time_diff > 1 do
 				local thistask = getElementData(npc,"npc_hlc:thistask")
 				if thistask then
+					--outputDebugString("server cycleNPCs:"..tostring(inspect(getElementData(npc,"npc_hlc:task.1"))))
 					local task = getElementData(npc,"npc_hlc:task."..thistask)
 					if not task then
+						--outputDebugString("remove...");
 						removeElementData(npc,"npc_hlc:thistask")
 						removeElementData(npc,"npc_hlc:lasttask")
 						break
@@ -76,26 +78,50 @@ end
 
 --服务器：NPC执行下一个任务
 function setNPCTaskToNext(npc)
+	outputDebugString("server setNPCTaskToNext..");
 	local thistask = getElementData(npc,"npc_hlc:thistask")
 	setElementData(npc,"npc_hlc:thistask",thistask+1)
 end
 
 --服务器：任务完成
-function cleanUpDoneTasks(dataname,oldval)
+--似乎是通过判断thistask增加来触发任务完成
+function cleanUpDoneTasks(dataname,oldval,newVal)
 	if notrigger then return end
+	--if dataname == "npc_hlc:task.1" then
+		--outputDebugString(dataname.." old:"..tostring(inspect(oldval)).." to new:"..tostring(inspect(newVal)))
+		--outputDebugString("source:"..tostring(inspect(source)));
+		--outputDebugString("client:"..tostring(inspect(client)));
+		--outputDebugString("sourceResource:"..tostring(inspect(sourceResource)));
+	--end
 	if not oldval or dataname ~= "npc_hlc:thistask" then return end
+
+	--outputDebugString("cleanUpDoneTasks:"..dataname.." old:"..tostring(inspect(oldval)).." to new:"..tostring(inspect(newVal)))
+	-- thistask发生了变化后执行后续代码
+
 	local newval = getElementData(source,dataname)
-	if not newval then return end
+	if not newval then 
+		--outputDebugString("thistask become nil , ignore next part");
+		return
+	end
+
+	-- thistask比之前减小，设置为之前的值
 	if newval < oldval then
 		notrigger = true
+		--outputDebugString("cleanUpDoneTasks notrigger");
 		setElementData(source,dataname,oldval)
 		notrigger = nil
 	end
+
+	--thistask 的 newval 比之前大，清理已经完成的task部分
+
+	--清理已完成任务信息
+	--outputDebugString("from:"..tostring(oldval).." to "..tostring(newval-1))
 	for tasknum = oldval,newval-1 do
 		local taskstr = "npc_hlc:task."..tasknum
 		local task = getElementData(source,taskstr)
 		if task then
 			triggerEvent("npc_hlc:onNPCTaskDone",source,task)
+			--outputDebugString("onNPCTaskDone remove:"..taskstr);
 			removeElementData(source,taskstr)
 		end
 	end

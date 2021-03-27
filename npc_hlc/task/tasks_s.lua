@@ -16,6 +16,14 @@ function performTask.walkToPos(npc,task,maxtime)
 	return makeNPCWalkToPos(npc,task[2],task[3],task[4],maxtime)
 end
 
+--2021 NEW
+	--DO NOTHING
+function performTask.hangOut(npc,task,maxtime)
+	if getElementSyncer(npc) then return maxtime end
+	--return makeNPCWalkToPos(npc,task[2],task[3],task[4],maxtime)
+	return maxtime
+end
+
 function performTask.walkAlongLine(npc,task,maxtime)
 	if getElementSyncer(npc) then return maxtime end
 	return makeNPCWalkAlongLine(npc,task[2],task[3],task[4],task[5],task[6],task[7],task[8],maxtime)

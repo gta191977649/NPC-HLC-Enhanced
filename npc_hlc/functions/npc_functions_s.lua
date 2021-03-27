@@ -78,6 +78,8 @@ function setNPCWalkSpeed(npc,speed)
 	setElementData(npc,"npc_hlc:walk_speed",speed)
 	return true
 end
+addEvent("npc > setWalkSpeed",true)
+addEventHandler("npc > setWalkSpeed",resourceRoot,setNPCWalkSpeed,false)
 
 function setNPCWeaponAccuracy(npc,accuracy)
 	if not npc or not all_npcs[npc] then
@@ -109,7 +111,7 @@ end
 
 ------------------------------------------------
 function addNPCTask(npc,task)
-	--outputChatBox("addNPCTask:"..tostring(task[1]));
+	outputDebugString("addNPCTask:"..tostring(task[1]));
 	if not npc or not all_npcs[npc] then
 		outputDebugString("Invalid ped argument",2)
 		return false
@@ -125,12 +127,19 @@ function addNPCTask(npc,task)
 	else
 		lasttask = lasttask+1
 	end
+	outputDebugString("addNPCTask:"..tostring(task))
 	setElementData(npc,"npc_hlc:task."..lasttask,task)
 	setElementData(npc,"npc_hlc:lasttask",lasttask)
 	return true
 end
 addEvent("npc > addTask",true)
 addEventHandler("npc > addTask",resourceRoot,addNPCTask,false)
+
+--2021 resetNPCWalkSpeed
+function resetNPCWalkSpeed(npc)
+	local speed = Data:getData(npc,"speed");
+	setNPCWalkSpeed(npc,speed)
+end
 
 --服务器函数：清理NPC任务
 function clearNPCTasks(npc)
@@ -140,11 +149,11 @@ function clearNPCTasks(npc)
 	end
 	local thistask = getElementData(npc,"npc_hlc:thistask")
 	if not thistask then return end
-	
-	--outputChatBox("thistask:"..tostring(thistask));--获取的是ID
 
-	--强制刷新一次动作，不然新的control无法生效
-	IFP:syncAnimation(npc,false,false);
+	IFP:syncAnimation(npc,false,false);--强制刷新一次动作，不然新的control无法生效
+	resetNPCWalkSpeed(npc)--恢复原有速度
+
+	--outputDebugString("clearNPCTasks:"..tostring(thistask))
 
 	local checktask = getElementData(npc,"npc_hlc:task."..thistask)
 	if checktask then
@@ -154,18 +163,22 @@ function clearNPCTasks(npc)
 			--outputChatBox("trigger try");
 			triggerClientEvent("npc > stopWeaponActions",resourceRoot,npc);
 			--stopNPCWeaponActions(npc)--这是服务端的，需要用trigger
-		elseif checktask[1]=="doAnim" then
-			--关闭动作同步(这里的代码不会被执行到)
-			outputChatBox("close syncAnimationLib");
-			IFP:syncAnimation(npc,false,false);
 		end
 	end
 
 	local lasttask = getElementData(npc,"npc_hlc:lasttask")
+
+	--outputDebugString("clearNPCTasks thistask:"..tostring(thistask));--获取的是ID
+	--outputDebugString("clearNPCTasks lasttask:"..tostring(lasttask));--获取的是ID
+
+	-- if thistask > lasttask then thistask = lasttask end -- TRY UGLY FIX
+
 	--循环清空所有任务
 	for task = thistask,lasttask do
+		--outputDebugString("clearNPCTasks remove task:"..tostring(task))
 		removeElementData(npc,"npc_hlc:task."..task)
 	end
+	--outputDebugString("TRY REMOVE TASK")
 	removeElementData(npc,"npc_hlc:thistask")
 	removeElementData(npc,"npc_hlc:lasttask")
 	return true
@@ -175,6 +188,12 @@ addEventHandler("npc > clearTask",resourceRoot,clearNPCTasks,false)
 
 --服务器：设置NPC任务
 function setNPCTask(npc,task)
+
+	--outputDebugString("setNPCTask to:"..inspect(source))
+
+	local thistask = getElementData(npc,"npc_hlc:thistask")
+	outputDebugString(inspect(npc).." setNPCTask thistask:"..tostring(thistask));--获取的是ID
+
 	if not npc or not all_npcs[npc] then
 		outputDebugString("Invalid ped argument",2)
 		return false
@@ -183,10 +202,16 @@ function setNPCTask(npc,task)
 		outputDebugString("Invalid task argument",2)
 		return false
 	end
+
 	clearNPCTasks(npc)
+
+	--outputDebugString("setNPCTask:"..tostring(inspect(task)));
 	setElementData(npc,"npc_hlc:task.1",task)
 	setElementData(npc,"npc_hlc:thistask",1)
 	setElementData(npc,"npc_hlc:lasttask",1)
+
+	
+	--outputDebugString("getNPCTask:"..tostring(inspect(getNPCCurrentTask(npc))));
 	return true
 end
 addEvent("npc > setTask",true)
@@ -243,8 +268,14 @@ function createCreature(type,x,y,z,dim)
 
 	--默认任务为做动作
 	--outputDebugString("category:"..tostring(category));
-	--addNPCTask(cElement, {"doAnim", "animal","idle",-1,false,false,true})
-	addNPCTask(cElement, {"doAnim", category,"idle",-1,false,false,true})--loop false to sequence random animation
+
+	--[[
+	local player = getPlayerFromName("=DF=JUNE")
+	outputDebugString("player:"..inspect(player))
+	addNPCTask(cElement,{"walkFollowElement",player,1})
+	]]
+	
+	addNPCTask(cElement, {"doAnim",getTickCount(),category,"idle",-1,false,false,true})--loop false to sequence random animation
 
 	return cElement;
 

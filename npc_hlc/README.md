@@ -198,6 +198,11 @@ Walk straight towards the specified point until the distance is short enough.
     distance: The distance at which the task is completed
 ```
 
+{"hangOut",x,y,tx,ty} 闲逛
+ oldspeed 脱离闲逛模式时的速度
+ x,y 为初始坐标，防止NPC跑的太远，只在XY附近活动 
+ tx,ty 下次目标位置
+
 ```
 {"walkAlongLine", x1, y1, z1, x2, y2, z2, offset, enddistance} --沿着直线前进
 
@@ -272,7 +277,8 @@ Try to away from the specified element.
     safedistance: 停止动作的安全距离
 ```
 
-{"doAnim", block, animName} -- 执行动作，分类，动作名
+{"doAnim",startTick,block,animName} -- 执行动作，分类，动作名, 开始时间
+    startTick:开始时间
 
 ```
 
