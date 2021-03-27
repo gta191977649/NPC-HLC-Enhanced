@@ -6,7 +6,7 @@ wolf = {
     attack = 10,
     fovDistance = 30, --视野距离
     fovAngle = 90, --视野角度
-    speed = "sprint",
+    speed = "run",
 };
 wolf.__index = wolf;
 setmetatable( wolf, animal );

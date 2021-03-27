@@ -50,6 +50,12 @@ function taskValid.awayFromElement(task)
 	return isElement(element) and getElementPosition(element) and tonumber(dist) and true or false
 end
 
+--2021 NEW
+function taskValid.doAnim(task)
+	local aType,aName = task[2],task[3]
+	return tostring(aType) and tostring(aName) and true or false
+end
+
 function taskValid.shootPoint(task)
 	local x,y,z = task[2],task[3],task[4]
 	return tonumber(x) and tonumber(y) and tonumber(z) and true or false

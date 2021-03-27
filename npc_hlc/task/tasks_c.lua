@@ -64,10 +64,11 @@ function performTask.walkFollowElement(npc,task)
 	end
 end
 
---NEW 2021
---TODO 没有躲避其他玩家
+-- NEW 2021
+-- 执行频率挺高
+-- TODO 没有躲避其他玩家
 function performTask.awayFromElement(npc,task)
-	--outputChatBox("[C] performTask.awayFromElement"); -- 执行频率挺高
+	--outputChatBox("[C] performTask.awayFromElement"); 
 	if isPedInVehicle(npc) then return true end
 	
 	local element,mindist,safedist = task[2],task[3],task[4]
@@ -82,17 +83,73 @@ function performTask.awayFromElement(npc,task)
 	ay = y + offset:getY();
 	--outputChatBox("ax:"..tostring(ax).." ay:"..tostring(ay))
 
-	if dx*dx+dy*dy < mindist*mindist then -- 太近了我要改变方向
+	if dx*dx+dy*dy < mindist*mindist then -- 太近了
 
-		-- 如果太靠近就反向奔跑
-		--outputChatBox("ITS TOO FAR")
-		--ax,ay = x,y + randomCoord(50,100);
+		-- 如果太靠近
 
 	elseif dx*dx+dy*dy > safedist*safedist then -- 足够安全了
 		--outputChatBox("I AM SAFE");
 		stopAllNPCActions(npc) -- 我要休息
+		return true -- 任务完成！
 	else
 		makeNPCWalkToPos(npc,ax,ay) -- 继续跑
+	end
+
+end
+
+--NEW 2021
+-- 同步动作
+--目前会循环执行一套动作，不会触发任务完成
+function performTask.doAnim(npc,task)
+
+	--注意：第一次执行的时候是获取不到的
+	--string anim, string block, int time, bool loop, bool updatePosition, bool interruptable, bool freezeLastFrame, int blendTime, bool restoreTaskOnAnimEnd
+	lastBlock,lastAnimation,time,loop = getPedAnimation(npc)
+	--outputDebugString("[C] performTask.doAnim:"..tostring(lastBlock).." "..tostring(lastAnimation).." time:"..tostring(time).." loop:"..tostring(loop));
+
+	--[[
+	--失败
+    for k=0,4 do
+        local a,b,c,d = getPedTask ( getLocalPlayer(), "primary", k )
+        outputDebugString ( "Primary task #"..k.." is "..tostring(a).." -> "..tostring(b).." -> "..tostring(c).." -> "..tostring(d).." -> ")
+    end
+    for k=0,5 do
+        local a,b,c,d = getPedTask ( getLocalPlayer(), "secondary", k )
+        outputDebugString ( "Secondary task #"..k.." is "..tostring(a).." -> "..tostring(b).." -> "..tostring(c).." -> "..tostring(d).." -> ")    
+    end
+	]]
+
+	
+	--outputChatBox(inspect(task))
+	local block,anim,time,loop,updatePosition,interruptable,freezeLastFrame = task[2],task[3],task[4],task[5],task[6]
+	--outputDebugString(lastBlock);
+	--outputDebugString(block);
+	--outputDebugString(lastAnimation);
+	--outputDebugString(anim);
+
+	--TODO 这里无法判定成功因为库，名是我原创的
+	if lastBlock and lastAnimation then
+		--outputChatBox("give cause already have set animation:"..tostring(lastAnimation));
+		return false
+	else
+
+		--outputChatBox("set new anim to:"..tostring(anim));
+
+		if time == nil then time = -1 end
+		if loop == nil then loop = true end
+		if updatePosition == nil then updatePosition = true end
+		if interruptable == nil then interruptable = true end
+		if freezeLastFrame == nil then freezeLastFrame = false end --默认不冻住玩家
+
+		IFP:syncAnimationLib(npc,block,anim,time,loop,updatePosition,interruptable,freezeLastFrame);
+
+		--TODO 如果不是loop模式，动作结束后才返回true
+		--TODO 这样才能完成序列动作
+		if loop then
+			--return true
+		else
+			--return true
+		end
 	end
 
 end

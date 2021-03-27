@@ -140,7 +140,11 @@ function clearNPCTasks(npc)
 	end
 	local thistask = getElementData(npc,"npc_hlc:thistask")
 	if not thistask then return end
+	
 	--outputChatBox("thistask:"..tostring(thistask));--获取的是ID
+
+	--强制刷新一次动作，不然新的control无法生效
+	IFP:syncAnimation(npc,false,false);
 
 	local checktask = getElementData(npc,"npc_hlc:task."..thistask)
 	if checktask then
@@ -150,6 +154,10 @@ function clearNPCTasks(npc)
 			--outputChatBox("trigger try");
 			triggerClientEvent("npc > stopWeaponActions",resourceRoot,npc);
 			--stopNPCWeaponActions(npc)--这是服务端的，需要用trigger
+		elseif checktask[1]=="doAnim" then
+			--关闭动作同步(这里的代码不会被执行到)
+			outputChatBox("close syncAnimationLib");
+			IFP:syncAnimation(npc,false,false);
 		end
 	end
 
@@ -230,7 +238,14 @@ function createCreature(type,x,y,z,dim)
 
 	local accuracy = Data:getData(cElement,"accuracy");
 	local speed = Data:getData(cElement,"speed");
+	local category = Data:getData(cElement,"category");
 	enableHLCForNPC(cElement,speed,accuracy,1)
+
+	--默认任务为做动作
+	--outputDebugString("category:"..tostring(category));
+	--addNPCTask(cElement, {"doAnim", "animal","idle",-1,false,false,true})
+	addNPCTask(cElement, {"doAnim", category,"idle",-1,false,false,true})--loop false to sequence random animation
+
 	return cElement;
-	
+
 end

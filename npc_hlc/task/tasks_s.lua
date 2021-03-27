@@ -34,7 +34,14 @@ end
 --2021 NEW
 --TODO 不是很明白含义
 function performTask.awayFromElement(npc,task,maxtime)
-	setElementPosition(npc,getElementPosition(npc))
+	--setElementPosition(npc,getElementPosition(npc))
+	return maxtime
+end
+
+--2021 NEW
+--TODO 不是很明白含义
+function performTask.doAnim(npc,task,maxtime)
+	--setElementPosition(npc,getElementPosition(npc))
 	return maxtime
 end
 

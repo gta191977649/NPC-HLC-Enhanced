@@ -272,6 +272,10 @@ Try to away from the specified element.
     safedistance: 停止动作的安全距离
 ```
 
+{"doAnim", block, animName} -- 执行动作，分类，动作名
+
+```
+
 ```
 {"shootPoint", x, y, z} --攻击坐标
 

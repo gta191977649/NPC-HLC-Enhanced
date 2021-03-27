@@ -1,5 +1,4 @@
 --SECOND LEVEL TYPE : ANIMAL
-
 animal = {
     category = "animal",
     --动物只会肉搏攻击，所以属性写在动物类

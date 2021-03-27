@@ -1,6 +1,4 @@
-Data = exports.Data
-Player = exports.NH_Player
-
 --函数
 loadstring(exports.Lib:settingsGetInline())()
+includeModule("bind.lua")
 includeModule("table.lua")

@@ -17,11 +17,16 @@ function debugCreature()
 
             local cX,cY,cZ = getElementPosition( creature )
             local x,y = getScreenFromWorldPosition(cX,cY,cZ) --TO SCREEN POS
+            
 
             local textcolor = tocolor(255,255,255)
             if Data:getData(creature,"name")~= "Wolf Crew" then
                 textcolor = tocolor(0,255,0)
             end
+
+            --distance
+            local pX,pY,pZ = getElementPosition( localPlayer )
+            local distance = getDistanceBetweenPoints2D(cX,cY,pX,pY);
 
             --targets
             local targets = Data:getData(creature,"targets") or {}; -- 获取我的目标表
@@ -36,10 +41,11 @@ function debugCreature()
                 --text = text .. "\n".."targets:"..tostring(inspect(targets))
                 text = text .. "\n".."Target:"..tostring(inspect(Data:getData(creature,"target")) or "MISS TARGET")
                 text = text .. "\n".."Gang:"..tostring(Data:getData(creature,"gang") or "MISS GANG")
+                --text = text .. "\n".."Distance:"..tostring(distance)
                 --text = text .. "\n".."Ammo:"..tostring(getPedTotalAmmo(creature))
                 --text = text .. "\n".."Accuracy:"..tostring(Data:getData(creature,"accuracy") or "MISS accuracy")
-                if(isNPCHaveTask(creature))then text = text .. "\n".."task:"..tostring(inspect(getNPCCurrentTask(creature))) end -- 对外的写法
-                --if AI and AI[creature] and AI[creature].task then text = text .. "\n".."task:"..tostring(inspect(AI[creature].task)) end
+                --if(isNPCHaveTask(creature))then text = text .. "\n".."task:"..tostring(inspect(getNPCCurrentTask(creature))) end -- 对外的写法
+            
                 ----------------checkFind
                 --[[
                 if s or v then 

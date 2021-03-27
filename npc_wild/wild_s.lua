@@ -30,12 +30,24 @@ end
 function spawnCreature(x,y,z)
     --outputChatBox("spawnCreature");
     --create
-    local random = math.random(1,2)
+    local random = math.random(1,8)
 
     if random == 1 then 
         spawn_type = "wolf"
-    else
+    elseif random == 2 then
+        spawn_type = "goat"
+    elseif random == 3 then
         spawn_type = "bear"
+    elseif random == 4 then
+        spawn_type = "puma"
+    elseif random == 5 then
+        spawn_type = "bandit"
+    elseif random == 6 then
+        spawn_type = "infected"
+    elseif random == 7 then
+        spawn_type = "hunter"
+    else
+        spawn_type = "goat"
     end
 
     local c = NPC:createCreature(spawn_type,x,y,z)

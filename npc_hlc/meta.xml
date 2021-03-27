@@ -34,6 +34,7 @@
         <script src="type/animal/wolf.lua" type="server" />
         <script src="type/animal/bear.lua" type="server" />
         <script src="type/animal/puma.lua" type="server" />
+        <script src="type/animal/goat.lua" type="server" />
 
         <script src="type/human/human.lua" type="server" />
         <script src="type/human/bandit.lua" type="server" />

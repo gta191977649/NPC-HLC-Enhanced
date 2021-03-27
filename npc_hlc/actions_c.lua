@@ -200,8 +200,6 @@ function makeNPCWalkToPos(npc,x,y)
 		
 	end
 
-
-
 	-- render debug text
 	if debug then
 		DGS:dgsSetProperty(AI[npc].text,"text",string.format("%s\nDECISION:%s\nLIGHT:%s",AI[npc].task,AI[npc].decision,light ~= nil and light or "N/A"))

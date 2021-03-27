@@ -8,8 +8,12 @@ function initNPCHLC()
 	cType["wolf"] = wolf
 	cType["bear"] = bear
 	cType["puma"] = puma
+	cType["goat"] = goat
 
 	cType["bandit"] = bandit
+
+	cType["hunter"] = hunter
+	cType["infected"] = infected
 end
 addEventHandler("onResourceStart",resourceRoot,initNPCHLC)
 

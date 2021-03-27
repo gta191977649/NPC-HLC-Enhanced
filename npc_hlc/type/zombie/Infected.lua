@@ -1,51 +1,32 @@
---SECOND LEVEL TYPE : zombie
+--THIRD LEVEL TYPE : 普通感染者
+infected = {
+    name = "infected", --名
+    type = "infected", --原型
+    skin = 77,
+    attack = 10,
+    fovDistance = 30, --视野距离
+    fovAngle = 120, --视野角度
+    speed = "run",
+};
+infected.__index = infected;
+setmetatable( infected, zombie );
 
-Infected = {};
-Infected.__index = Infected;
+function infected:create(x,y,z)
 
-setmetatable( Infected, zombie );
+    --outputDebugString("CREATE infected");
+    --outputDebugString("CREATE infected AT "..x..","..y..","..z);
+    local o = zombie:create(infected.skin,x,y,z)
+    setmetatable(o,self);
+    self.__index = self;
 
---Infected = zombie:create()
-
-function Infected:create(x,y,z)
-    outputDebugString("CREATE Infected "..x..y..z);
-    local table = {
-        skin = 15,
-        category = "zombie",
-        type = "Infected",
-        x = x,
-        y = y,
-        z = z,
-        attack = 20,
-        source = creature:create();
-    }
-    local self = setmetatable(table,Infected);
-
-    setElementModel(self.source,self.skin)
-    setElementPosition(self.source,self.x,self.y,self.z)
-    setElementDimension(self.source,1)
-
-    --SET DATA
-    for k,v in pairs(table) do
+    for k,v in pairs(infected) do 
         Data:setData(self.source,k,v)
     end
 
-    return self;
+    --zombie HAVE KNIFE
+    local ped = o:getElement()
+    giveWeapon(ped,4,1,true)--KNIFE
+
+    return o;
 
 end
-
-function Infected:printAttack()
-    outputDebugString(tostring(self.type).." attack:"..tostring(self.attack));
-end
-
-
-
-
---c:debug();
---a:debug();
---w:debug();
-
---c:speak();
---a:speak();
---w:speak();
---w:printAttack();
