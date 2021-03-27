@@ -12,6 +12,8 @@ creatures = {} -- HOLD ALL creature
 --BASIC CLASS
 creature = {
     core = "creature",
+    gang = 0, -- 默认无帮派
+    target = false, --最终目标（注意和目标列表targets不同）
 }; 
 
 creature.__index = creature;

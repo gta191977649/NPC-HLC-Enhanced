@@ -9,8 +9,7 @@ function debugCreature()
     --NOTICE:ONLY DEBUG IN PARENTS AND STREAMED IN PED
     for _,creature in pairs(getElementsByType("ped",otherElements,true)) do
         --outputChatBox("c:"..tostring(inspect(creature)))
-        if isElement(creature) and getElementType(creature)=="ped" then
-
+        if isElement(creature) and getElementType(creature)=="ped" and not isPedDead(creature) then
 
             ------------------DEBUG VISIBLE/HEAR -----------------
             find,s,v = checkFind(creature) -- TODO 优化：这里应该直接提取本地的NPC数据，否则每帧执行一次复杂的checkFind函数
@@ -33,8 +32,12 @@ function debugCreature()
                 --text = text .. "\nCategory:"..tostring(Data:getData(creature,"category") or "MISS CATEGORY")
                 --text = text .. "\n".."Speed:"..tostring(Data:getData(creature,"speed") or "MISS SPEED")
                 --text = text .. "\n".."HP:"..tostring(getElementHealth(creature) or "MISS SPEED")
-                text = text .. "\n".."Visble:"..tostring(checkVisible(creature))
-                text = text .. "\n".."targets:"..tostring(inspect(targets))
+                --text = text .. "\n".."Visble:"..tostring(checkVisible(creature))
+                --text = text .. "\n".."targets:"..tostring(inspect(targets))
+                text = text .. "\n".."Target:"..tostring(inspect(Data:getData(creature,"target")) or "MISS TARGET")
+                text = text .. "\n".."Gang:"..tostring(Data:getData(creature,"gang") or "MISS GANG")
+                --text = text .. "\n".."Ammo:"..tostring(getPedTotalAmmo(creature))
+                --text = text .. "\n".."Accuracy:"..tostring(Data:getData(creature,"accuracy") or "MISS accuracy")
                 if(isNPCHaveTask(creature))then text = text .. "\n".."task:"..tostring(inspect(getNPCCurrentTask(creature))) end -- 对外的写法
                 --if AI and AI[creature] and AI[creature].task then text = text .. "\n".."task:"..tostring(inspect(AI[creature].task)) end
                 ----------------checkFind

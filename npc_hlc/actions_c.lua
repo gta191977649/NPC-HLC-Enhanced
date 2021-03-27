@@ -49,6 +49,7 @@ end
 
 
 function stopAllNPCActions(npc)
+	--outputChatBox("stopAllNPCActions");
 	stopNPCWalkingActions(npc)
 	stopNPCWeaponActions(npc)
 	stopNPCDrivingActions(npc)
@@ -71,9 +72,12 @@ function stopNPCWalkingActions(npc)
 end
 
 function stopNPCWeaponActions(npc)
+	--outputChatBox("stopNPCWeaponActions:"..inspect(npc));
 	setPedControlState(npc,"aim_weapon",false)
 	setPedControlState(npc,"fire",false)
 end
+addEvent("npc > stopWeaponActions",true)
+addEventHandler("npc > stopWeaponActions",resourceRoot,stopNPCWeaponActions,false);
 
 function stopNPCDrivingActions(npc)
 	local car = getPedOccupiedVehicle(npc)
@@ -275,13 +279,20 @@ function makeNPCShootAtPos(npc,x,y,z)
 end
 
 --客户端：NPC设计element
---TODO:当前设计的是NPC或者PED的头部，不适合动物
+--TODO:当前设计的是NPC或者PED的脊柱，不适合动物
 function makeNPCShootAtElement(npc,target)
 	local x,y,z = getElementPosition(target)
 	local vx,vy,vz = getElementVelocity(target)
 	local tgtype = getElementType(target)
 	if tgtype == "ped" or tgtype == "player" then
 		x,y,z = getPedBonePosition(target,3)
+		 -- 动物的位置更低一些(才会被攻击到)
+		local category = Data:getData(target,"category");
+		if category == "animal" then
+			--outputChatBox(inspect(target).." category:"..tostring(category))
+			z = z - 1
+		end 
+
 		local vehicle = getPedOccupiedVehicle(target)
 		if vehicle then
 			vx,vy,vz = getElementVelocity(vehicle)

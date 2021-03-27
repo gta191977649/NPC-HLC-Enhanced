@@ -9,6 +9,7 @@ function initNPCControl()
 end
 
 --客户端：循环NPC任务
+--TODO：这里始终在stopAllNPCActions()清空NPC按键，是否合适
 function cycleNPCs()
 	for pednum,npc in ipairs(getElementsByType("ped",root,true)) do
 		if getElementData(npc,"npc_hlc") then

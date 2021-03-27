@@ -17,9 +17,6 @@
 --z = Infected:create(5,3,3)
 --z2 = hunter:create(6,3,3)
 
-function taskDone(task)
-    outputDebugString(tostring(inspect(source)).." taskDone:"..tostring(inspect(task)))
-end
 
 function initTester()
 
@@ -34,7 +31,7 @@ function initTester()
     ]]
 
     c1 = createCreature("wolf",240.1689453125,2500.109375,16.484375)
-    c3 = createCreature("puma",284.236328125,2534.7548828125,16.818849563599)
+    c2 = createCreature("bandit",284.236328125,2534.7548828125,16.818849563599)
     --[[
     
     c2 = createCreature("bear",261.3671875,2487.5546875,16.484375)
@@ -58,7 +55,7 @@ function initTester()
                 addNPCTask(ped, {"killPed",c,100,5}) -- ATTACK LEADER
             end
 
-            addEventHandler("npc_hlc:onNPCTaskDone",c,taskDone)
+            
 
 
         end,3000*k,1)

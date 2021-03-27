@@ -109,7 +109,7 @@ end
 
 ------------------------------------------------
 function addNPCTask(npc,task)
-	outputChatBox("addNPCTask:"..tostring(task[1]));
+	--outputChatBox("addNPCTask:"..tostring(task[1]));
 	if not npc or not all_npcs[npc] then
 		outputDebugString("Invalid ped argument",2)
 		return false
@@ -140,7 +140,21 @@ function clearNPCTasks(npc)
 	end
 	local thistask = getElementData(npc,"npc_hlc:thistask")
 	if not thistask then return end
+	--outputChatBox("thistask:"..tostring(thistask));--获取的是ID
+
+	local checktask = getElementData(npc,"npc_hlc:task."..thistask)
+	if checktask then
+		--outputChatBox(inspect(checktask))
+		--清理武器动作
+		if checktask[1]=="killPed" then
+			--outputChatBox("trigger try");
+			triggerClientEvent("npc > stopWeaponActions",resourceRoot,npc);
+			--stopNPCWeaponActions(npc)--这是服务端的，需要用trigger
+		end
+	end
+
 	local lasttask = getElementData(npc,"npc_hlc:lasttask")
+	--循环清空所有任务
 	for task = thistask,lasttask do
 		removeElementData(npc,"npc_hlc:task."..task)
 	end
@@ -178,7 +192,10 @@ function isTaskValid(task)
 end
 
 --2021
+-----------------------------------------------------------------------------------------------------
 
+
+--2021
 --服务器：检测NPC是否存在任务
 function isNPCHaveTask(npc)
 	if not npc or not all_npcs[npc] then
@@ -194,12 +211,13 @@ function isNPCHaveTask(npc)
 	end 
 end
 
-
+--2021
 --创建生物
 function createCreature(type,x,y,z,dim)
 
 	outputDebugString("TRY CALL createCreature:"..tostring(type));
 	local c = cType[type]:create(x,y,z) -- 不要使用预留名creature..不然BUG
+
 
 	local cElement = c:getElement();
 
@@ -207,8 +225,12 @@ function createCreature(type,x,y,z,dim)
 	setElementData(cElement,"creature",type);
 	creatures[cElement] = self;
 
-	speed = Data:getData(cElement,"speed")
-	enableHLCForNPC(cElement,speed,0.99,1)
+	--绑定到任务结束函数
+	addEventHandler("npc_hlc:onNPCTaskDone",cElement,taskDone)
+
+	local accuracy = Data:getData(cElement,"accuracy");
+	local speed = Data:getData(cElement,"speed");
+	enableHLCForNPC(cElement,speed,accuracy,1)
 	return cElement;
 	
 end

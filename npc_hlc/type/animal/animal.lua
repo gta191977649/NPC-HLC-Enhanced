@@ -2,6 +2,10 @@
 
 animal = {
     category = "animal",
+    --动物只会肉搏攻击，所以属性写在动物类
+    shootdist = 3,--小于这个距离攻击
+    followdist = 1,--大于这个距离跟随
+    accuracy = 0,
 };
 animal.__index = animal;
 setmetatable( animal, creature );

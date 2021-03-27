@@ -115,8 +115,12 @@ function checkFind(npc)
 		--end
 		targetByVisibility = true
 	else
-		--TODO:如果已经锁定了玩家，近距离不会丢失
-		if distance < 10 and getElementData ( npc, "target" ) == localPlayer then 
+		--玩家和NPC之间的视野被阻挡
+		--即使被阻挡一样可以发现玩家，缺点就是会隔着墙壁无脑设计
+
+		local target = Data:getData(npc,"target"); -- 获取我的最终长期目标
+		--TODO:即时被阻挡，如果已经锁定了玩家，近距离不会丢失
+		if distance < 10 and target == localPlayer then 
 			targetByVisibility = true
 		else
 			targetByVisibility = false
@@ -136,8 +140,12 @@ end
 function sensorChecks()
 	--outputChatBox("sensorChecks start");
 	for pednum,npc in ipairs(getElementsByType("ped",root,true)) do
-		if getElementData(npc,"npc_hlc") then
-			--outputChatBox("sensorChecks npc_hlc");
+		if getElementData(npc,"npc_hlc") then 
+			--outputChatBox("sensorChecks npc_hlc");、
+
+			-- sensor 功能过滤
+			if not getElementData(npc,"creature") then return end 
+
 			if getElementHealth(getPedOccupiedVehicle(npc) or npc) >= 1 then
 				--outputChatBox("sensorChecks Health");
 				-- TODO 如果NPC存在SENSOR能力（才进入循环）
