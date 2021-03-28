@@ -111,7 +111,7 @@ end
 
 ------------------------------------------------
 function addNPCTask(npc,task)
-	outputDebugString("addNPCTask:"..tostring(task[1]));
+	--outputDebugString("addNPCTask:"..tostring(task[1]));
 	if not npc or not all_npcs[npc] then
 		outputDebugString("Invalid ped argument",2)
 		return false
@@ -127,7 +127,7 @@ function addNPCTask(npc,task)
 	else
 		lasttask = lasttask+1
 	end
-	outputDebugString("addNPCTask:"..tostring(task))
+	--outputDebugString("addNPCTask:"..tostring(task))
 	setElementData(npc,"npc_hlc:task."..lasttask,task)
 	setElementData(npc,"npc_hlc:lasttask",lasttask)
 	return true
@@ -192,7 +192,7 @@ function setNPCTask(npc,task)
 	--outputDebugString("setNPCTask to:"..inspect(source))
 
 	local thistask = getElementData(npc,"npc_hlc:thistask")
-	outputDebugString(inspect(npc).." setNPCTask thistask:"..tostring(thistask));--获取的是ID
+	--outputDebugString(inspect(npc).." setNPCTask thistask:"..tostring(thistask));--获取的是ID
 
 	if not npc or not all_npcs[npc] then
 		outputDebugString("Invalid ped argument",2)

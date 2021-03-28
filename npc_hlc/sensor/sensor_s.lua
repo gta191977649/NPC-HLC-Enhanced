@@ -7,7 +7,7 @@ function taskDone(task)
 
 	if task[1]== "doAnim" and task[4]=="idle" then
 		--IDLE - > HANG OUT
-		outputDebugString("IDLE - > HANG OUT")
+		--outputDebugString("IDLE - > HANG OUT")
 
 		setTimer(function(ped)
 			local x,y = getElementPosition(ped);

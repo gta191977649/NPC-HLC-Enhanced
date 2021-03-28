@@ -11,7 +11,7 @@ bandit = {
     -- shootdist < followdist 导致在特定距离时NPC会发呆，既不会攻击，也不会靠近
     shootdist = 30,
     followdist = 20,
-    accuracy = 0.8,--0.95,
+    accuracy = 0.975,--0.95,
 };
 bandit.__index = bandit;
 setmetatable( bandit, human );

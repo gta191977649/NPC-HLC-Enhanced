@@ -30,24 +30,37 @@ end
 function spawnCreature(x,y,z)
     --outputChatBox("spawnCreature");
     --create
-    local random = math.random(1,8)
 
-    if random == 1 then 
-        spawn_type = "wolf"
-    elseif random == 2 then
-        spawn_type = "goat"
-    elseif random == 3 then
-        spawn_type = "bear"
-    elseif random == 4 then
-        spawn_type = "puma"
-    elseif random == 5 then
-        spawn_type = "bandit"
-    elseif random == 6 then
-        spawn_type = "infected"
-    elseif random == 7 then
-        spawn_type = "hunter"
+    hour = getTime();
+    if table.haveValue({21,22,23,0,1,2,3,4,5},hour) then
+        --night
+        local random = math.random(1,5)
+        if random > 4 then 
+            spawn_type = "hunter"
+        else
+            spawn_type = "infected"
+        end
     else
-        spawn_type = "goat"
+
+        local city = getZoneName(x, y, z,true)
+        if city == "Los Santos" or city == "Las Venturas" or city == "San Fierro" then
+            spawn_type = "bandit"
+        else
+            --animal
+            local random = math.random(1,5)
+            if random == 1 then 
+                spawn_type = "wolf"
+            elseif random == 2 then
+                spawn_type = "goat"
+            elseif random == 3 then
+                spawn_type = "bear"
+            elseif random == 4 then
+                spawn_type = "puma"
+            else
+                spawn_type = "goat"
+            end
+        end
+
     end
 
     local c = NPC:createCreature(spawn_type,x,y,z)

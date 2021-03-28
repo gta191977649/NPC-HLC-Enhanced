@@ -32,7 +32,7 @@ function debugCreature()
             local targets = Data:getData(creature,"targets") or {}; -- 获取我的目标表
 
 			if tonumber(x) and tonumber(y) then
-                local text = "Name:"..tostring(Data:getData(creature,"name") or "MISS TYPE")
+                local text = tostring(Data:getData(creature,"name") or "MISS TYPE") --"Name:"..
                 --text = text .. "\n".."Type:"..tostring(Data:getData(creature,"type") or "MISS TYPE")
                 --text = text .. "\nCategory:"..tostring(Data:getData(creature,"category") or "MISS CATEGORY")
                 --text = text .. "\n".."Speed:"..tostring(Data:getData(creature,"speed") or "MISS SPEED")
@@ -67,7 +67,7 @@ function debugCreature()
                 ----------------
 
                 local length = dxGetTextWidth(text,1,"clear")
-				dxDrawText(text,x-length/2-sW*0.01,y*0.8, x+length/2+sW*0.01, y+sH*0.03, textcolor,1, "clear", "center", "center")
+				--dxDrawText(text,x-length/2-sW*0.01,y*0.8, x+length/2+sW*0.01, y+sH*0.03, textcolor,1, "clear", "center", "center")
 			end
 
             --这里需要从客户端获取服务端的数据
@@ -84,7 +84,7 @@ function debugCreature()
             for a = -angle/2,angle/2,30 do 
                 
                 local x,y,z = getPositionFromOffsetByPosRot(cX,cY,cZ,rx,ry,rz+a,0,radius,0)
-                dxDrawLine3D( cX,cY,cZ, x,y,z,color,1 )
+                --dxDrawLine3D( cX,cY,cZ, x,y,z,color,1 )
             end
 
         end
