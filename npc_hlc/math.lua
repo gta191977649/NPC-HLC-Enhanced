@@ -5,6 +5,14 @@ local degToPi = math.pi/180
 local getElementPosition = getElementPosition
 local getElementRotation = getElementRotation
 
+
+function angleWrapping(x)
+    x = x % 360
+    if x < 0 then
+        x = x + 360
+	end
+    return x
+end
 function getPercentageInLine(x,y,x1,y1,x2,y2)
 	x,y = x-x1,y-y1
 	local yx,yy = x2-x1,y2-y1
@@ -49,7 +57,7 @@ function getPositionFromElementOffset(element,offx,offy,offz)
 end
 
 function getPositionFromOffsetByPosRot(x,y,z,rx,ry,rz,offx,offy,offz)
-    local rx,ry,rz = -rx*degToPi,-ry*degToPi,rz*degToPi
+    local rx,ry,rz = rx*degToPi,ry*degToPi,rz*degToPi
 	local rxCos,ryCos,rzCos,rxSin,rySin,rzSin = cos(rx),cos(ry),cos(rz),sin(rx),sin(ry),sin(rz)
 	m11,m12,m13,m21,m22,m23,m31,m32,m33 = rzCos*ryCos-rzSin*rxSin*rySin,ryCos*rzSin+rzCos*rxSin*rySin,-rxCos*rySin,-rxCos*rzSin,rzCos*rxCos,rxSin,rzCos*rySin+ryCos*rzSin*rxSin,rzSin*rySin-rzCos*ryCos*rxSin,rxCos*ryCos
 	return offx*m11+offy*m21+offz*m31+x,offx*m12+offy*m22+offz*m32+y,offx*m13+offy*m23+offz*m33+z

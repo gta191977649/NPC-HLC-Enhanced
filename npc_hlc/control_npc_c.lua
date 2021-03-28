@@ -1,13 +1,14 @@
-UPDATE_COUNT = 30
+UPDATE_COUNT = 35
 UPDATE_INTERVAL_MS = 200
 local cycleNPCs
 function initNPCControl()
 	--addEventHandler("onClientPreRender",root,cycleNPCs)
-	--setTimer ( cycleNPCs, UPDATE_COUNT, 0)
-	cycleNPCs()
+	setTimer ( cycleNPCs, UPDATE_COUNT,1)
+	--cycleNPCs()
 end
 --Async:setDebug(true)
 Async:setPriority("low")
+--Async:setPriority(500, 33); 
 cycleNPCs = function()
 	local data = getElementsByType("ped",root,true)
 	Async:foreach(data, function(npc,pednum) 
@@ -30,11 +31,8 @@ cycleNPCs = function()
 				end
 			end
 		end
-	end,function() 
-		setTimer ( cycleNPCs, UPDATE_COUNT,1)
-	end)
+	end,initNPCControl)
 end
-
 function cycleNPCs_old()
 	local streamed_npcs = {}
 	for pednum,ped in ipairs(getElementsByType("ped",root,true)) do
