@@ -3,6 +3,7 @@
 	<include resource="npc_hlc"/>
 	<script src="imports.lua" type="shared" cache="false" />
 	<script src="wild_s.lua" type="server"/>
+	<script src="wild_wasted_s.lua" type="server"/>
 	<script src="wild_c.lua"  type="client" cache="false"/>
 	<script src="wild_sensor_c.lua"  type="client" cache="false"/>
 </meta>

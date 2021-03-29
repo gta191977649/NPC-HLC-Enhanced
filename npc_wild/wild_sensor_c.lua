@@ -51,37 +51,58 @@ end
 addEvent("npc > lostTarget",true)
 addEventHandler("npc > lostTarget",root,wildLost,false)
 
-function wildDamage(attacker,weapon,bodypart,loss)
+--客户端受伤后决策判定
+function wildDamageSensor(attacker,weapon,bodypart,loss)
+
+	if not getElementData(source,"creature") then
+		cancelEvent()
+		outputChatBox("return need after cancel");
+		return;
+	end
 	--source:ped that got damaged
 	--outputChatBox(inspect(attacker).." attack "..inspect(source));
 
-	--根据两者关系决定动物的行为
-	local gang = Data:getData(source,"gang");--被攻击者帮会
-	local gang_attacker = Data:getData(attacker,"gang");--攻击者帮会
+	--有攻击者
+	if attacker then
 
-	--误伤是否反击
-	--目前只反击玩家或者非同帮会成员
-	if getElementType(attacker) == "player" or ( gang~=gang_attacker ) then
+		--根据两者关系决定动物的行为
+		local gang = Data:getData(source,"gang");--被攻击者帮会
+		local gang_attacker = Data:getData(attacker,"gang");--攻击者帮会
 
-		--如果已有attacker作为目标，就不要再执行了
-		if NPC:isNPCHaveTask(source) then
-			task = NPC:getNPCCurrentTask(source)
-			--QUEST:这里task理论上不为空，但是确实存在空
-			if task and task[1] == "killPed" and task[2]==target then
-				outputChatBox("IGNORE SAME ATTACKER TO FIGHT BACK");
-			else
-				--立刻 反击
-				local shootdist = Data:getData(source,"shootdist");
-				local followdist = Data:getData(source,"followdist");
-				triggerServerEvent("npc > setTask",npcRoot,source,{"killPed",attacker,shootdist,followdist})
-				Data:setData(source,"target",target);--设置长期目标
+		--误伤是否反击
+		--目前只反击玩家或者非同帮会成员
+		if getElementType(attacker) == "player" or ( gang ~= gang_attacker ) then
+			-----------------
+			---player killer
+			------------------
+			--如果已有attacker作为目标，就不要再执行了
+			if NPC:isNPCHaveTask(source) then
+				task = NPC:getNPCCurrentTask(source)
+				--QUEST:这里task理论上不为空，但是确实存在空
+				if task and task[1] == "killPed" and task[2]==target then
+					outputChatBox("IGNORE SAME ATTACKER TO FIGHT BACK");
+				else
+					--立刻 反击
+					local shootdist = Data:getData(source,"shootdist");
+					local followdist = Data:getData(source,"followdist");
+					triggerServerEvent("npc > setTask",npcRoot,source,{"killPed",attacker,shootdist,followdist})
+					Data:setData(source,"target",target);--设置长期目标
+				end
 			end
+
+		elseif getElementType(attacker) == "vehicle" then
+			-----------------
+			---veh killer
+			-----------------
+
 		end
 
-	end 
+
+	else
+	end
 
 	--TODO 如果NPC被2个以上玩家顺序攻击，会频繁的改变目标，需要增加一个仇恨值判断，例如新目标是否比旧目标仇恨值更高
 
 end
 --注意这里getRootElement()需要是NPC的上级
-addEventHandler ( "onClientPedDamage", getRootElement(), wildDamage )
+addEventHandler ( "onClientPedDamage", getRootElement(), wildDamageSensor )
