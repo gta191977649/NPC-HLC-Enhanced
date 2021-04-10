@@ -29,7 +29,7 @@ function creatureDied(totalAmmo,killer,killerWeapon,bodypart,stealth)
                 killtype = "kill1"; 
                 Player:givePlayerData(killer,"HeadShot",1);
             end 
-            triggerClientEvent(killer,"showkill",killer,killtype,"you",targetname,Loc:Localization(killerwep,killer),0);
+            triggerClientEvent(killer,"showkill",killer,killtype,"you",Loc:Localization(killerwep,killer),targetname,0);
         end
     end
 

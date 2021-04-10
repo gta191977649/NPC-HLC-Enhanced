@@ -56,7 +56,7 @@ function wildDamageSensor(attacker,weapon,bodypart,loss)
 
 	if not getElementData(source,"creature") then
 		cancelEvent()
-		outputChatBox("return need after cancel");
+		--outputChatBox("return need after cancel");
 		return;
 	end
 	--source:ped that got damaged
