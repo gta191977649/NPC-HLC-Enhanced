@@ -9,11 +9,11 @@ animal = {
 animal.__index = animal;
 setmetatable( animal, creature );
 
-function animal:create(skin,x,y,z)
+function animal:create(skin,x,y,z,r)
 
     --outputDebugString("CREATE ANIMAL");
 
-    local o = creature:create(skin,x,y,z)
+    local o = creature:create(skin,x,y,z,r)
     
     self.__index = self;
 

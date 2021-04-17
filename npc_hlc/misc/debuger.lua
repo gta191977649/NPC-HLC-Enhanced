@@ -67,7 +67,7 @@ function debugCreature()
                 ----------------
 
                 local length = dxGetTextWidth(text,1,"clear")
-				--dxDrawText(text,x-length/2-sW*0.01,y*0.8, x+length/2+sW*0.01, y+sH*0.03, textcolor,1, "clear", "center", "center")
+				dxDrawText(text,x-length/2-sW*0.01,y*0.8, x+length/2+sW*0.01, y+sH*0.03, textcolor,1, "clear", "center", "center")
 			end
 
             --这里需要从客户端获取服务端的数据
@@ -80,7 +80,7 @@ function debugCreature()
                 color = tocolor(0,255,0)
             end
             
-            local rx,ry,rz =  getElementRotation(creature)
+            local rx,ry,rz = getElementRotation(creature)
             for a = -angle/2,angle/2,30 do 
                 
                 local x,y,z = getPositionFromOffsetByPosRot(cX,cY,cZ,rx,ry,rz+a,0,radius,0)

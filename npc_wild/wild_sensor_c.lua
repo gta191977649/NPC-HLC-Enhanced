@@ -7,6 +7,7 @@ function wildFind(npc,target)
 
 	if gang ~= gang_target then
 
+		--[[
 		--debug 
 		if Data:getData(npc,"type") == "goat" then
 			triggerServerEvent("npc > setTask",npcRoot,npc,{"awayFromElement",target,0.1,200})
@@ -17,6 +18,7 @@ function wildFind(npc,target)
 		local shootdist = Data:getData(npc,"shootdist");
 		local followdist = Data:getData(npc,"followdist");
 		triggerServerEvent("npc > setTask",npcRoot,npc,{"killPed",target,shootdist,followdist})
+		]]
 	else
 		--二者帮会相同
 		triggerServerEvent("npc > setTask",npcRoot,npc,{"awayFromElement",target,0.1,200})

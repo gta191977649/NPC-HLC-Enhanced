@@ -11,9 +11,9 @@ puma = {
 puma.__index = puma;
 setmetatable( puma, animal );
 
-function puma:create(x,y,z)
+function puma:create(x,y,z,r)
 
-    local o = animal:create(puma.skin,x,y,z)
+    local o = animal:create(puma.skin,x,y,z,r)
     setmetatable(o,self);
     self.__index = self;
 

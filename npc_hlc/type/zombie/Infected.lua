@@ -11,11 +11,11 @@ infected = {
 infected.__index = infected;
 setmetatable( infected, zombie );
 
-function infected:create(x,y,z)
+function infected:create(x,y,z,r)
 
     --outputDebugString("CREATE infected");
     --outputDebugString("CREATE infected AT "..x..","..y..","..z);
-    local o = zombie:create(infected.skin,x,y,z)
+    local o = zombie:create(infected.skin,x,y,z,r)
     setmetatable(o,self);
     self.__index = self;
 

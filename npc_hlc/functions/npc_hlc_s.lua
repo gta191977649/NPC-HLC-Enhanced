@@ -10,7 +10,7 @@ function initNPCHLC()
 	cType["puma"] = puma
 	cType["goat"] = goat
 
-	cType["bandit"] = bandit
+	cType["normal"] = normal
 
 	cType["hunter"] = hunter
 	cType["infected"] = infected

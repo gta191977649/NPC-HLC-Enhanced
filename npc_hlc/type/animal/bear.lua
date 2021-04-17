@@ -11,9 +11,9 @@ bear = {
 bear.__index = bear;
 setmetatable( bear, animal );
 
-function bear:create(x,y,z)
+function bear:create(x,y,z,r)
     
-    local o = animal:create(bear.skin,x,y,z)
+    local o = animal:create(bear.skin,x,y,z,r)
     setmetatable(o,self);
     self.__index = self;
 

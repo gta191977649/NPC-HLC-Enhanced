@@ -19,7 +19,7 @@ creature = {
 creature.__index = creature;
 
 --创建
-function creature:create(skin,x,y,z)
+function creature:create(skin,x,y,z,r)
 
     --outputDebugString("TRY CREATE creature ");
 
@@ -27,7 +27,7 @@ function creature:create(skin,x,y,z)
     setmetatable(o,self);
     self.__index = self;
 
-    self.source = createPed(skin,x,y,z);
+    self.source = createPed(skin,x,y,z,r);
     setElementDimension(self.source,1) -- 设置到世界1
     
     setElementParent(self.source,otherElements) -- bind to parent for data system

@@ -37,7 +37,7 @@
         <script src="type/animal/goat.lua" type="server" />
 
         <script src="type/human/human.lua" type="server" />
-        <script src="type/human/bandit.lua" type="server" />
+        <script src="type/human/normal.lua" type="server" />
 
         <script src="type/zombie/zombie.lua" type="server" />
         <script src="type/zombie/Infected.lua" type="server" />

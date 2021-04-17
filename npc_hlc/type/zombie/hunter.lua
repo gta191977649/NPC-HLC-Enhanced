@@ -11,11 +11,11 @@ hunter = {
 hunter.__index = hunter;
 setmetatable( hunter, zombie );
 
-function hunter:create(x,y,z)
+function hunter:create(x,y,z,r)
 
     --outputDebugString("CREATE hunter");
     --outputDebugString("CREATE hunter AT "..x..","..y..","..z);
-    local o = zombie:create(hunter.skin,x,y,z)
+    local o = zombie:create(hunter.skin,x,y,z,r)
     setmetatable(o,self);
     self.__index = self;
 

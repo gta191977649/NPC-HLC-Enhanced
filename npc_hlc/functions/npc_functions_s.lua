@@ -246,12 +246,22 @@ end
 
 --2021
 --创建生物
-function createCreature(type,x,y,z,dim)
+--如果是人类，需要阵营，名字
+--参数：CLASS类型，坐标XYZ,角度R，姓名name，子分类subtype（人类是阵营，其他动物是种类）
+function createCreature(type,x,y,z,r,subtype,btype)
 
-	outputDebugString("TRY CALL createCreature:"..tostring(type));
-	local c = cType[type]:create(x,y,z) -- 不要使用预留名creature..不然BUG
+	--DEBUG 不存在的类型创建为僵尸
+	--outputDebugString("table have key "..tostring(cType[type]))
+	--outputDebugString("not table have key "..tostring(not cType[type]))
+	--outputDebugString("TRY CALL createCreature:"..tostring(type));
 
+	local c = nil;
 
+	if type == "normal" then
+		c = cType[type]:create(x,y,z,r,subtype,btype) -- 不要使用预留名creature..不然BUG
+	else
+		c = cType[type]:create(x,y,z,r) -- 不要使用预留名creature..不然BUG
+	end
 	local cElement = c:getElement();
 
 	--反绑定
@@ -267,15 +277,7 @@ function createCreature(type,x,y,z,dim)
 	enableHLCForNPC(cElement,speed,accuracy,1)
 
 	--默认任务为做动作
-	--outputDebugString("category:"..tostring(category));
-
-	--[[
-	local player = getPlayerFromName("=DF=JUNE")
-	outputDebugString("player:"..inspect(player))
-	addNPCTask(cElement,{"walkFollowElement",player,1})
-	]]
-	
-	addNPCTask(cElement, {"doAnim",getTickCount(),category,"idle",-1,false,false,true})--loop false to sequence random animation
+	--addNPCTask(cElement, {"doAnim",getTickCount(),category,"idle",-1,false,false,true})--loop false to sequence random animation
 
 	return cElement;
 

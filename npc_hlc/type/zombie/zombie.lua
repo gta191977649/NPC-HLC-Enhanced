@@ -9,11 +9,11 @@ zombie = {
 zombie.__index = zombie;
 setmetatable( zombie, creature );
 
-function zombie:create(skin,x,y,z)
+function zombie:create(skin,x,y,z,r)
 
     --outputDebugString("CREATE zombie");
 
-    local o = creature:create(skin,x,y,z)
+    local o = creature:create(skin,x,y,z,r)
     
     self.__index = self;
 

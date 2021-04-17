@@ -1,8 +1,8 @@
 wilds = {} --记录所有野生动物
 
 function InitWildCreature()
-    setTimer ( SpawnWildCreature, 5000, 0 ) --直接开启在玩家周围随机产生动物
-    setTimer ( clearFarCreature, 5000, 0) --KEEPS ALL THE CRETURES CLOSE TO PLAYERS
+    --setTimer ( SpawnWildCreature, 5000, 0 ) --直接开启在玩家周围随机产生动物
+    --setTimer ( clearFarCreature, 5000, 0) --KEEPS ALL THE CRETURES CLOSE TO PLAYERS
 end
 addEventHandler("onResourceStart", getRootElement(), InitWildCreature)
 
@@ -44,7 +44,7 @@ function spawnCreature(x,y,z)
 
         local city = getZoneName(x, y, z,true)
         if city == "Los Santos" or city == "Las Venturas" or city == "San Fierro" then
-            spawn_type = "bandit"
+            spawn_type = "normal"
         else
             --animal
             local random = math.random(1,5)

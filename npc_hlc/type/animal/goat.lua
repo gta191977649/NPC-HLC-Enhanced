@@ -11,11 +11,11 @@ goat = {
 goat.__index = goat;
 setmetatable( goat, animal );
 
-function goat:create(x,y,z)
+function goat:create(x,y,z,r)
 
     --outputDebugString("CREATE goat");
     --outputDebugString("CREATE goat AT "..x..","..y..","..z);
-    local o = animal:create(goat.skin,x,y,z)
+    local o = animal:create(goat.skin,x,y,z,r)
     setmetatable(o,self);
     self.__index = self;
 
