@@ -2,12 +2,10 @@
 function wildFind(npc,target)
 	--根据两者关系决定动物的行为
 	local gang = Data:getData(npc,"gang");
-	outputChatBox(tostring(inspect(npc)).." find new target "..tostring(inspect(target)).."gang:"..tostring(gang));
-	local gang_target = Data:getData(target,"gang");
+	local gang_target = Data:getData(target,"gang") or Player:getPlayerData(target,"Gang");
+	outputChatBox(tostring(inspect(npc)).." of gang:"..tostring(gang).." find new target "..tostring(inspect(target)).."gang:"..tostring(gang_target));
 
 	if gang ~= gang_target then
-
-		--[[
 		--debug 
 		if Data:getData(npc,"type") == "goat" then
 			triggerServerEvent("npc > setTask",npcRoot,npc,{"awayFromElement",target,0.1,200})
@@ -17,8 +15,11 @@ function wildFind(npc,target)
 		--二者位于不同帮会
 		local shootdist = Data:getData(npc,"shootdist");
 		local followdist = Data:getData(npc,"followdist");
+
+		triggerEvent("onChatbubblesMessageIncome",npc,"Kill "..tostring(getPlayerName(target).."!"),0);
+
 		triggerServerEvent("npc > setTask",npcRoot,npc,{"killPed",target,shootdist,followdist})
-		]]
+		
 	else
 		--二者帮会相同
 		triggerServerEvent("npc > setTask",npcRoot,npc,{"awayFromElement",target,0.1,200})

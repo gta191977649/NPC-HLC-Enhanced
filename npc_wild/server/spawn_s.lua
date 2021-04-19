@@ -81,8 +81,8 @@ function setupBotSpawnCols (resource)
 
 end
 --服务器启动时
+--暂时关闭用于测试
 addEventHandler("onResourceStart",resourceRoot,setupBotSpawnCols)
-
 --2. onColShapeHit: 
 	-- is bot already spawned?
 		-- Y: return
@@ -91,6 +91,7 @@ function onHitF(hitElem,dim)
 
 	--if not getElementData(source,"botToSpawn") then return end --if it ain't a spawncol then return
 	if getElementType(hitElem) ~= "player" then return end -- 只有玩家能触发检测
+	if not getElementDimension(hitElem)==1 then return end;
 	if isTimer(getElementData(source,"respawnTimer")) then return end --if there is a respawntimer active on the bot then return
 	if getElementData (source,"botWasSpawned") == true then -- 如果BOT已产生不继续执行
 	    return
@@ -135,15 +136,28 @@ function onHitF(hitElem,dim)
 
         spawnType = getElementType(spawnpoint)
         local faction = string.lower(string.gsub(spawnType,"_spawn",""))
-        outputDebugString("TRY COL NPC spawnType:"..tostring(faction).." botType:"..tostring(botType).." with Name:"..tostring(botName));
+        --outputDebugString("TRY COL NPC spawnType:"..tostring(faction).." botType:"..tostring(botType or ZedType).." with Name:"..tostring(botName));
 
         local cType = "normal";
         if faction == "neutral" then
-            cType = "goat"
+			if botType =="Goat" then
+				cType = "goat"
+			elseif botType =="WildPig" then
+				cType = "wolf"
+			elseif botType =="Freelance" then
+				--中立NPC
+			elseif botType =="Bear" then
+				cType = "bear"
+			end
         elseif faction == "zombie" then
-            cType = "infected"
+			if ZedType == "Walker" then
+				cType = "infected"
+			elseif ZedType == "Runner" then
+				cType = "hunter"
+			elseif ZedType == "Brute" then
+				cType = "hunter"
+			end
         end
-
         --[[
 		if spawnType == "Raider_spawn" then
 			if botType == "Guard" then
@@ -247,19 +261,6 @@ function onHitF(hitElem,dim)
 			end
 			
 		elseif spawnType == "Neutral_spawn" then
-			if botType =="Goat" then
-				ped = createGoat(x,y,z,r,team,weap)
-				setElementData(source,"theSpawnedBotPed", ped)
-			elseif botType =="WildPig" then
-				ped = createWildPig(x,y,z,r,team,weap)
-				setElementData(source,"theSpawnedBotPed", ped)
-			elseif botType =="Freelance" then
-				ped = createNeutralFreelancer(x,y,z,r,team,weap)	 
-				setElementData(source,"theSpawnedBotPed", ped)
-			elseif botType =="Bear" then
-				ped = createBear(x,y,z,r,team,weap)	 
-				setElementData(source,"theSpawnedBotPed", ped)
-			end
 			
 		elseif spawnType == "Scavenger_spawn" then --place slothbot entries first, otherwise they engage the civs
 			if botType =="ScavGuard" then
@@ -315,16 +316,7 @@ function onHitF(hitElem,dim)
 			end
 			
 		elseif spawnType == "Zombie_spawn" then --createZombie
-			--if ZedType == "Walker" then
-				ped = exports["dystopia_zombies"]:createZombie (ZedType,x,y,z,r)
-				setElementData(source,"theSpawnedBotPed", ped) -- 设置当前COL产生的BOT为这个PED
-			--elseif ZedType == "Runner" then
-			--	ped = exports["dystopia_zombies"]:createZombie (ZedType,x,y,z,r)		
-			--	setElementData(source,"theSpawnedBotPed", ped)
-			--elseif ZedType == "Brute" then
-			--	ped = exports["dystopia_zombies"]:createZombie (ZedType,x,y,z,r)	
-			--	setElementData(source,"theSpawnedBotPed", ped)
-			--end
+			--
 		end
         ]]
 
@@ -332,7 +324,7 @@ function onHitF(hitElem,dim)
         --local ped = createPed(0,x,y,z) -- NPC:createCreature("bear",x,y,z)
         --setElementDimension(ped,1)
 
-        local ped = NPC:createCreature(cType,x,y,z,r,faction,string.lower(botType))
+        local ped = NPC:createCreature(cType,x,y,z,r,faction,botType and string.lower(botType))
         setElementData(source,"theSpawnedBotPed", ped) -- 设置当前COL产生的BOT为这个PED
 
         setElementData(source,"botWasSpawned", true) -- 设置当前COL已经产生NPC
@@ -351,6 +343,7 @@ function onLeaveF (leaveElem,dim)
 
     --if not getElementData(source,"botToSpawn") then return end
     if getElementType(leaveElem) ~= "player" then return end;
+	if not getElementDimension(leaveElem)==1 then return end;
     if getElementData (source,"botWasSpawned") == false then return end;
             
     local playersInColShape = getElementsWithinColShape ( source, "player") -- 获取COL内的玩家

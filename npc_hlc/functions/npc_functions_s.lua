@@ -277,8 +277,19 @@ function createCreature(type,x,y,z,r,subtype,btype)
 	enableHLCForNPC(cElement,speed,accuracy,1)
 
 	--默认任务为做动作
-	--addNPCTask(cElement, {"doAnim",getTickCount(),category,"idle",-1,false,false,true})--loop false to sequence random animation
+	addNPCTask(cElement, {"doAnim",getTickCount(),category,"idle",-1,false,false,true})--loop false to sequence random animation
 
 	return cElement;
 
+end
+
+--NEW
+--摧毁生物
+function destroyCreature(element)
+	local creature = creatures[element];
+	if creature then
+		creature:destroy()
+	else
+		outputDebugString("no creature in lib to destroy")
+	end
 end

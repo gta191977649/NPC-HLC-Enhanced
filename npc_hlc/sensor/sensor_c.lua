@@ -5,7 +5,7 @@ SENSOR_COUNT = 1000 --循环间隔
 function initNPCSensor()
 	setTimer ( sensorChecks, SENSOR_COUNT, 0)
 end
---addEventHandler("onClientResourceStart",resourceRoot,initNPCSensor)
+addEventHandler("onClientResourceStart",resourceRoot,initNPCSensor)
 
 
 --[[

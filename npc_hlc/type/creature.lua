@@ -45,8 +45,13 @@ function creature:kill()
     killPed(self.source)
 end
 
---摧毁
+--摧毁生物
 function creature:destroy()
+
+    --尝试移除attach（似乎在ATTACH插件里管理更好吧）
+    --Attach:removeAttach(self.source)
+
+    --TODO：尝试删除动作同步 （似乎在SYNC插件里管理更好吧）
 
     creatures[self.source] = nil;
     destroyElement(self.source);
