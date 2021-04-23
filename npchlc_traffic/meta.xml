@@ -20,7 +20,7 @@
 	<export function="getTrafficDensity" type="server" http="false" />
 
 	<settings>
-		<setting name="*check_collisions" value="all" />
+		<setting name="*check_collisions" value="false" />
 	</settings>
 </meta>
 

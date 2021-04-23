@@ -1,6 +1,6 @@
 DISTORY_TIME = 3000
 function initTrafficGenerator()
-	traffic_density = {peds = 0.008,cars = 0.005,boats = 0.01,planes = 0.01}
+	traffic_density = {peds = 0.005,cars = 0.005,boats = 0.01,planes = 0.01}
 
 	population = {peds = {},cars = {},boats = {},planes = {}}
 	element_timers = {}
@@ -14,7 +14,7 @@ function initTrafficGenerator()
 
 	square_subtable_count = {}
 
-	setTimer(updateTraffic,1000,0)
+	setTimer(updateTraffic,500,0)
 end
 
 function addPlayerOnJoin()
@@ -24,25 +24,22 @@ end
 function removePlayerOnQuit()
 	players[source] = nil
 end
---Async:setDebug(true)
 
-Async:setPriority("low"); 
 function updateTraffic()
 	server_coldata = getResourceFromName("server_coldata")
-	npc_hlc = getResourceFromName("npc_hlc")
+	--npc_hlc = getResourceFromName("npc_hlc")
+	npc_hlc = exports.npc_hlc
 
-	colcheck = get("npchlc_traffic.check_collisions")
-	colcheck = colcheck == "all" and root or colcheck == "local" and resourceRoot or nil
+	--colcheck = get("npchlc_traffic.check_collisions")
+	--colcheck = colcheck == "all" and root or colcheck == "local" and resourceRoot or nil
 
-	Async:iterate(0, 1, function() 
-		updateSquarePopulations()
-		generateTraffic()
-		removeEmptySquares()
-    end); 
-
+	updateSquarePopulations()
+	generateTraffic()
+	removeEmptySquares()
 end
 
 function updateSquarePopulations()
+	--[[
 	if square_population then
 		for dim,square_dim in pairs(square_population) do
 			for y,square_row in pairs(square_dim) do
@@ -54,32 +51,74 @@ function updateSquarePopulations()
 			end
 		end
 	end
-
+	--]]
+	
+	if square_population then
+		Async:setPriority("low")
+		Async:forkey(square_population, function(dim,square_dim)  
+			for dim,square_dim in pairs(square_population) do
+				for y,square_row in pairs(square_dim) do
+					for x,square in pairs(square_row) do
+						square.count = {peds =  0,cars =  0,boats =  0,planes =  0}
+						square.list  = {peds = {},cars = {},boats = {},planes = {}}
+						square.gen_mode  = "despawn"
+					end
+				end
+			end
+		end)
+	end
+	
 	countPopulationInSquares("peds")
 	countPopulationInSquares("cars")
-	--countPopulationInSquares("boats")
-	--countPopulationInSquares("planes")
-
-	for player,exists in pairs(players) do
+	countPopulationInSquares("boats")
+	countPopulationInSquares("planes")
+	Async:forkey(players,function(player,exists) 
 		local x,y = getElementPosition(player)
 		local dim = getElementDimension(player)
 		x,y = math.floor(x/SQUARE_SIZE),math.floor(y/SQUARE_SIZE)
 
-		for sy = y-4,y+4 do for sx = x-4,x+4 do
-			local square = getPopulationSquare(sx,sy,dim)
-			if not square then
-				square = createPopulationSquare(sx,sy,dim,"spawn")
-			else
-				if x-3 <= sx and sx <= x+3 and y-3 <= sy and sy <= y+3 then
-					square.gen_mode = "nospawn"
+		for sy = y-4,y+4 do 
+			for sx = x-4,x+4 do
+				local square = getPopulationSquare(sx,sy,dim)
+				if not square then
+					square = createPopulationSquare(sx,sy,dim,"spawn")
 				else
-					square.gen_mode = "spawn"
+					if x-3 <= sx and sx <= x+3 and y-3 <= sy and sy <= y+3 then
+						square.gen_mode = "nospawn"
+					else
+						square.gen_mode = "spawn"
+					end
 				end
 			end
-		end end
-	end
+		end
+	end)
+	--[[
+	for player,exists in pairs(players) do 
+		if isElement(player) then 
+			local x,y = getElementPosition(player)
+			local dim = getElementDimension(player)
+			x,y = math.floor(x/SQUARE_SIZE),math.floor(y/SQUARE_SIZE)
 
-	if colcheck then call(server_coldata,"generateColData",colcheck) end
+			for sy = y-4,y+4 do 
+				for sx = x-4,x+4 do
+					local square = getPopulationSquare(sx,sy,dim)
+					if not square then
+						square = createPopulationSquare(sx,sy,dim,"spawn")
+					else
+						if x-3 <= sx and sx <= x+3 and y-3 <= sy and sy <= y+3 then
+							square.gen_mode = "nospawn"
+						else
+							square.gen_mode = "spawn"
+						end
+					end
+				end
+			end
+		end
+	end
+	]]
+	--if colcheck then call(server_coldata,"generateColData",colcheck) end
+
+	
 end
 
 function removeEmptySquares()
@@ -102,8 +141,25 @@ function removeEmptySquares()
 	end
 end
 
---计算countPopulationInSquares里的PED数量
 function countPopulationInSquares(trtype)
+	
+	Async:forkey(population[trtype],function(element,exists) 
+		if getElementType(element) ~= "ped" or not isPedInVehicle(element) then
+			local x,y = getElementPosition(element)
+			local dim = getElementDimension(element)
+			x,y = math.floor(x/SQUARE_SIZE),math.floor(y/SQUARE_SIZE)
+
+			for sy = y-2,y+2 do for sx = x-2,x+2 do
+				local square = getPopulationSquare(sx,sy,dim)
+				if sx == x and sy == y then
+					if not square then square = createPopulationSquare(sx,sy,dim,"despawn") end
+					square.list[trtype][element] = true
+				end
+				if square then square.count[trtype] = square.count[trtype]+1 end
+			end end
+		end
+	end)
+	--[[
 	for element,exists in pairs(population[trtype]) do
 		if getElementType(element) ~= "ped" or not isPedInVehicle(element) then
 			local x,y = getElementPosition(element)
@@ -120,6 +176,7 @@ function countPopulationInSquares(trtype)
 			end end
 		end
 	end
+	--]]
 end
 
 function createPopulationSquare(x,y,dim,genmode)
@@ -188,8 +245,6 @@ function getPopulationSquare(x,y,dim)
 	return square_row[x]
 end
 
-
-
 function generateTraffic()
 	if not square_population then return end
 
@@ -200,25 +255,24 @@ function generateTraffic()
 				if genmode == "spawn" then
 					spawnTrafficInSquare(x,y,dim,"peds")
 					spawnTrafficInSquare(x,y,dim,"cars")
-					--spawnTrafficInSquare(x,y,dim,"boats")
-					--spawnTrafficInSquare(x,y,dim,"planes")
+					spawnTrafficInSquare(x,y,dim,"boats")
+					spawnTrafficInSquare(x,y,dim,"planes")
 				elseif genmode == "despawn" then
 					despawnTrafficInSquare(x,y,dim,"peds")
 					despawnTrafficInSquare(x,y,dim,"cars")
-					--despawnTrafficInSquare(x,y,dim,"boats")
-					--despawnTrafficInSquare(x,y,dim,"planes")
+					despawnTrafficInSquare(x,y,dim,"boats")
+					despawnTrafficInSquare(x,y,dim,"planes")
 				end
 			end
 		end
 	end
 end
 
-
-skins = {7,9,10,11,12,13,14,15,16,17,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,43,44,46,47,48,49,50,53,54,55,56,57,58,59,60,61,66,67,68,69,70,71,72,73,76,77,78,79,82,83,84,88,89,91,93,94,95,96,98,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,141,142,143,147,148,150,151,153,157,158,159,160,161,162,170,173,174,175,181,182,183,184,185,186,187,188,196,197,198,199,200,201,202,206,210,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,231,232,233,234,235,236,239,240,241,242,247,248,250,253,254,255,258,259,260,261,262,263}
+skins = {0,7,9,10,11,12,13,14,15,16,17,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,43,44,46,47,48,49,50,53,54,55,56,57,58,59,60,61,66,67,68,69,70,71,72,73,76,77,78,79,82,83,84,88,89,91,93,94,95,96,98,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,141,142,143,147,148,150,151,153,157,158,159,160,161,162,170,173,174,175,181,182,183,184,185,186,187,188,196,197,198,199,200,201,202,206,210,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,231,232,233,234,235,236,239,240,241,242,247,248,250,253,254,255,258,259,260,261,262,263}
 vehicles = {581,462,521,463,522,461,468,586,602,496,401,518,527,589,419,587,533,523,474,545,517,410,600,436,439,549,
-			491,445,507,585,466,492,546,551,516,467,526,547,405,580,550,566,540,421,529,438,428,499,414,
+			491,445,507,585,466,492,546,551,516,467,526,547,405,580,550,566,540,421,529,438,420,428,499,414,459,
 			422,482,418,582,413,440,543,478,554,579,400,404,489,505,479,458,536,575,534,567,535,576,412,402,542,603,
-			475,429,541,415,480,562,565,434,503,411,559,561,560,506,451,558,555,477,500,438,498,475}
+			475,429,541,415,480,562,565,434,503,411,559,561,560,506,451,558,555,477,500,423,455,438,420,552}
 --vehicles = {581,462,521,463,522,461,468,586}
 skincount,vehiclecount = #skins,#vehicles
 
@@ -237,35 +291,41 @@ function spawnTrafficInSquare(x,y,dim,trtype)
 	local ttden = square_ttden[square_tm_id][trtype]
 
 
-	--[[
-	local currentDensity = square.count[trtype]/25 > traffic_density[trtype] and traffic_density[trtype] or square.count[trtype]/25
-	
-	local p = (traffic_density[trtype] - currentDensity)  / (traffic_density[trtype] )
-
-
-	p = p * 100
-	local n = math.random(0,p)
-
-	if n < p and n ~= 0 then 
-		count_needed = 1
-	end
-	--]]
-
-	--print(square.count[trtype])
-	
-	if square.count[trtype] < 5 then
-		--count_needed = count_needed+math.max(ttden*traffic_density[trtype]-square.count[trtype]/25,0)
+	if square.count[trtype] < 4 then
 		count_needed = count_needed+math.max(ttden*traffic_density[trtype]-square.count[trtype]/8,0)
+
+	--count_needed = count_needed+math.max(2-square.count[trtype],0)
 	else
 		count_needed = 0
 	end
 
-	--count_needed = 0
+	--[[
+	if trtype == 'cars' then
+		local msg = string.format("ai type:%s, n of vehicle: %d",trtype,square.count[trtype])
+		print(msg)
+	end
+	--]]
+
 	while count_needed >= 1 do
+		
 		local sqpos = ttden*math.random()
 		local connpos
 		local connnum = 1
+
 		connpos = cdens[connnum]
+		for connnum = 1,#cdens do 
+			connpos = cdens[connnum]
+			if connpos then
+				if sqpos > connpos then
+					sqpos = sqpos-connpos
+				else
+					connpos = sqpos/connpos
+					break
+				end
+			end
+		end
+		--print(connnum)
+		--[[
 		while true do
 			connpos = cdens[connnum]
 			if connpos then
@@ -278,6 +338,7 @@ function spawnTrafficInSquare(x,y,dim,trtype)
 				connnum = connnum+1
 			end
 		end
+		--]]
 
 		local connid = conns[connnum]
 		connpos = cpos1[connnum]*(1-connpos)+cpos2[connnum]*connpos
@@ -338,7 +399,9 @@ function spawnTrafficInSquare(x,y,dim,trtype)
 
 			if colcheck then call(server_coldata,"updateElementColData",ped) end
 
-			call(npc_hlc,"enableHLCForNPC",ped,"walk",0.99,40/180)
+			--call(npc_hlc,"enableHLCForNPC",ped,"walk",0.99,40/180)
+			npc_hlc:enableHLCForNPC(ped,"walk",0.99,40/180)
+
 			ped_lane[ped] = lane
 			initPedRouteData(ped)
 			addNodeToPedRoute(ped,n1)
@@ -352,7 +415,6 @@ function spawnTrafficInSquare(x,y,dim,trtype)
 			local car = createVehicle(model,x,y,z+zoff,rx,0,rz)
 			setElementHealth(car,1000)
 			setElementDimension(car,dim)
-			setElementSyncer(car,true)
 			-- ghostmode for 5 second (prevent stack)
 			--setElementCollidableWith (car,"vehicle", false)
 
@@ -367,12 +429,11 @@ function spawnTrafficInSquare(x,y,dim,trtype)
 			local ped1 = createPed(skins[math.random(skincount)],x,y,z+1)
 			warpPedIntoVehicle(ped1,car)
 			setElementDimension(ped1,dim)
-			setElementSyncer(ped1,true)
 			element_timers[ped1] = {}
 			addEventHandler("onElementDestroy",ped1,removePedFromListOnDestroy,false)
 			addEventHandler("onPedWasted",ped1,removeDeadPed,false)
 			population.peds[ped1] = true
-			
+
 			--local maxpass = getVehicleMaxPassengers(model)
 			local maxpass = 0
 
@@ -408,7 +469,9 @@ function spawnTrafficInSquare(x,y,dim,trtype)
 
 			setElementVelocity(car,vx,vy,vz)
 
-			call(npc_hlc,"enableHLCForNPC",ped1,"walk",0.99,speed)
+			--call(npc_hlc,"enableHLCForNPC",ped1,"walk",0.99,speed)
+			npc_hlc:enableHLCForNPC(ped1,"walk",0.99,speed)
+
 			ped_lane[ped1] = lane
 			initPedRouteData(ped1)
 			addNodeToPedRoute(ped1,n1)
@@ -472,14 +535,3 @@ function despawnTrafficInSquare(x,y,dim,trtype)
 		end
 	end
 end
-
-addEventHandler ( "onVehicleStartEnter", getRootElement(), function( player, seat, jacked) 
-	if getElementType(player) == "player" then
-		outputChatBox(string.format( "[NPC]: %s start to enter veh %d",getPlayerName(player),getElementModel( source )))
-	end
-end ) --add an event handler for onVehicleStartEnter
-addEventHandler ( "onVehicleEnter", getRootElement(), function( player, seat, jacked) 
-	if getElementType(player) == "player" then
-		outputChatBox(string.format( "[NPC]: %s enter to veh %d",getPlayerName(player),getElementModel( source )))
-	end
-end )

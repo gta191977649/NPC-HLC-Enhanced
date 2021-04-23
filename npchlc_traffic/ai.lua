@@ -1,3 +1,4 @@
+
 function initAI()
 	ped_nodes = {}
 	ped_conns = {}
@@ -29,7 +30,9 @@ function continuePedRoute(task)
 	local thisnode = ped_thisnode[source]
 	local speed = ped_drivespeed[source][thisnode]
 	if speed then
-		call(npc_hlc,"setNPCDriveSpeed",source,speed/180)
+		--call(npc_hlc,"setNPCDriveSpeed",source,speed/180)
+		npc_hlc:setNPCDriveSpeed(source,speed/180)
+
 		ped_drivespeed[source][thisnode] = nil
 	end
 	ped_thisnode[source] = thisnode+1
@@ -83,22 +86,27 @@ function addNodeToPedRoute(ped,nodeid,nb)
 		local off = speed*0.1
 		local enddist = lights and call(server_coldata,"getModelBoundingBox",model,"y2")+5 or off
 		if nb then
-			call(npc_hlc,"addNPCTask",ped,{"driveAroundBend",node_x[nb],node_y[nb],x1,y1,z1,x2,y2,z2,off,enddist})
+			--call(npc_hlc,"addNPCTask",ped,{"driveAroundBend",node_x[nb],node_y[nb],x1,y1,z1,x2,y2,z2,off,enddist})
+			npc_hlc:addNPCTask(ped,{"driveAroundBend",node_x[nb],node_y[nb],x1,y1,z1,x2,y2,z2,off,enddist})
 		else
-			call(npc_hlc,"addNPCTask",ped,{"driveAlongLine",x1,y1,z1,x2,y2,z2,off,enddist,lights})
+			--call(npc_hlc,"addNPCTask",ped,{"driveAlongLine",x1,y1,z1,x2,y2,z2,off,enddist,lights})
+			npc_hlc:addNPCTask(ped,{"driveAlongLine",x1,y1,z1,x2,y2,z2,off,enddist,lights})
 		end
 	else
 		if nb then
-			call(npc_hlc,"addNPCTask",ped,{"walkAroundBend",node_x[nb],node_y[nb],x1,y1,z1,x2,y2,z2,1,1})
+			--call(npc_hlc,"addNPCTask",ped,{"walkAroundBend",node_x[nb],node_y[nb],x1,y1,z1,x2,y2,z2,1,1})
+			npc_hlc:addNPCTask(ped,{"walkAroundBend",node_x[nb],node_y[nb],x1,y1,z1,x2,y2,z2,1,1})
 		else
-			call(npc_hlc,"addNPCTask",ped,{"walkAlongLine",x1,y1,z1,x2,y2,z2,1,1})
+			--call(npc_hlc,"addNPCTask",ped,{"walkAlongLine",x1,y1,z1,x2,y2,z2,1,1})
+			npc_hlc:addNPCTask(ped,{"walkAlongLine",x1,y1,z1,x2,y2,z2,1,1})
 		end
 	end
 	if not ped_thisnode[ped] then ped_thisnode[ped] = 1 end
 	ped_lastnode[ped] = n2num
 
 	if lights then
-		call(npc_hlc,"addNPCTask",ped,{"waitForGreenLight",lights})
+		--call(npc_hlc,"addNPCTask",ped,{"waitForGreenLight",lights})
+		npc_hlc:addNPCTask(ped,{"waitForGreenLight",lights})
 	end
 end
 

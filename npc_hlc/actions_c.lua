@@ -1,6 +1,3 @@
---重要：客户端 基本ACTIONS
---这里是NPC的最基础行为
-
 DGS = exports.dgs
 AI = {}
 AI.config = {
@@ -12,17 +9,15 @@ AI.config = {
 	decision_timeout = 500,
 	decision_walk_timeout = 1000
 }
---AI决定
 AI.decisions = {
-	"IDLE",--1
-	"FORWARD_AVOID_OBSTCLE",--2
+	"IDLE",
+	"FORWARD_AVOID_OBSTCLE",
 	"BACKWARD_AVOID_OBSTCLE",
 	"WAIT_OBSTCLE",
-	"WALK_OBSTCLE_RIGHT", --5
+	"WALK_OBSTCLE_RIGHT",
 	"WALK_OBSTCLE_LEFT",
 	"WALK_OBSTCLE_BACK",
 }
---调试模式
 debug = false
 local mathCos = math.cos
 local mathSin = math.sin
@@ -87,7 +82,7 @@ function stopNPCDrivingActions(npc)
 	setPedControlState(npc,"vehicle_right",false)
 end
 
---客户端 创建NPC射线
+
 function createPedRaycast(element,type) 
 	local px,py,pz = getElementPosition(element)
 	local x0, y0, z0, x1, y1, z1 = getElementBoundingBox( element )
@@ -116,42 +111,40 @@ function createPedRaycast(element,type)
 	end
 end
 
---客户端：让NPC移动到坐标（X,Y）通过操纵按键的方式而不是设置动作
 function makeNPCWalkToPos(npc,x,y)
 	local speed = getNPCWalkSpeed(npc)
 	
-	-- injected ai logic 初始化AI参数
+	-- injected ai logic
 	initalAIParameter(npc)
-	AI[npc].task = getNPCCurrentTask(npc)[1] -- 获取NPC的首个任务
+	AI[npc].task = getNPCCurrentTask(npc)[1]
 	local px,py,pz = getElementPosition(npc)
 	local cameraAngle = math.deg(mathAtan2(x-px,y-py))
-	setPedCameraRotation(npc,cameraAngle) -- 设置NPC转向？
+	setPedCameraRotation(npc,cameraAngle)
 
-	--检测三个方向的射线碰撞情况
+
 	local ray_eye_l = createPedRaycast(npc,"raycast_eye_l")
 	local ray_eye_m = createPedRaycast(npc,"raycast_eye_m")
 	local ray_eye_r = createPedRaycast(npc,"raycast_eye_r")
 
 	local currentTick = getTickCount()
 
-	if AI[npc].decision == AI.decisions[1] then -- 从IDLE状态开始
-
+	if AI[npc].decision == AI.decisions[1] then
 		if ray_eye_l and ray_eye_r and ray_eye_m or ray_eye_l and ray_eye_r then 
 			AI[npc].decision = AI.decisions[7]
 			AI[npc].lastDecisionTick = currentTick
 		end
 		
-		if ray_eye_l or ray_eye_l and ray_eye_m then --碰撞到左边或者碰撞到左+前
+		if ray_eye_l or ray_eye_l and ray_eye_m then 
 			--controlPedRight(npc)
-			AI[npc].decision = AI.decisions[5] --向右
+			AI[npc].decision = AI.decisions[5]
 			AI[npc].lastDecisionTick = currentTick
 		end
-		if ray_eye_r or ray_eye_r and ray_eye_m then --碰撞到右边或者碰撞到右+前
+		if ray_eye_r or ray_eye_r and ray_eye_m then 
 			--controlPedLeft(npc)
-			AI[npc].decision = AI.decisions[6] -- 向左
+			AI[npc].decision = AI.decisions[6]
 			AI[npc].lastDecisionTick = currentTick
 		end
-		if ray_eye_m then -- 碰撞到前面，随机左转或者右转
+		if ray_eye_m then 
 			local dir = math.random(1,2)
 			if dir == 1 then
 				AI[npc].decision = AI.decisions[5]
@@ -163,15 +156,15 @@ function makeNPCWalkToPos(npc,x,y)
 			end
 		end
 
-		if isElementInWater(npc) then -- NPC落水后
+		if isElementInWater(npc) then 
 			local angle = 360-math.deg(math.atan2(x-px,y-py))
 			setPedRotation(npc,angle)
 		end
 
 	end
 
-	-- ai decision 根据AI决策执行行为
-	if AI[npc].decision == AI.decisions[5] then -- 向右
+	-- ai decision
+	if AI[npc].decision == AI.decisions[5] then 
 		controlPedRight(npc)
 		--setPedCameraRotation(npc,cameraAngle + 90)
 		if not ray_eye_l or AI[npc].lastDecisionTick ~= nil and currentTick - AI[npc].lastDecisionTick >= AI.config.decision_walk_timeout then
@@ -179,7 +172,7 @@ function makeNPCWalkToPos(npc,x,y)
 		end
 		
 	end
-	if AI[npc].decision == AI.decisions[6] then --向左
+	if AI[npc].decision == AI.decisions[6] then 
 		controlPedLeft(npc)
 		--setPedCameraRotation(npc,cameraAngle - 90)
 		if not ray_eye_r or currentTick - AI[npc].lastDecisionTick >= AI.config.decision_walk_timeout then
@@ -187,7 +180,7 @@ function makeNPCWalkToPos(npc,x,y)
 		end
 		
 	end
-	if AI[npc].decision == AI.decisions[7] then --后退
+	if AI[npc].decision == AI.decisions[7] then 
 		controlPedBack(npc)
 		--setPedCameraRotation(npc,cameraAngle + 180)
 		if currentTick - AI[npc].lastDecisionTick >= AI.config.decision_walk_timeout then
@@ -211,7 +204,6 @@ function makeNPCWalkToPos(npc,x,y)
 	)
 end
 
---客户端：NPC步行到车边后上车
 function makeNPCEnterToVehicle(npc,vehicle,seat)
 	print("[C] Set setPedEnterVehicle")
 	local x,y,z = getElementPosition(npc)
@@ -225,7 +217,6 @@ function makeNPCEnterToVehicle(npc,vehicle,seat)
 	end
 end
 
---客户端：NPC离开车
 function makeNPCExitFromVehicle(npc)
 	if not getPedOccupiedVehicle(npc) then return false end
 	setPedExitVehicle (npc)
@@ -249,7 +240,6 @@ function makeNPCWalkAroundBend(npc,x0,y0,x1,y1,x2,y2,off)
 	makeNPCWalkToPos(npc,destx,desty)
 end
 
---客户端：NPC射击坐标
 function makeNPCShootAtPos(npc,x,y,z)
 	local sx,sy,sz = getElementPosition(npc)
 	x,y,z = x-sx,y-sy,z-sz
@@ -265,7 +255,7 @@ function makeNPCShootAtPos(npc,x,y,z)
 	yx,yy,yz = yx*ymult,yy*ymult,yz*ymult
 	x,y,z = x*mult,y*mult,z*mult
 
-	setPedAimTarget(npc,sx+xx+yx+x,sy+xy+yy+y,sz+xz+yz+z) -- 射击坐标
+	setPedAimTarget(npc,sx+xx+yx+x,sy+xy+yy+y,sz+xz+yz+z)
 	if isPedInVehicle(npc) then
 		setPedControlState(npc,"vehicle_fire",not getPedControlState(npc,"vehicle_fire"))
 	else
@@ -274,8 +264,6 @@ function makeNPCShootAtPos(npc,x,y,z)
 	end
 end
 
---客户端：NPC设计element
---TODO:当前设计的是NPC或者PED的头部，不适合动物
 function makeNPCShootAtElement(npc,target)
 	local x,y,z = getElementPosition(target)
 	local vx,vy,vz = getElementVelocity(target)
@@ -291,7 +279,6 @@ function makeNPCShootAtElement(npc,target)
 	makeNPCShootAtPos(npc,x+vx,y+vy,z+vz)
 end
 
---客户端：设置AI参数
 function initalAIParameter(npc)
 	if AI[npc] == nil then
 		AI[npc] = {}
@@ -313,8 +300,6 @@ function initalAIParameter(npc)
 		end)
 	end
 end
-
---判断路
 function isModelObstcle(model_id)
 	local dff = engineGetModelNameFromID(model_id) -- check if not road
 	
@@ -327,7 +312,6 @@ function isModelObstcle(model_id)
 	end
 	return true
 end
-
 function obstacleCheck(hitModel)
 	if hitModel~= nil and tonumber(hitModel) then 
 		return isModelObstcle(hitModel)
@@ -335,36 +319,53 @@ function obstacleCheck(hitModel)
 	return true
 end
 
---更多用于车的射线检测
-function createRaycast(element,type)
+function createRaycast(element,type,dist_x,dist_y,dist_z)
+	
 	local px,py,pz = getElementPosition(element)
+	local rx,ry,rz = getElementRotation(element)
+	local dist = Vector2(px,py) + Vector2(dist_x,dist_y)
+
+	if debug then 
+		dxDrawLine3D( px,py,pz,dist.x,dist.y,pz,tocolor ( 255, 0, 0, 255 ))
+	end
+
+	local dx = dist.x - px
+	local dy = dist.y - py
+	local a = mathAtan2(dx,dy)
+
+	local angle = 360 -  (a * 180/math.pi)
+	--print(angleWrapping(angle))
+	if math.abs(rz - angle) < 90 then
+		rz = angle
+	end
+
 	local x0, y0, z0, x1, y1, z1 = getElementBoundingBox( element )
 	local vWidth = mathAbs(y0 - y1)
 	local vHeight = mathAbs(x0 -x1)
 	local lx,ly,lz = 0
 	if type == "raycast_l" then
-		lx,ly,lz = getPositionFromElementOffset(element,-AI.config.sensorOffset,vWidth+1,AI.config.sensorOffsetZ)
+		lx,ly,lz = getPositionFromOffsetByPosRot(px,py,pz,rx,ry,rz,-AI.config.sensorOffset,vWidth+1,AI.config.sensorOffsetZ)
 	end
 	if type == "raycast_m" then
-		lx,ly,lz = getPositionFromElementOffset(element,0,vWidth+1.5,AI.config.sensorOffsetZ)
+		lx,ly,lz = getPositionFromOffsetByPosRot(px,py,pz,rx,ry,rz,0,vWidth+1.5,AI.config.sensorOffsetZ)
 	end
 	if type == "raycast_r" then
-		lx,ly,lz = getPositionFromElementOffset(element,AI.config.sensorOffset,vWidth+1,AI.config.sensorOffsetZ)
+		lx,ly,lz = getPositionFromOffsetByPosRot(px,py,pz,rx,ry,rz,AI.config.sensorOffset,vWidth+1,AI.config.sensorOffsetZ)
 	end
 	if type == "raycast_b" then
-		lx,ly,lz = getPositionFromElementOffset(element, 0,-(vWidth/2+1),AI.config.sensorOffsetZ)
+		lx,ly,lz = getPositionFromOffsetByPosRot(px,py,pz,rx,ry,rz, 0,-(vWidth/2+1),AI.config.sensorOffsetZ)
 	end
 	if type == "raycast_sr" then
-		lx,ly,lz = getPositionFromElementOffset(element,vHeight/2 + 1,0,AI.config.sensorOffsetZ)
+		lx,ly,lz = getPositionFromOffsetByPosRot(px,py,pz,rx,ry,rz,vHeight/2 + 1,0,AI.config.sensorOffsetZ)
 	end
 	if type == "raycast_sl" then
-		lx,ly,lz = getPositionFromElementOffset(element,-(vHeight/2 + 1),0,AI.config.sensorOffsetZ)
+		lx,ly,lz = getPositionFromOffsetByPosRot(px,py,pz,rx,ry,rz,-(vHeight/2 + 1),0,AI.config.sensorOffsetZ)
 	end
 	if type == "raycast_bl" then
-		lx,ly,lz = getPositionFromElementOffset(element, AI.config.sensorOffset+0.5,-(vWidth/2+1),AI.config.sensorOffsetZ)
+		lx,ly,lz = getPositionFromOffsetByPosRot(px,py,pz,rx,ry,rz, AI.config.sensorOffset+0.5,-(vWidth/2+1),AI.config.sensorOffsetZ)
 	end
 	if type == "raycast_br" then
-		lx,ly,lz = getPositionFromElementOffset(element, -AI.config.sensorOffset-0.5,-(vWidth/2+1),AI.config.sensorOffsetZ)
+		lx,ly,lz = getPositionFromOffsetByPosRot(px,py,pz,rx,ry,rz, -AI.config.sensorOffset-0.5,-(vWidth/2+1),AI.config.sensorOffsetZ)
 	end
 
 	local ray,_,_,_,hitElement,_,_,_,_,_,_,hitModel = processLineOfSight(px,py,pz+AI.config.sensorOffsetZ,lx,ly,lz,true,true,true,true,false,true,true,false,element,true)
@@ -448,21 +449,21 @@ function makeNPCDriveToPos(npc,x,y,z,light)
 		--]]
 
 		-- left
-		local ray_l = createRaycast(car,"raycast_l")
+		local ray_l = createRaycast(car,"raycast_l",x,y,z)
 		-- mid
-		local ray_m,hitElement = createRaycast(car,"raycast_m")
+		local ray_m,hitElement = createRaycast(car,"raycast_m",x,y,z)
 		-- right
-		local ray_r = createRaycast(car,"raycast_r")
+		local ray_r = createRaycast(car,"raycast_r",x,y,z)
 		-- back
-		local ray_b = createRaycast(car,"raycast_b")
+		local ray_b = createRaycast(car,"raycast_b",x,y,z)
 		-- side right
-		local ray_sr = createRaycast(car,"raycast_sr")
+		local ray_sr = createRaycast(car,"raycast_sr",x,y,z)
 		-- side left
-		local ray_sl = createRaycast(car,"raycast_sl")
+		local ray_sl = createRaycast(car,"raycast_sl",x,y,z)
 		-- back left
-		local ray_bl = createRaycast(car,"raycast_bl")
+		local ray_bl = createRaycast(car,"raycast_bl",x,y,z)
 		-- back right
-		local ray_br = createRaycast(car,"raycast_br")
+		local ray_br = createRaycast(car,"raycast_br",x,y,z)
 		
 		-- logic
 		if AI[npc].task == "driveAroundBend" then
@@ -488,7 +489,7 @@ function makeNPCDriveToPos(npc,x,y,z,light)
 
 			if ray_m then
 				-- check if is vehile & wait for green light
-				local _,hit = createRaycast(car,"raycast_m")
+				local _,hit = createRaycast(car,"raycast_m",x,y,z)
 				if hit ~=nil and isElement(hit) and getElementType(hit) == "vehicle" and light ~= nil and isGreenLight(light) == false and AI[npc].task == "driveAlongLine" then 
 					speed = 0
 					setPedControlState (npc,"handbrake",true)
@@ -500,7 +501,7 @@ function makeNPCDriveToPos(npc,x,y,z,light)
 			end
 			if ray_l then
 				-- check if is vehile & wait for green light
-				local _,hit = createRaycast(car,"raycast_l")
+				local _,hit = createRaycast(car,"raycast_l",x,y,z)
 				if hit ~=nil and isElement(hit) and getElementType(hit) == "vehicle" and light ~= nil and isGreenLight(light) == false and AI[npc].task == "driveAlongLine" then 
 					speed = 0
 					setPedControlState (npc,"handbrake",true)
@@ -512,7 +513,7 @@ function makeNPCDriveToPos(npc,x,y,z,light)
 			end
 			if ray_r then
 				-- check if is vehile & wait for green light
-				local _,hit = createRaycast(car,"raycast_r")
+				local _,hit = createRaycast(car,"raycast_r",x,y,z)
 				if hit ~=nil and isElement(hit) and getElementType(hit) == "vehicle" and light ~= nil and isGreenLight(light) == false and AI[npc].task == "driveAlongLine" then 
 					speed = 0	
 					setPedControlState (npc,"handbrake",true)
@@ -610,7 +611,6 @@ function makeNPCDriveToPos(npc,x,y,z,light)
 		setPedControlState(npc,"accelerate",vry < speed)
 		setPedControlState(npc,"brake_reverse",vry > speed*1.1)
 	end
-
 
 
 end
