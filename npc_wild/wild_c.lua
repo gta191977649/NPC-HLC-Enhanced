@@ -21,7 +21,7 @@ function wildDamage(attacker,weapon,bodypart,loss)
 		return;
 	end
 	--source:ped that got damaged
-	--outputChatBox(inspect(attacker).." attack "..inspect(source));
+	outputChatBox(inspect(attacker).." attack "..inspect(source).."by "..tostring(weapon));
 
 	--有攻击者
 	if attacker then
@@ -96,7 +96,10 @@ function wildDamage(attacker,weapon,bodypart,loss)
 
 	end 
 
-	Sound:playSoundLib("zombie","hit");
+	--车压伤
+	if weapon ~= 50 then
+		Sound:playSoundLib("zombie","hit");
+	end
 
 	--TODO 如果NPC被2个以上玩家顺序攻击，会频繁的改变目标，需要增加一个仇恨值判断，例如新目标是否比旧目标仇恨值更高
 

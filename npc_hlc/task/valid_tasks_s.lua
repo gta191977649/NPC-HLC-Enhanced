@@ -8,7 +8,14 @@ function taskValid.walkToPos(task)
 end
 
 --2021
+--TODO CHECK TASK
 function taskValid.hangOut(task)
+	return true
+end
+
+--2021
+--TODO CHECK TASK
+function taskValid.guardPos(task)
 	return true
 end
 

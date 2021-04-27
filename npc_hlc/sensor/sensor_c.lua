@@ -143,19 +143,21 @@ function sensorChecks()
 		if getElementData(npc,"npc_hlc") then 
 			--outputChatBox("sensorChecks npc_hlc");、
 
-			-- sensor 功能过滤
+			-- 过滤非生物
 			if not getElementData(npc,"creature") then return end 
 
 			if getElementHealth(getPedOccupiedVehicle(npc) or npc) >= 1 then
 				--outputChatBox("sensorChecks Health");
-				-- TODO 如果NPC存在SENSOR能力（才进入循环）
+
+				-- 如果NPC存在SENSOR能力（才进入循环）
+				if not Data:getData(npc,"sensor") then return end
 
 				-- if (getDistanceBetweenPoints3D(Px, Py, Pz, Zx, Zy, Zz) < 45 ) then 最大听觉/视觉范围以外不检测
 
 						--判定能否 找到/听/看到 玩家
 						local canFind,hear,visible = checkFind(npc);
 						local haveTask = isNPCHaveTask(npc);
-						--outputChatBox("canFind:"..tostring(canFind).." hear:"..tostring(hear)..",visible:"..tostring(visible));
+						--outputChatBox(tostring(Data:getData(npc,"name")).." canFind:"..tostring(canFind).." hear:"..tostring(hear)..",visible:"..tostring(visible));
 
 						local targets = Data:getData(npc,"targets"); -- 获取我的目标表
 						local targets = table.check( targets )

@@ -14,6 +14,7 @@ creature = {
     core = "creature",
     gang = 0, -- 默认无帮派
     target = false, --最终目标（注意和目标列表targets不同）
+    sensor = true, -- 默认存在感知功能
 }; 
 
 creature.__index = creature;
@@ -28,6 +29,9 @@ function creature:create(skin,x,y,z,r)
     self.__index = self;
 
     self.source = createPed(skin,x,y,z,r);
+
+    --outputDebugString("creature:create to :"..tostring(inspect(self.source)))
+
     setElementDimension(self.source,1) -- 设置到世界1
     
     setElementParent(self.source,otherElements) -- bind to parent for data system
@@ -46,15 +50,19 @@ function creature:kill()
 end
 
 --摧毁生物
-function creature:destroy()
+function creature:destroy(element)
 
     --尝试移除attach（似乎在ATTACH插件里管理更好吧）
     --Attach:removeAttach(self.source)
+    --outputDebugString("creature:destroy: "..tostring(inspect(self.source)).." from "..tostring(inspect(self)))
+    --outputDebugString("creature:destroy:"..tostring(inspect(self.source)))
+
+    creatures[element] = nil;
 
     --TODO：尝试删除动作同步 （似乎在SYNC插件里管理更好吧）
-
-    creatures[self.source] = nil;
-    destroyElement(self.source);
+    if isElement(element) then
+        destroyElement(element);
+    end
 
 	setmetatable( self, nil );
 	self = nil;

@@ -17,8 +17,25 @@ function performTask.walkToPos(npc,task,maxtime)
 end
 
 --2021 NEW
-	--DO NOTHING
 function performTask.hangOut(npc,task,maxtime)
+
+	--S 设置闲逛速度
+	if getNPCWalkSpeed(npc) ~= "walk" then
+		--outputChatBox("set walk for hangOut");
+		IFP:syncAnimation(npc);--强制清理一次动作
+		getNPCWalkSpeed(npc,"walk")
+	end
+
+	--DO NOTHING 
+	if getElementSyncer(npc) then return maxtime end
+	--return makeNPCWalkToPos(npc,task[2],task[3],task[4],maxtime)
+	return maxtime
+end
+
+--守卫某地
+function performTask.guardPos(npc,task,maxtime)
+	--DO NOTHING 
+
 	if getElementSyncer(npc) then return maxtime end
 	--return makeNPCWalkToPos(npc,task[2],task[3],task[4],maxtime)
 	return maxtime

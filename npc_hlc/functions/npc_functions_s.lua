@@ -189,7 +189,7 @@ addEventHandler("npc > clearTask",resourceRoot,clearNPCTasks,false)
 --服务器：设置NPC任务
 function setNPCTask(npc,task)
 
-	--outputDebugString("setNPCTask to:"..inspect(source))
+	--outputDebugString("setNPCTask to:"..inspect(task))
 
 	local thistask = getElementData(npc,"npc_hlc:thistask")
 	--outputDebugString(inspect(npc).." setNPCTask thistask:"..tostring(thistask));--获取的是ID
@@ -266,18 +266,32 @@ function createCreature(type,x,y,z,r,subtype,btype)
 
 	--反绑定
 	setElementData(cElement,"creature",type);
-	creatures[cElement] = self;
+	creatures[cElement] = c;
 
 	--绑定到任务结束函数
 	addEventHandler("npc_hlc:onNPCTaskDone",cElement,taskDone)
 
 	local accuracy = Data:getData(cElement,"accuracy");
 	local speed = Data:getData(cElement,"speed");
-	local category = Data:getData(cElement,"category");
+	--local category = Data:getData(cElement,"category");
+
+	local behaviour = Data:getData(cElement,"behaviour");
 	enableHLCForNPC(cElement,speed,accuracy,1)
 
-	--默认任务为做动作
-	addNPCTask(cElement, {"doAnim",getTickCount(),category,"idle",-1,false,false,true})--loop false to sequence random animation
+	--默认任务
+	if behaviour == "guard" then
+		Data:setData(cElement,"sensor",true); -- 开启感知
+		accuracy = 1 -- 守卫设计准确度很高
+		setNPCTask(cElement, {"guardPos",x,y,z})--loop false to sequence random animation
+	elseif behaviour == "hunt" then
+		--追杀
+		Data:setData(cElement,"sensor",true); -- 开启感知
+	else
+		--闲逛市民
+		setNPCTask(cElement,{"hangOut",x,y,x,y})
+	end
+	
+	--outputDebugString("createCreature to:"..tostring(table.nums(creatures)));
 
 	return cElement;
 
@@ -287,9 +301,11 @@ end
 --摧毁生物
 function destroyCreature(element)
 	local creature = creatures[element];
+	--outputDebugString(tostring(inspect(element)).."creature:"..tostring(inspect(creature)))
 	if creature then
-		creature:destroy()
+		--outputDebugString("TRY destroyCreature "..tostring(inspect(element)))
+		creature:destroy(element)
 	else
-		outputDebugString("no creature in lib to destroy")
+		outputDebugString("no creature in lib to destroy..left:"..tostring(table.nums(creatures)))
 	end
 end

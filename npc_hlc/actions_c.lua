@@ -252,6 +252,7 @@ function makeNPCWalkAroundBend(npc,x0,y0,x1,y1,x2,y2,off)
 end
 
 --客户端：NPC射击坐标
+--TODO 增加射速检测............
 function makeNPCShootAtPos(npc,x,y,z)
 	local sx,sy,sz = getElementPosition(npc)
 	x,y,z = x-sx,y-sy,z-sz
@@ -289,7 +290,12 @@ function makeNPCShootAtElement(npc,target)
 		if category == "animal" then
 			--outputChatBox(inspect(target).." category:"..tostring(category))
 			z = z - 1
-		end 
+		end  
+
+		--蹲下的玩家坐标-1
+		if isPedDucked(target) then
+			z = z - 1
+		end
 
 		local vehicle = getPedOccupiedVehicle(target)
 		if vehicle then

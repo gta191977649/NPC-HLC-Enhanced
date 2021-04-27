@@ -1,29 +1,68 @@
 --注意，目前的target只可能是玩家
 function wildFind(npc,target)
+
+	local name = Data:getData(npc,"name");
+
+	--TODO 更好的方式?
+	--只需要判定NPC对玩家是哪种行为，最后执行即可
+
 	--根据两者关系决定动物的行为
 	local gang = Data:getData(npc,"gang");
-	local gang_target = Data:getData(target,"gang") or Player:getPlayerData(target,"Gang");
-	outputChatBox(tostring(inspect(npc)).." of gang:"..tostring(gang).." find new target "..tostring(inspect(target)).."gang:"..tostring(gang_target));
+
+	local gang_target
+	if getElementType(target) =="ped" then
+		gang_target = Data:getData(target,"gang")
+	elseif getElementType(target) =="player" then 
+		gang_target = Player:getPlayerData(target,"Gang");
+	end
+	outputChatBox(tostring(name).." find new target "..tostring(inspect(target)).."gang:"..tostring(gang_target));
 
 	if gang ~= gang_target then
+
 		--debug 
-		if Data:getData(npc,"type") == "goat" then
-			triggerServerEvent("npc > setTask",npcRoot,npc,{"awayFromElement",target,0.1,200})
-			return 
-		end
+		--if Data:getData(npc,"type") == "goat" then
+		--	triggerServerEvent("npc > setTask",npcRoot,npc,{"awayFromElement",target,0.1,200})
+		--	return 
+		--end
 
 		--二者位于不同帮会
 		local shootdist = Data:getData(npc,"shootdist");
 		local followdist = Data:getData(npc,"followdist");
+		local behaviour = Data:getData(npc,"behaviour");
 
-		triggerEvent("onChatbubblesMessageIncome",npc,"Kill "..tostring(getPlayerName(target).."!"),0);
+		outputChatBox("behaviour:"..tostring(behaviour))
 
-		triggerServerEvent("npc > setTask",npcRoot,npc,{"killPed",target,shootdist,followdist})
+		if gang == 0 then
+			--TODO 僵尸也没有组织
+			if Data:getData(npc,"category") == "zombie" then
+				triggerServerEvent("npc > setTask",npcRoot,npc,{"killPed",target,shootdist,followdist})
+			else
+				triggerEvent("onChatbubblesMessageIncome",npc,"Hello "..tostring(getPlayerName(target).."!"),0);
+			end
+			
+		else
+
+			--根据behaviour判定
+			if behaviour == "guard" then
+				--DO NOTHING CAUSE TASK HANDLE IT
+			elseif behaviour == "hunt" then
+				--if nott isNPCHaveTask
+				triggerEvent("onChatbubblesMessageIncome",npc,"Kill "..tostring(getPlayerName(target).."!"),0);
+				triggerServerEvent("npc > setTask",npcRoot,npc,{"killPed",target,shootdist,followdist})
+			else
+				triggerServerEvent("npc > setTask",npcRoot,npc,{"awayFromElement",target,0.1,200})
+			end
+			
+		end
+
+
 		
 	else
 		--二者帮会相同
-		triggerServerEvent("npc > setTask",npcRoot,npc,{"awayFromElement",target,0.1,200})
+		--triggerServerEvent("npc > setTask",npcRoot,npc,{"awayFromElement",target,0.1,200})
+		triggerEvent("onChatbubblesMessageIncome",npc,"Hello "..tostring(getPlayerName(target).."!"),0);
 	end
+
 	Data:setData(npc,"target",target);--设置长期目标
 end
 addEvent("npc > findTarget",true)
@@ -32,25 +71,36 @@ addEventHandler("npc > findTarget",root,wildFind,false)
 
 --注意，目前的target只可能是玩家
 function wildLost(npc,target)
-	outputChatBox(tostring(inspect(npc)).." lost target "..tostring(inspect(target)));
+
+	local name = Data:getData(npc,"name");
+	
+	outputChatBox(tostring(name).." lost target "..tostring(inspect(target)));
 	--triggerServerEvent("npc > clearTask",getResourceRootElement(getResourceFromName("npc_hlc")),npc)
 
 	if NPC:isNPCHaveTask(npc) then
 		task = NPC:getNPCCurrentTask(npc)
 		--QUEST:这里task理论上不为空，但是确实存在空
+		--杀人任务目标丢失，放弃击杀
 		if task and task[1] == "killPed" and task[2]==target then
 			--
 			outputChatBox("npc:"..tostring(inspect(npc)).."Lost me and go to check last point");
 			local x,y,z = getElementPosition(target);
 			triggerServerEvent("npc > setTask",npcRoot,npc,{"walkToPos",x,y,z,2})
+
+		elseif task and task[1] == "guardPos" then
+			--守卫任务目标丢失，清空目标
+			--outputChatBox("GUARD wildLost AND TRY TO FORGET");
+			Data:setData(npc,"target",nil);--清理长期目标
 		end
+
 	else
 		--没有任务了，忘记他吧
 		--TODO 这里未执行到过....可能目前丢失玩家的时候基本上都是有任务的状态
-		outputChatBox("wildLost AND TRY TO FORGET");
+		--outputChatBox("wildLost AND TRY TO FORGET");
 		Data:setData(npc,"target",nil);--清理长期目标
 	end 
 end
+
 addEvent("npc > lostTarget",true)
 addEventHandler("npc > lostTarget",root,wildLost,false)
 

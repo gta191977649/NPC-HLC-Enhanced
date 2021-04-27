@@ -352,12 +352,14 @@ function onLeaveF (leaveElem,dim)
 
     --这个COL里没有其他玩家了
     botToDelete = getElementData(source,"theSpawnedBotPed")
-    if isElement(botToDelete) then destroyElement(botToDelete) end -- spits an error if you kill the bot, wait until the body gets removed and then leave the area
+    if isElement(botToDelete) then 
+		NPC:destroyCreature(botToDelete);
+	end -- spits an error if you kill the bot, wait until the body gets removed and then leave the area
     setElementData(source,"botWasSpawned", false)
     setElementData(source,"theSpawnedBotPed", false)
     botToDelete = nil
 
-    outputChatBox("LEAVE COL AND DELETE A NPC ")
+    --outputChatBox("LEAVE COL AND DELETE A NPC ")
     --end
 end
 
@@ -372,7 +374,7 @@ addEventHandler("onPlayerQuit", root,
                     --TODO：删除NPC改为通过NPC系统删除
 					local bot = getElementData(colshape, "theSpawnedBotPed")
 					if isElement(bot) then
-						destroyElement(bot)
+						NPC:destroyCreature(bot);
 						setElementData(colshape,"botWasSpawned", false)
 						setElementData(colshape,"theSpawnedBotPed", false)
 						--print ("Destroyed")
@@ -387,6 +389,7 @@ addEventHandler("onPlayerQuit", root,
 addEventHandler("onPedWasted", root,
 	function ()
 		local spawnpoint = getElementData(source,"botSpawnCol")
+		outputDebugString("onPedWasted: "..tostring(inspect(spawnpoint)));
 		if spawnpoint then
 			local respawntimer = getElementData(spawnpoint,"respawnTimer")
 			if respawntimer and isTimer(respawntimer) then 

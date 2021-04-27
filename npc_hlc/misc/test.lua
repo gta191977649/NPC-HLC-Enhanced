@@ -30,7 +30,7 @@ function initTester()
     --enableHLCForNPC(ped) --make HLC functions work on the ped
     ]]
 
-    c1 = createCreature("normal",240.1689453125,2500.109375,16.484375,0,"bandit","guard")
+    c1 = createCreature("normal",240.1689453125,2500.109375,16.484375,0,"scavenger","civ")
 
     --c2 = createCreature("bandit",284.236328125,2534.7548828125,16.818849563599)
     --z = createCreature("hunter",290.1044921875,2525.9169921875,16.792568206787)

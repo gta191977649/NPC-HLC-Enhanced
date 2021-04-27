@@ -16,40 +16,101 @@ end
 --NEW 2021
 --闲逛任务
 --TODO 可以做成和IDLE之间互相转换，但是不好，因为部分NPC可能不转换
+--civiliansAnims = {"WALK_civi","IDLE_tired","WALK_civi","WALK_civi","roadcross","WALK_civi","endchat_01","facgum","gum_eat","Idlestance_fat","XPRESSscratch"}
+
 function performTask.hangOut(npc,task)
-	--outputChatBox("[C] performTask.hangOut"); 
+
 	if isPedInVehicle(npc) then return true end
 
-	if getNPCWalkSpeed(npc) ~="walk" then
-		--outputChatBox("set walk for hangOut");
-		IFP:syncAnimation(npc);--强制清理一次动作
-		triggerServerEvent("npc > setWalkSpeed",resourceRoot,npc,"walk") -- 设置闲逛速度
+	local action = getElementData(npc,"hangOut:action");
+	--初始化行走动作
+	if not action then
+		setElementData(npc,"hangOut:action","walk",false);
+		setPedAnimation(npc,"ped","WALK_civi");
+		setElementData(npc,"hangOut:tick",getTickCount())
 	end
 
-	local x,y = task[2],task[3]
-	local destx,desty = task[4],task[5]
-
+	local x,y = task[2],task[3];
 	local nX,nY = getElementPosition(npc);
-	local dist = getDistanceBetweenPoints2D(nX,nY,destx,desty);
+	local dist = getDistanceBetweenPoints2D(nX,nY,x,y);
 
-	local dest_dist = 1 -- 最小距离
+	if action == "walk" then
 
-	--靠近目的地
-	if dist < dest_dist*dest_dist then 
-		--PLAN A  --可以任务完成
-		--return true
-		--outputDebugString("dist:"..tostring(dist).." vs "..tostring(dest_dist*dest_dist))
-		--PLAN B 产生新的目标 OR 自动切换进入IDLE模式
-		
-		--PLAN B2 再次进入IDLE动作
-		--local category = Data:getData(npc,"category");
-		--triggerServerEvent("npc > setTask",resourceRoot,npc,{"doAnim", category,"idle",-1,false,false,true})
-		return true
-		--return true
+		--移动遇到障碍物就休息
+		local ray_eye_m = createPedRaycast(npc,"raycast_eye_m")
+
+		if getTickCount() - getElementData(npc,"hangOut:tick") > 3000 or ray_eye_m then
+
+			--outputChatBox(Data:getData(npc,"name").."REST NOW!");
+			--靠近出发点，休息一下
+			setPedAnimation(npc)
+			--IFP:syncAnimationLib ( npc,"human","idle" );
+
+			setElementData(npc,"hangOut:action","rest",false);
+			
+			setElementData(npc,"hangOut:tick",getTickCount(),false) -- 更新tick
+		end
+
+	elseif action == "rest" then
+
+		if getTickCount() - getElementData(npc,"hangOut:tick") > 5000 then
+			--休息够了继续走
+			setPedAnimation(npc,"ped","WALK_civi");
+			setElementData(npc,"hangOut:action","walk",false);
+			setElementData(npc,"hangOut:tick",getTickCount(),false) -- 更新tick
+
+			--随机方向或者返回原点
+			if dist > 5 then
+				--outputChatBox(Data:getData(npc,"name").."Walk TO POS!");
+				setElementFaceToPos(npc,x,y)
+			else
+				--outputChatBox(Data:getData(npc,"name").."RANDOM Walk NOW!");
+				setPedRotation(npc,math.random(360))
+			end
+		end
+
+	end
+
+
+end
+
+--NEW 2021
+--守卫坐标
+function performTask.guardPos(npc,task)
+
+	local x,y,z = task[2],task[3],task[4];
+	local nX,nY,nZ = getElementPosition(npc);
+	local Guarddist = getDistanceBetweenPoints3D(nX,nY,nZ,x,y,z); -- 距离任务点的位置，无用
+
+	local shootdist = Data:getData(npc,"shootdist");
+	local target = Data:getData(npc,"target");
+
+	if target and isElement(target) and getElementHealth(target) > 0 then
+
+		local tX,tY,tZ = getElementPosition(target)
+		local targetDist = getDistanceBetweenPoints3D(nX,nY,nZ,tX,tY,tZ)
+
+		--outputDebugString("npc guard find target:"..tostring(target).." distance to task:"..tostring(targetDist));
+
+		-- 防止拳头无脑进攻
+		if targetDist <= shootdist then
+			makeNPCShootAtElement(npc,target);
+		end
+		setElementFaceTo(npc,target)
 
 	else
-		makeNPCWalkToPos(npc,destx,desty)
+
+		stopNPCWeaponActions(npc)--STOP SHOT
+
+		if Guarddist > 1 then
+			--BACK TO GUARD POS? - 目前出拳攻击可能导致NPC位移
+			makeNPCWalkToPos(npc,x,y)
+		end
+
+		--TODO
+		--没有任务的时候随机旋转角度?
 	end
+	--不能返回true，不然任务就结束了
 
 end
 
@@ -140,7 +201,7 @@ function performTask.awayFromElement(npc,task)
 end
 
 --NEW 2021
--- 同步动作
+--同步动作
 --目前会循环执行一套动作，不会触发任务完成
 function performTask.doAnim(npc,task)
 
@@ -213,22 +274,22 @@ end
 function performTask.killPed(npc,task)
 	if isPedInVehicle(npc) then return true end
 	local target,shootdist,followdist = task[2],task[3],task[4]
-	if not isElement(target) or getElementHealth(target) < 1 then return true end -- 注意这里有个生命值检测
+	if not isElement(target) or getElementHealth(target) == 0 then return true end -- 注意这里有个生命值检测
 	local x,y,z = getElementPosition(npc)
 	local tx,ty,tz = getElementPosition(target)
 	local dx,dy = tx-x,ty-y
 	local distsq = dx*dx+dy*dy
 
-	--outputChatBox("distsq:"..tostring(distsq));
-	--outputChatBox("shootdist:"..tostring(shootdist*shootdist));
+	--outputDebugString("distsq:"..tostring(distsq));
+	--outputDebugString("shootdist:"..tostring(shootdist));
 
-	if distsq < shootdist*shootdist then
+	if distsq < shootdist then
 		makeNPCShootAtElement(npc,target)
 		setPedRotation(npc,-math.deg(math.atan2(dx,dy)))
 	else
 		stopNPCWeaponActions(npc)
 	end
-	if distsq > followdist*followdist then
+	if distsq > followdist then
 		makeNPCWalkToPos(npc,tx,ty)
 	else
 		stopNPCWalkingActions(npc)
