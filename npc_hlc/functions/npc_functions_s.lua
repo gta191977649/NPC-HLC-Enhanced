@@ -286,8 +286,12 @@ function createCreature(type,x,y,z,r,subtype,btype)
 	elseif behaviour == "hunt" then
 		--追杀
 		Data:setData(cElement,"sensor",true); -- 开启感知
-	else
+	elseif behaviour == "default" then
 		--闲逛市民
+		setNPCTask(cElement,{"hangOut",x,y,x,y})
+	else
+		--trade
+		--僵尸
 		setNPCTask(cElement,{"hangOut",x,y,x,y})
 	end
 	

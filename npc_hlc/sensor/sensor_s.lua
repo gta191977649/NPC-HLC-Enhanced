@@ -24,6 +24,14 @@ function taskDone(task)
 			setNPCTask(ped, {"doAnim",getTickCount(),category,"idle",-1,false,false,true})
 		end,100,1,source)
 
+	elseif task[1]== "panic" then
+
+		--恐慌结束->默认转为逃离状态
+		
+		setTimer(function(ped)
+			setNPCTask(ped,{"awayFromElement",task[2],0.1,200})
+		end,100,1,source)
+
 	else
 
 		setTimer(function(ped)
@@ -35,7 +43,7 @@ function taskDone(task)
 
 	end
 
-
+	--任务完成后qingli目标
 	if Data:getData(source,"target") then
 		--outputChatBox("taskDone AND TRY TO FORGET");
 		Data:setData(source,"target",nil);--清理长期目标
@@ -44,3 +52,133 @@ function taskDone(task)
 	--addNPCTask(source,{"hangOut",x,y,tx,ty})
 
 end
+
+
+--------------------------------
+--AIM NPC
+--------------------------------
+
+threatenFriendlyMessages = {"Watch where you're pointing that!", "You don't wanna threaten me!", "Hey, I'm friendly!", "You're about to make a big mistake!", "Don't point that at me!", "Friendly here, watch out!", "Lower your weapon!","Put the gun down!" }
+unholsteredFriendlyMessages = {"Put away the weapon!", "Careful with that gun!", "Stop waving that gun!", "Holster your weapon!" }
+pedWasRobbedMessages = {"Help! I'm being robbed!", "Robbery! Heelp!","This is all I have!", "Take it, it's all I have!", "Damn you, take this and leave me alone!","Don't hurt me! Take this...","Take this and let me go!","You wretched thief!","That's all I got!"}
+pedWasAlreadyRobbedMessages = {"You already took all I got!", "I have nothing left!", "I don't have anything of value!", "I swear, I have nothing left!"}
+threatenRobbingMessages = {"Please don't hurt me!", "Don't shoot!", "Please sir, no!", "Oh no!", "Not again!", "What do you want?"}
+meleeThreatenedMessages = {"Gun!","Whoa!","Don't shoot!","Wait, mister..."}
+
+--瞄准NPC
+--注意 未右键瞄准时也可以除法
+--TODO 屏蔽僵尸/动物
+function aimAtNPC(ped)
+
+	if not ped then return end
+	if getElementType(ped)~= "ped" then return end -- 目前只检测PED
+
+	local aiming = getControlState(source,"aim_weapon") -- 区分冷兵器还是热武器用？
+	local validPed = false -- ped 
+	local armed -- 是否使用武器瞄准
+
+	--特定武器才触发
+	local slot = getSlotFromWeapon(getPedWeapon(source))
+	if slot > 1 and slot ~= 10 then 
+		armed = true 
+	else 
+		armed = false 
+	end
+
+	--outputChatBox(inspect(ped).." aimAtNPC aiming:"..tostring(aiming).." armed:"..tostring(armed));
+
+	--过滤未被威胁过的NPC
+	--确保距离够近
+	if ped and getElementType(ped) == "ped" and armed then
+		local distance = getDistance(ped,source);
+		if distance < 5 then
+			validPed = true
+			theThreatenedPed = ped -- 确保同时只能威胁一名NPC掏出物品
+		end
+		--outputChatBox(inspect(ped).." targeted")
+	end
+
+	--执行
+	if validPed then
+
+		local traits = Data:getData(source,"trait")
+		local civ = table.haveValue(traits,"civilian");
+
+		local sameteam
+		local enemy
+
+		--todo 判断关系
+		sameteam = true
+		enemy = false
+
+		setElementData(ped,"threatened",true) -- 设置威胁状态（防止频繁检测威胁）
+		setTimer(setElementData,10000,1,ped,"threatened",false) -- 清除威胁状态（10秒）
+
+		if not getElementData(ped,"threatened") then
+
+			--友好关系，条件成立
+			if sameteam then
+
+				if aiming then
+					--武器瞄准时的信息
+					triggerClientEvent("onChatbubblesMessageIncome",ped,table.random(threatenFriendlyMessages),0);
+					triggerClientEvent(root, "sync.message", ped, ped, 255, 255, 255, "ANGRY")
+				else
+					--玩家未瞄准时的信息
+					triggerClientEvent("onChatbubblesMessageIncome",ped,table.random(unholsteredFriendlyMessages),0);
+					triggerClientEvent(root, "sync.message", ped, ped, 255, 255, 255, "ALERT")
+				end
+
+			end
+			
+			--敌对关系，条件成立
+			if enemy then
+				if aiming and (getSlotFromWeapon(getPedWeapon(ped)) < 2 or getSlotFromWeapon(getPedWeapon(ped)) == 10) then
+					setElementFaceTo(ped,source)
+					setPedAnimation(ped,"ped","handscower",4000,false,true,false,false) -- 被瞄准惊吓
+					triggerClientEvent("onChatbubblesMessageIncome",ped,table.random(meleeThreatenedMessages),0);
+					triggerClientEvent(root, "sync.message", root, ped, 255, 255, 255, "INTIMIDATED")
+				end
+			end
+
+		end
+
+		--瞄准市民 触发panic 
+		--只有市民会投降
+		if aiming and civ then
+			
+			--outputDebugString("make ped panic!"..tostring(inspect(getNPCCurrentTask(ped))));
+			
+			--如果目前task不是panic，设置任务为panic
+			local task = getNPCCurrentTask(ped)
+			if task[1] ~= "panic" then
+				triggerClientEvent(root, "sync.message", ped, ped, 255, 255, 255, "SCARED")
+				setNPCTask(ped,{"panic",source}) -- 使用NPC恐惧source
+			end
+
+		end
+
+		--TODO 抢劫
+		--[[
+		setTimer(function()
+
+			if isElement(ped) and theTargetedElement == ped then -- 确保威胁的是同一个人
+				if not getElementData(ped,"wasrobbed") then
+					-- -1 善恶
+					triggerClientEvent("onChatbubblesMessageIncome",ped,table.random(pedWasRobbedMessages),0);
+					triggerClientEvent(root, "sync.message", ped, ped, 255, 255, 255, "ROBBED")
+				else
+					triggerClientEvent("onChatbubblesMessageIncome",ped,table.random(pedWasAlreadyRobbedMessages),0);
+				end
+
+			end
+
+		end	, 5000, 1) -- PED 'PANIC' STATE DURATION after threatened
+		]]
+
+	end
+
+
+	
+end
+addEventHandler("onPlayerTarget",root,aimAtNPC)

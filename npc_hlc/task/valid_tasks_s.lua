@@ -67,6 +67,13 @@ function taskValid.awayFromElement(task)
 end
 
 --2021 NEW
+function taskValid.panic(task)
+	outputDebugString("taskValid panic")
+	local element = task[2]
+	return isElement(element) and getElementPosition(element) and true or false
+end
+
+--2021 NEW
 function taskValid.doAnim(task)
 	local aType,aName = task[2],task[3]
 	return tostring(aType) and tostring(aName) and true or false

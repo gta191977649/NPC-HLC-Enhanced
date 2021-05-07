@@ -2,6 +2,8 @@
 
 performTask = {}
 
+--改进2021.5.4
+--支持僵尸等使用动作移动
 function performTask.walkToPos(npc,task)
 	if isPedInVehicle(npc) then return true end
 	local destx,desty,destz,dest_dist = task[2],task[3],task[4],task[5]
@@ -10,14 +12,20 @@ function performTask.walkToPos(npc,task)
 	local dist = distx*distx+disty*disty
 	local dest_dist = task[5]
 	if dist < dest_dist*dest_dist then return true end
-	makeNPCWalkToPos(npc,destx,desty)
+
+	--获取我的属性
+	local walkingstyle = Data:getData(npc,"walkingstyle");
+
+	if walkingstyle and type(walkingstyle)=="string" then
+		makeNPCAnimToPos(npc,destx,desty) -- 动作移动
+	else
+		makeNPCWalkToPos(npc,destx,desty) -- 按键移动
+	end
+
 end
 
---NEW 2021
+--改进 2021.5.4
 --闲逛任务
---TODO 可以做成和IDLE之间互相转换，但是不好，因为部分NPC可能不转换
---civiliansAnims = {"WALK_civi","IDLE_tired","WALK_civi","WALK_civi","roadcross","WALK_civi","endchat_01","facgum","gum_eat","Idlestance_fat","XPRESSscratch"}
-
 function performTask.hangOut(npc,task)
 
 	if isPedInVehicle(npc) then return true end
@@ -26,13 +34,17 @@ function performTask.hangOut(npc,task)
 	--初始化行走动作
 	if not action then
 		setElementData(npc,"hangOut:action","walk",false);
-		setPedAnimation(npc,"ped","WALK_civi");
+		--setPedAnimation(npc,"ped","WALK_civi");
 		setElementData(npc,"hangOut:tick",getTickCount())
 	end
 
 	local x,y = task[2],task[3];
 	local nX,nY = getElementPosition(npc);
 	local dist = getDistanceBetweenPoints2D(nX,nY,x,y);
+
+	--获取npc的属性
+	local walkingstyle = Data:getData(npc,"walkingstyle");
+	--outputChatBox(inspect(npc).." walkingstyle:"..tostring(walkingstyle));
 
 	if action == "walk" then
 
@@ -42,20 +54,36 @@ function performTask.hangOut(npc,task)
 		if getTickCount() - getElementData(npc,"hangOut:tick") > 3000 or ray_eye_m then
 
 			--outputChatBox(Data:getData(npc,"name").."REST NOW!");
-			--靠近出发点，休息一下
-			setPedAnimation(npc)
-			--IFP:syncAnimationLib ( npc,"human","idle" );
+			
+			--特殊类型的idle动作
+			if walkingstyle and type(walkingstyle)=="string" then
+				--停止动作移动
+
+				--闲置动作
+				IFP:syncAnimationLib ( npc, walkingstyle, "idle", -1, true, true, true) --KEEP WALKING
+			else
+				--停止按键模式
+				stopNPCWalkingActions(npc)
+			end
 
 			setElementData(npc,"hangOut:action","rest",false);
-			
 			setElementData(npc,"hangOut:tick",getTickCount(),false) -- 更新tick
 		end
 
 	elseif action == "rest" then
 
 		if getTickCount() - getElementData(npc,"hangOut:tick") > 5000 then
+
 			--休息够了继续走
-			setPedAnimation(npc,"ped","WALK_civi");
+
+			if walkingstyle and type(walkingstyle)=="string" then
+				IFP:syncAnimationLib ( npc, walkingstyle, "walk", -1, true, true, true) --KEEP WALKING
+			else
+				--按键移动模式
+				setPedControlState(npc,"forwards",true)
+				setPedControlState(npc,"walk",true)
+			end
+			
 			setElementData(npc,"hangOut:action","walk",false);
 			setElementData(npc,"hangOut:tick",getTickCount(),false) -- 更新tick
 
@@ -167,6 +195,55 @@ function performTask.walkFollowElement(npc,task)
 	end
 end
 
+--NEW 2021 
+-- 被威胁/恐惧
+-- 参数：威胁者
+function performTask.panic(npc,task)
+
+	local element = task[2];
+	if not isElement(element) then return true end -- 无效威胁，任务完成
+
+	local distance = getDistance(npc,element);
+	local hisTarget = getPedTarget(element); -- 他的标准目标
+	local heIsAiming = getPedControlState(element,"aim_weapon") -- 他是否瞄准
+
+	--检测威胁对象是否正在关注我
+	local targetMe = false 
+	if hisTarget == npc and heIsAiming then
+		targetMe = true
+	end
+
+	if distance > 10 then
+		--距离过远，恐慌结束
+		IFP:syncAnimationLib(npc) -- 停止动作
+		return true
+	else
+
+		lastBlock,lastAnimation = getPedAnimation(npc)
+		--outputDebugString(tostring(lastBlock)..","..tostring(lastAnimation));
+
+		if targetMe then
+			if lastBlock == "shop" and lastAnimation == "SHP_Rob_HandsUp" then
+				return false
+			else
+				setElementFaceTo(npc,element);--面向威胁者
+				IFP:syncAnimationLib(npc,"human","handsup")
+			end
+		else
+
+			if lastBlock == "ped" and lastAnimation == "cower" then
+				return false
+			else
+				IFP:syncAnimationLib(npc,"human","panic");
+			end
+			
+			-- outputChatBox(inspect(element).." hisTarget "..tostring(hisTarget));
+		end
+	end
+	return false
+
+end
+
 -- NEW 2021
 -- 执行频率挺高
 -- TODO 没有躲避其他玩家
@@ -203,6 +280,7 @@ end
 --NEW 2021
 --同步动作
 --目前会循环执行一套动作，不会触发任务完成
+--注意：这个task目前未使用
 function performTask.doAnim(npc,task)
 
 	--注意：第一次执行的时候是获取不到的
@@ -271,29 +349,70 @@ function performTask.shootElement(npc,task)
 	makeNPCShootAtElement(npc,target)
 end
 
+--改进 2021.5.4 支持动作移动
+--TODO：当攻击用KEY，移动用ANIM时，攻击动作无法执行完成（比如没有玩家跑得快的僵尸）
+--TODO：原因是停止ANIM将玩家的攻击动作也强行停止了...
+--TODO：当距离大于followdist且小于shootdist时，会同时执行两部分，导致僵尸肉搏攻击BUG
 function performTask.killPed(npc,task)
 	if isPedInVehicle(npc) then return true end
 	local target,shootdist,followdist = task[2],task[3],task[4]
 	if not isElement(target) or getElementHealth(target) == 0 then return true end -- 注意这里有个生命值检测
 	local x,y,z = getElementPosition(npc)
 	local tx,ty,tz = getElementPosition(target)
-	local dx,dy = tx-x,ty-y
-	local distsq = dx*dx+dy*dy
+
+	--local dx,dy = tx-x,ty-y
+	--local distsq = dx*dx+dy*dy
+
+	local distsq = getDistance(npc,target)
 
 	--outputDebugString("distsq:"..tostring(distsq));
 	--outputDebugString("shootdist:"..tostring(shootdist));
+	--outputDebugString("followdist:"..tostring(followdist));
 
+	--获取我的属性
+	local walkingstyle = Data:getData(npc,"walkingstyle");
+	--outputDebugString("isZombie:"..tostring(inspect(isZombie)));
+
+
+	--距离小于射击距离3
+	--TODO:这里在重复执行
 	if distsq < shootdist then
+		--outputDebugString("Shoot!!!"..tostring(distsq).." < "..tostring(shootdist));
 		makeNPCShootAtElement(npc,target)
-		setPedRotation(npc,-math.deg(math.atan2(dx,dy)))
+		setElementFaceTo(npc,target);
+		--setPedRotation(npc,-math.deg(math.atan2(dx,dy)))
 	else
+		--outputChatBox("stopNPCWalkingActions");
 		stopNPCWeaponActions(npc)
 	end
+	
+	--距离大于追踪距离1
 	if distsq > followdist then
-		makeNPCWalkToPos(npc,tx,ty)
+		--outputDebugString("move!!!:"..tostring(distsq).." > "..tostring(followdist));
+		if walkingstyle and type(walkingstyle)=="string" then
+			--ZOMBIE MOVE
+			makeNPCAnimToPos(npc,tx,ty)
+			--outputDebugString("ZOMBIE MOVE...");
+		else
+			makeNPCWalkToPos(npc,tx,ty)
+		end
 	else
-		stopNPCWalkingActions(npc)
+		if walkingstyle and type(walkingstyle)=="string" then
+			--STOP ZOMBIE MOVE
+			--[[
+			local b,a = getPedAnimation(npc)
+			outputDebugString("b:"..tostring(b)..",a="..tostring(a));
+			--过滤出拳状态 失败
+			if b == "nb_zombie" then
+				stopNPCWalkingAnim(npc)
+			end
+			]]
+			stopNPCWalkingAnim(npc)
+		else
+			stopNPCWalkingActions(npc)
+		end
 	end
+	
 	return false
 end
 

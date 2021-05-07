@@ -1,38 +1,10 @@
---通用皮肤
-
-
-slaveSkin = {	
-    63,--bfypro
-    145,--wfycrk
-    146,--hmycm
-    213,--vwmotr2
-    238,--sbfypro
-    257,--swfystr
-    310
-}
---裸男
-meatSkin = {	
-    252,--wmyva2
-    154,--wmybe
-    97 --wmylg
-}
-
--- NOT USED
-cultSkin = {
-    32,--dwmolc1
-    33,--dwmolc2
-    132,--dnmolc1
-    157,--cwfyhb
-    158,--cwmofr
-    159,--cwmohb1
-    160,--cwmohb2
-    200 --cwmyhb2
-}
-
 --皮肤对照表
+slaveSkin = {63,145,146,213,238,257,310}
+meatSkin = {252,154,97,}--裸男
+cultSkin = {32,33,132,157,158,159,160,200}-- NOT USED
+
 
 --武器对照表
-CampGuardWeapons = {29,25} --camp guards weapons
 raiderWeapons = {11,12,15,23,33,25,2,4,5,6,7,8,10,24}
 randomMelee = { 2,4,5,6,7,8,10,11,12,15}
 raiderBossWeapons = {25,27,30,33,34,31,24}
@@ -43,11 +15,48 @@ ESTSpecWeapons = {3}
 ESTCleanerWeapons = {29,27,37}
 ESTSuitWeapons = {29}
 
+CampGuardWeapons = {29,25} --camp guards weapons
 banditWeapons = {25,27,29,30,33,34,31}
-
 SyndicateTriadWeapons = {30,27,29}
-
 NeutralFreelancerWeapons = {4,5,6,7,8,25,10,11,12,14,15,24} --vagrants and looters weapons
+
+--商人出售列表（等待转移）
+--TODO 等待完善
+--参数：物品名，几率(乘以100换算成%,1 = 必然刷出)
+raiderTrade = {
+    {"raw_meat",1},
+    {"cooked_meat",1},
+    {"animal_fat",0.5},
+}
+cdfTrade = {
+    {"bandage",0.75},
+    {"energy_drink",0.1},
+    {"painkiller",0.1},
+    {"helmet1",0.05},
+    {"backpack_small",0.05},
+    {"armor1",0.05},
+}
+establishmentTrade = {}
+scavengerTrade = {
+    {"fertilizer",1},
+    {"improvised_compass",0.1},
+    {"salt_packet",0.1},
+    {"ground_coffee",0.1},
+    {"packet_of_sugar",0.1},
+    {"satchel",0.05},
+}
+wasteTrade = {
+    {"s1897",1},
+}
+syndTrade = {
+    {"machete",1},
+    {"p1911",0.1},
+    {"swizzle",0.1},
+}
+--都有可能出售的物品（贸易物品）
+commonTrade = {
+    {"baked_beans",1},
+}
 
 local normalType = {
 
@@ -62,13 +71,13 @@ local normalType = {
     --"SWEET","Sweet_injuredloop",-1, true
     --"CRACK", "crckidle2", -1, false
     --"GRAVEYARD", "mrnF_loop", -1, true
-    ['raider_vendor']={name="Trader",behaviour="guard",traits={"vendor","raider"},gang=5,skin={108,109,181,247,248,242,293},wep=randomMelee}, --商人 OK
+    ['raider_vendor']={name="Trader",behaviour="guard",traits={"vendor","raider"},trade=raiderTrade,gang=5,skin={108,109,181,247,248,242,293},wep=randomMelee}, --商人 OK
     ['raider_quest']={name="Warchief",behaviour="guard",traits={"questgiver","raider"},gang=5,skin={108,109,181,247,248,242,293},wep=raiderBossWeapons}, -- 酋长 OK
 
     --【城市民兵武装】 OK ///////////////////////////////////////////////
     ['cdf_guard']={name="Militia",behaviour="guard",traits={"cdf"},gang=3,skin={73,16,176,179,2,21,278},wep=CampGuardWeapons},--民兵守卫 OK
     ['cdf_hunter']={name="Militia",behaviour="hunt",traits={"cdf,civilian,male"},gang=3,skin={73,16,176,179,2,21,278},wep=CampGuardWeapons},-- 民兵 OK
-    ['cdf_vendor']={name="Quartermaster",behaviour="guard",traits={"cdf,vendor"},gang=3,skin={236,131,1,2,21},wep={24}},-- 军需官 OK
+    ['cdf_vendor']={name="Quartermaster",behaviour="guard",traits={"cdf,vendor"},trade=cdfTrade,gang=3,skin={236,131,1,2,21},wep={24}},-- 军需官 OK
     ['cdf_staff']={name="Citizen",behaviour="default",traits={"cdf,civilian,male"},gang=3,skin={101,133,234,250,16,73,2}},--平民 OK
     ['cdf_quest']={name="Militia Leader",behaviour="guard",traits={"cdf,questgiver"},gang=3,skin={236,131,1,2,21},},-- 民兵领袖 可能存在特殊类型 CDF Recruiter 招募者  OK
 
@@ -94,7 +103,7 @@ local normalType = {
     ['scavenger_civ']={name="Survivor",behaviour="default",traits={"male","civilian","scavenger"},gang=1,skin={10,15,77,78,79},},-- dumpSkins 拾荒阵营幸存者
     ['scavenger_scavguard']={name="Guard",behaviour="guard",traits={"scavenger"},gang=1,skin={143,160,180,183,24,220,272,25,135},wep=CampGuardWeapons},--ScavengerGuardSkins 守卫
     ['scavenger_freelance']={name="Scavenger",behaviour="hunt",traits={"male","civilian","freelancer"},gang=1,skin={183,29,202,24,25,112},wep=banditWeapons},--ScavengerFreelancerSkins 拾荒者
-    ['scavenger_scavvendor']={name="Trader",behaviour="default",traits={"scavenger","vendor"},gang=1,skin={132,95,44},wep={24},},--ScavengersVendorSkins 
+    ['scavenger_scavvendor']={name="Trader",behaviour="default",traits={"scavenger","vendor"},trade=scavengerTrade,gang=1,skin={132,95,44},wep={24},},--ScavengersVendorSkins 
     ['scavenger_scavquest']={name="Scavenger Leader",behaviour="guard",traits={"scavenger","questgiver"},gang=1,skin={183,29,202,24,25,112},},--ScavengerFreelancerSkins
     --猪，转移到动物？猪也有派系...
     ['scavenger_pig']={name="Pig",gang=1,skin={81},},--animalFarmSkins 应该被转移到动物!
@@ -102,7 +111,7 @@ local normalType = {
     --【拾荒者】 废土阵营
     ['scavenger_wasteguard']={name="Wastelander",behaviour="guard",traits={"wastelander"},gang=1,skin={34,133,134,198,201,202,261,26},wep=CampGuardWeapons},--wastelandersSkin 荒地者
     ['scavenger_wastefreelance']={name="Wastelander",behaviour="hunt",traits={"male","civilian","freelancer"},gang=1,skin={100,133,143,13,202,26,223},wep=banditWeapons},--WastelanderFreelancerSkins
-    ['scavenger_wastevendor']={name="Trader",behaviour="default",traits={"wastelander","vendor"},gang=1,skin={201,197,196,160,131,132,134,129,31,10},wep={24},},--wastelanderCivSkin
+    ['scavenger_wastevendor']={name="Trader",behaviour="default",traits={"wastelander","vendor"},trade=wasteTrade,gang=1,skin={201,197,196,160,131,132,134,129,31,10},wep={24},},--wastelanderCivSkin
     ['scavenger_wasteciv']={name="Wastelander",behaviour="civilian",traits={"male","civilian","wastelander"},gang=1,skin={201,197,196,160,131,132,134,129,31,10},},--wastelanderCivSkin 荒野求生者
     ['scavenger_wastequest']={name="Wastelander Leader",behaviour="guard",traits={"wastelander","questgiver"},gang=1,skin={100,133,143,13,202,26,223},},--WastelanderFreelancerSkins 领袖
 
@@ -110,8 +119,8 @@ local normalType = {
     ['scavenger_nang']={name="Guard",behaviour="guard",traits={"syndicate"},gang=1,skin={121,122,123},wep=CampGuardWeapons},--黑社会Nang OK
     ['scavenger_triad']={name="Guard",behaviour="guard",traits={"syndicate"},gang=1,skin={117,118},wep=SyndicateTriadWeapons},--黑社会Traid OK
     ['scavenger_syndciv']={name="Survivor",behaviour="default",traits={"male","civilian","syndicate"},gang=1,skin={210,54,58,57,123,170,224,225,227,263},},--黑社会平民 OK
-    ['scavenger_syndvendor']={name="Trader",behaviour="guard",traits={"syndicate","vendor"},gang=1,skin={210,54,58,57,123,170,224,225,227,263},wep={24},},--SyndicateCivSkin
-    ['scavenger_syndQuest']={name="Syndicate Boss",behaviour="guard",traits={"syndicate","questgiver"},gang=1,skin={294,49},},--SyndQuestgiverSkins
+    ['scavenger_syndvendor']={name="Trader",behaviour="trade",traits={"syndicate","vendor"},gang=1,trade=syndTrade,skin={210,54,58,57,123,170,224,225,227,263},wep={24},},--SyndicateCivSkin
+    ['scavenger_syndquest']={name="Syndicate Boss",behaviour="guard",traits={"syndicate","questgiver"},gang=1,skin={294,49},},--SyndQuestgiverSkins
 
     --【强盗】 OK ///////////////////////////
     ['bandit_guard']={name="Bandit",behaviour="guard",traits={"civilian","male","bandit"},gang=2,skin={28,30,47,104,144,301,241,177,184,102,18,223},wep=banditWeapons}, -- OK
@@ -120,11 +129,16 @@ local normalType = {
 
     --【自由人】 OK
     ['neutral_freelance']={name={"Looter","Robber","Vagrant","Drifter","Nomad","Thug"},behaviour="hunt",traits={"civilian","male","freelancer"},gang=0,skin={32,79,134,183,29,100,177,241,28,30,47,104,144,135,137,160,168,182,200,230,223},wep=NeutralFreelancerWeapons,},--NeutralFreelancerSkins
-    
+
     --【测试】
     ['tester_archer']={name="GM",behaviour="guard",traits={},gang=0,skin={0},wep={23},},--NeutralFreelancerSkins
 
 };
+
+
+femaleSkins = {9, 10, 11, 12, 13, 31, 38, 39, 40, 41, 53, 54, 55, 56, 63, 64, 69, 75, 76, 77, 85, 87, 88, 89, 90, 91, 92, 93, 129, 130, 131, 138, 139, 140, 141, 145, 148, 150, 151, 152, 157, 169, 172, 178, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 201, 205, 207, 211, 214, 215, 216, 218, 219, 224, 225, 226, 231, 232, 233, 237, 238, 243, 244, 245, 246, 251, 256, 257, 263, 298, 304}
+
+
 
 
 --THIRD LEVEL TYPE : WOLF
@@ -134,7 +148,8 @@ normal = {
     attack = 10,
     fovDistance = 30,--视野距离
     fovAngle = 120,--视野角度
-    speed = "walk",
+
+    speed = "sprint",--默认速度是奔跑
 
     --人类会使用工具，这里应该由武器决定
     --TODO 武器最大射程 = shootdist
@@ -145,7 +160,10 @@ normal = {
     gang = 0;
     sensor = false;--默认感知能力关闭
     behaviour = "default", -- 默认
-    traits = {},
+    traits = {}, -- 特性
+
+    trade = {}, -- 交易信息
+
 };
 
 normal.__index = normal;
@@ -154,12 +172,15 @@ setmetatable( normal,human );
 --人类的subtype是阵营
 function normal:create(x,y,z,r,faction,btype)
 
-    --outputDebugString("CREATE normal AT "..x..","..y..","..z);
+    --outputDebugString("CREATE normal of "..faction..","..btype..","..z);
 
     local skins = normalType[faction.."_"..btype].skin or 0 
     local weps = normalType[faction.."_"..btype].wep or nil
     local gang = normalType[faction.."_"..btype].gang or normal.gang
     local behaviour = normalType[faction.."_"..btype].behaviour or normal.behaviour
+    local trade = normalType[faction.."_"..btype].trade or normal.trade -- 获取贸易信息
+
+
     --name
     local name = faction.." "..btype
     if type(normalType[faction.."_"..btype].name)=="table" then
@@ -194,6 +215,31 @@ function normal:create(x,y,z,r,faction,btype)
     o.behaviour = behaviour; -- 默认行为
     o.traits = traits;
 
+    local tradelist = {}
+    --构建商人库存
+    if table.avalible(trade) then
+        local tradepool = table.merge(trade,commonTrade);
+        --outputDebugString("tradepool:"..tostring(inspect(tradepool)))
+        
+        for _,v in pairs(tradepool) do 
+            local id = itemNameToID[v[1]]
+            local rate = v[2]*100
+            if math.random(100) <= rate then
+                if not table.haveValue(tradelist,id) then
+                    table.insert(tradelist,id)
+                end
+            end
+        end
+        --outputDebugString("tradelist:"..tostring(inspect(tradelist)))
+    end
+
+    -- 贸易
+    o.trade = {
+        list = tradelist,
+        pricelevel = 1,
+    }
+
+
     if not weapon or weapon <= 9 then
         o.shootdist = 3
         o.followdist = 1
@@ -201,7 +247,7 @@ function normal:create(x,y,z,r,faction,btype)
 
     --normal表为索引，实际值为o，若无v补位
     --outputDebugString("sync normal");
-    for k,v in pairs(normal) do 
+    for k,v in pairs(normal) do
         Data:setData(self.source,k,o[k] or v)
     end
 

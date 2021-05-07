@@ -16,4 +16,4 @@ end
 function onDataHandler(pElement, pKey, pType, pOldValue, pNewValue, pEvent, pSyncer)
 	outputChatBox("onDataHandler got triggered at key: "..pKey.." ("..pType.." data) - syncer element: "..inspect(pSyncer))
 end
-addDataHandler("player", {}, {}, onDataHandler, "onDataChanged")
+addDataHandler({"player","object"}, {}, {}, onDataHandler, "onDataChanged")

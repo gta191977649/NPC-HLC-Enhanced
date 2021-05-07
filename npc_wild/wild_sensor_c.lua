@@ -1,3 +1,27 @@
+--重要函数，获取二者之间的关系
+--参数：英文
+function getRelationship(a,b)
+
+	local rel = "ignore" -- 默认关系，无视
+
+	local traitsA = Data:getData(a,"traits");
+	local traitsB = Data:getData(b,"traits");
+
+	--------------------------------------------------
+	--任意一方为僵尸，且二者不都为僵尸
+	local aZb = table.haveValue(traitsA,"zombie");
+	local bZb = table.haveValue(traitsB,"zombie");
+	if aZb ~= bZb and (aZb or bZb) then
+		rel = "hostility"
+		return rel;
+	end
+
+	---------------------------------------------------
+	--
+
+	return rel
+end
+
 --注意，目前的target只可能是玩家
 function wildFind(npc,target)
 
@@ -17,6 +41,8 @@ function wildFind(npc,target)
 	end
 	outputChatBox(tostring(name).." find new target "..tostring(inspect(target)).."gang:"..tostring(gang_target));
 
+	triggerEvent("sync.message", npc, npc, 240, 125, 0, "ALERT")
+
 	if gang ~= gang_target then
 
 		--debug 
@@ -32,6 +58,7 @@ function wildFind(npc,target)
 
 		outputChatBox("behaviour:"..tostring(behaviour))
 
+		--NPC无组织
 		if gang == 0 then
 			--TODO 僵尸也没有组织
 			if Data:getData(npc,"category") == "zombie" then
@@ -40,6 +67,10 @@ function wildFind(npc,target)
 				triggerEvent("onChatbubblesMessageIncome",npc,"Hello "..tostring(getPlayerName(target).."!"),0);
 			end
 			
+		elseif gang_target == 0 then
+			--玩家无组织
+			triggerEvent("onChatbubblesMessageIncome",npc,"Hello "..tostring(getPlayerName(target).."!"),0);
+			--TODO 注意，这里因为设置了target，守卫任务的NPC还是会攻击，应该修复
 		else
 
 			--根据behaviour判定
@@ -54,8 +85,6 @@ function wildFind(npc,target)
 			end
 			
 		end
-
-
 		
 	else
 		--二者帮会相同

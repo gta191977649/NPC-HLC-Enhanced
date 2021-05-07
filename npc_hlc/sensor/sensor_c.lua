@@ -137,81 +137,86 @@ function checkFind(npc)
 end
 
 --核心：感应检测
+--不能乱用return，会导致后续循环失效
 function sensorChecks()
 	--outputChatBox("sensorChecks start");
 	for pednum,npc in ipairs(getElementsByType("ped",root,true)) do
 		if getElementData(npc,"npc_hlc") then 
-			--outputChatBox("sensorChecks npc_hlc");、
+			--outputChatBox("sensorChecks npc_hlc");
 
 			-- 过滤非生物
-			if not getElementData(npc,"creature") then return end 
+			if getElementData(npc,"creature") then 
 
-			if getElementHealth(getPedOccupiedVehicle(npc) or npc) >= 1 then
-				--outputChatBox("sensorChecks Health");
+				if getElementHealth(getPedOccupiedVehicle(npc) or npc) > 0 then
+					--outputChatBox("sensorChecks Health");
 
-				-- 如果NPC存在SENSOR能力（才进入循环）
-				if not Data:getData(npc,"sensor") then return end
+					-- 如果NPC存在SENSOR能力（才进入循环），注意这里不能用return，不然只要有一个没有sensor会跳过后面的检测
+					if Data:getData(npc,"sensor") then
 
-				-- if (getDistanceBetweenPoints3D(Px, Py, Pz, Zx, Zy, Zz) < 45 ) then 最大听觉/视觉范围以外不检测
+					-- if (getDistanceBetweenPoints3D(Px, Py, Pz, Zx, Zy, Zz) < 45 ) then 最大听觉/视觉范围以外不检测
 
-						--判定能否 找到/听/看到 玩家
-						local canFind,hear,visible = checkFind(npc);
-						local haveTask = isNPCHaveTask(npc);
-						--outputChatBox(tostring(Data:getData(npc,"name")).." canFind:"..tostring(canFind).." hear:"..tostring(hear)..",visible:"..tostring(visible));
+							--判定能否 找到/听/看到 玩家
+							local canFind,hear,visible = checkFind(npc);
+							local haveTask = isNPCHaveTask(npc);
+							--outputChatBox(tostring(Data:getData(npc,"name")).." canFind:"..tostring(canFind).." hear:"..tostring(hear)..",visible:"..tostring(visible));
 
-						local targets = Data:getData(npc,"targets"); -- 获取我的目标表
-						local targets = table.check( targets )
+							local targets = Data:getData(npc,"targets"); -- 获取我的目标表
+							local targets = table.check( targets )
 
-						if canFind then
-							--outputChatBox("localPlayer:"..tostring(inspect(getPlayerName(localPlayer))).." been Find");
-							--addNPCTask(npc,{"walkFollowElement",localPlayer,1})
-							--call(npc_hlc,"addNPCTask",npc,{"walkFollowElement",localPlayer,1})
-							--triggerServerEvent("npc > addTask",resourceRoot,npc,{"walkFollowElement",localPlayer,2})
+							if canFind then
+								--outputChatBox("localPlayer:"..tostring(inspect(getPlayerName(localPlayer))).." been Find");
+								--addNPCTask(npc,{"walkFollowElement",localPlayer,1})
+								--call(npc_hlc,"addNPCTask",npc,{"walkFollowElement",localPlayer,1})
+								--triggerServerEvent("npc > addTask",resourceRoot,npc,{"walkFollowElement",localPlayer,2})
 
-							--if not haveTask then -- 同时存在C/S 端
-								--outputChatBox("NPC NO TASK ,SO CALL FIND ME")
-								--triggerServerEvent("npc > addTask",resourceRoot,npc,{"walkFollowElement",localPlayer, 1})
-								--triggerServerEvent("npc > addTask",resourceRoot,npc,{"killPed",localPlayer,3,1})
-								--triggerServerEvent("npc > addTask",resourceRoot,npc,{"awayFromElement",localPlayer,0.1,200})
-								
-								--如果不存在目标或者目标中没有它，尝试发现
-								if table.isEmpty(targets) or ( not table.haveValue(targets,localPlayer) ) then 
-									--targets 为空,增加首个目标
+								--if not haveTask then -- 同时存在C/S 端
+									--outputChatBox("NPC NO TASK ,SO CALL FIND ME")
+									--triggerServerEvent("npc > addTask",resourceRoot,npc,{"walkFollowElement",localPlayer, 1})
+									--triggerServerEvent("npc > addTask",resourceRoot,npc,{"killPed",localPlayer,3,1})
+									--triggerServerEvent("npc > addTask",resourceRoot,npc,{"awayFromElement",localPlayer,0.1,200})
+									
+									--如果不存在目标或者目标中没有它，尝试发现
+									if table.isEmpty(targets) or ( not table.haveValue(targets,localPlayer) ) then 
+										--targets 为空,增加首个目标
 
-									table.insert(targets,localPlayer)
+										table.insert(targets,localPlayer)
+										Data:setData(npc,"targets",targets);--更新客户端数据
+
+										triggerEvent("npc > findTarget",root,npc,localPlayer);
+
+									end
+								--end
+							else
+
+								--outputChatBox(tostring(table.haveValue(targets,localPlayer)))
+
+								if table.haveValue(targets,localPlayer) then
+
+									for k,v in pairs(targets)do
+										if v == localPlayer then
+											table.remove(targets,k)
+										end
+									end
+
 									Data:setData(npc,"targets",targets);--更新客户端数据
 
-									triggerEvent("npc > findTarget",root,npc,localPlayer);
-
-								end
-							--end
-						else
-
-							--outputChatBox(tostring(table.haveValue(targets,localPlayer)))
-
-							if table.haveValue(targets,localPlayer) then
-
-								for k,v in pairs(targets)do
-									if v == localPlayer then
-										table.remove(targets,k)
-									end
+									triggerEvent("npc > lostTarget",root,npc,localPlayer);
 								end
 
-								Data:setData(npc,"targets",targets);--更新客户端数据
+								--outputChatBox("NPC GIVE UP TO KILL ME");
+								--if haveTask then
+									--
+									--triggerServerEvent("npc > clearTask",resourceRoot,npc)
 
-								triggerEvent("npc > lostTarget",root,npc,localPlayer);
+									--丢失目标，应该去丢失时的玩家位置
+								--end
 							end
 
-							--outputChatBox("NPC GIVE UP TO KILL ME");
-							--if haveTask then
-								--
-								--triggerServerEvent("npc > clearTask",resourceRoot,npc)
+					-- end
 
-								--丢失目标，应该去丢失时的玩家位置
-							--end
-						end
+					end
+				end
 
-				-- end
 			end
 		end
 	end

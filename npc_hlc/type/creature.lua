@@ -33,6 +33,7 @@ function creature:create(skin,x,y,z,r)
     --outputDebugString("creature:create to :"..tostring(inspect(self.source)))
 
     setElementDimension(self.source,1) -- 设置到世界1
+
     
     setElementParent(self.source,otherElements) -- bind to parent for data system
 

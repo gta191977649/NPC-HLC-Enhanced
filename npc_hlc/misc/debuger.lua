@@ -41,21 +41,25 @@ function debugCreature()
                     --text = text .. "\n".."Type:"..tostring(Data:getData(creature,"type") or "MISS TYPE")
                     --text = text .. "\nCategory:"..tostring(Data:getData(creature,"category") or "MISS CATEGORY")
                     --text = text .. "\n".."Speed:"..tostring(getNPCWalkSpeed(creature) or "MISS SPEED")
+                    --text = text .. "\n".."WalkingStyle:"..tostring(Data:getData(creature,"walkingstyle")) or "MISS SPEED"
                     --text = text .. "\n".."HP:"..tostring(getElementHealth(creature) or "MISS SPEED")
                     --text = text .. "\n".."Visble:"..tostring(checkVisible(creature))
                     --text = text .. "\n".."Senser:"..tostring(Data:getData(creature,"sensor"))
                     --text = text .. "\n".."targets:"..tostring(inspect(targets))
                     --text = text .. "\n".."Target:"..tostring(inspect(Data:getData(creature,"target")) or "MISS TARGET")
+                    --text = text .. "\n".."Traits:"..tostring(inspect(Data:getData(creature,"traits")) or "MISS TRAITS")
                     --text = text .. "\n".."Gang:"..tostring(Data:getData(creature,"gang") or "MISS GANG")
                     --text = text .. "\n".."Distance:"..tostring(math.round(distance))
                     --text = text .. "\n".."Ammo:"..tostring(getPedTotalAmmo(creature))
                     --text = text .. "\n".."Accuracy:"..tostring(Data:getData(creature,"accuracy") or "MISS accuracy")
                     --text = text .. "\n"..inspect(creature).." thistask:"..tostring(getElementData(creature,"npc_hlc:thistask")) 
 
-                     --if(isNPCHaveTask(creature)) then 
-                    --    text = text .. "\n".."task:"..tostring(inspect(getNPCCurrentTask(creature))) 
-                    --end -- 对外的写法
-                
+                    --[[
+                    if(isNPCHaveTask(creature)) then 
+                        text = text .. "\n".."task:"..tostring(inspect(getNPCCurrentTask(creature))) 
+                    end -- 对外的写法
+                    ]]
+
                     ----------------checkFind
                     --[[
                     if s or v then 
@@ -99,7 +103,6 @@ function debugCreature()
                 end
 
             end
-
             ----SENSOR STOP
         end
 

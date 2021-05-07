@@ -65,6 +65,14 @@ end
 
 --2021 NEW
 --TODO 不是很明白含义
+function performTask.panic(npc,task,maxtime)
+	--setElementPosition(npc,getElementPosition(npc))
+	return maxtime
+end
+
+
+--2021 NEW
+--TODO 不是很明白含义
 function performTask.doAnim(npc,task,maxtime)
 	--setElementPosition(npc,getElementPosition(npc))
 	return maxtime

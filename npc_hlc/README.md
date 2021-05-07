@@ -279,6 +279,12 @@ Try to away from the specified element.
     element: The element to away from
     angledistance: The min distance to the element 改变方向的最小距离
     safedistance: 停止动作的安全距离
+
+```
+{"panic", element} -- 被目标恐惧/威胁
+
+    element: 威胁来源
+
 ```
 
 {"doAnim",startTick,block,animName} -- 执行动作，分类，动作名, 开始时间

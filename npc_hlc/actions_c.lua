@@ -62,6 +62,7 @@ function stopAllNPCActions(npc)
 	setPedControlState(npc,"handbrake",false)
 end
 
+
 function stopNPCWalkingActions(npc)
 	setPedControlState(npc,"forwards",false)
 	setPedControlState(npc,"backwards",false)
@@ -71,10 +72,18 @@ function stopNPCWalkingActions(npc)
 	setPedControlState(npc,"left",false)
 end
 
+--NEW
+function stopNPCWalkingAnim(npc)
+	--FOR ZOMBIE
+	setPedAnimation(npc)
+end
+
 function stopNPCWeaponActions(npc)
 	--outputChatBox("stopNPCWeaponActions:"..inspect(npc));
 	setPedControlState(npc,"aim_weapon",false)
 	setPedControlState(npc,"fire",false)
+	--FORZOMBIE
+	--setPedAnimation(npc)
 end
 addEvent("npc > stopWeaponActions",true)
 addEventHandler("npc > stopWeaponActions",resourceRoot,stopNPCWeaponActions,false);
@@ -118,6 +127,28 @@ function createPedRaycast(element,type)
 		if debug then dxDrawLine3D( px,py,pz, lx,ly,lz,ray == false and tocolor ( 255, 0, 0, 255 )  or tocolor ( 0, 255, 0, 255 ) ,1 ) end
 		return not ray
 	end
+end
+
+--2021 改进
+--客户端：让NPC边做动作边移动到（X,Y）
+--这里的循环速度非常快
+--目前主要是用于僵尸，支持walk/run/sprint
+function makeNPCAnimToPos(npc,x,y)
+
+	local speed = getNPCWalkSpeed(npc) -- 默认速度
+	local walkingstyle = Data:getData(npc,"walkingstyle");
+	--outputChatBox("speed "..tostring(speed))
+
+	--设置NPC朝向
+	setElementFaceToPos(npc,x,y)
+
+	local block,anim = getPedAnimation(npc)
+
+	--TODO block not in table(zb_walk,run..etc)
+	if not block then
+		IFP:syncAnimationLib ( npc, walkingstyle, speed, -1, true, true, true) --KEEP WALKING
+	end
+
 end
 
 --客户端：让NPC移动到坐标（X,Y）通过操纵按键的方式而不是设置动作

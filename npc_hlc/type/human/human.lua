@@ -4,11 +4,12 @@ human = {
     category = "human",
     skin = 0,
     weapon = "bow", -- 默认武器
+    walkingstyle = 0, -- 移动模式
 };
 human.__index = human;
 setmetatable( human, creature );
 
-function human:create(skin,x,y,z,r,holdweapon)
+function human:create(skin,x,y,z,r,holdweapon,walkingstyle)
 
     --outputDebugString("CREATE human");
 
@@ -25,10 +26,13 @@ function human:create(skin,x,y,z,r,holdweapon)
     --outputDebugString("TRY TO COPY FROM "..inspect(getmetatable(o)))
     setmetatable(o,self);
 
+    --get ped
+    local humanped = o:getElement()
+
+
     --outputDebugString("human weapon:"..tostring(inspect(holdweapon)));
     if holdweapon then
 
-        local humanped = o:getElement()
         giveWeapon(humanped,holdweapon,9999,true)--无限子弹
 
         --
@@ -44,6 +48,18 @@ function human:create(skin,x,y,z,r,holdweapon)
         end
 
     end
+
+    --设置动作
+    outputDebugString("skin:"..tostring(skin));
+    local wk = gtapeds[skin][3]
+    --outputDebugString("gtaped wk:"..tostring(wk));
+    local walkingstyle = GTAWalkingStyle[wk];
+    if walkingstyle then
+        --outputDebugString("walkingstyle:"..tostring(walkingstyle));
+        setPedWalkingStyle(humanped,walkingstyle)
+        o.walkingstyle = walkingstyle;
+    end
+    
 
     --DATA 同步 越外层，优先级最高
     for k,v in pairs(human) do 

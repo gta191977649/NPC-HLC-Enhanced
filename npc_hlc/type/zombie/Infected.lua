@@ -2,7 +2,7 @@
 infected = {
     name = "infected", --名
     type = "infected", --原型
-    skin = 77,
+    skin = {15,17,46,47,157,267,268},
     attack = 10,
     fovDistance = 30, --视野距离
     fovAngle = 120, --视野角度
