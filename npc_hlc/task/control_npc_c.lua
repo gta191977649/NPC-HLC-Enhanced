@@ -1,38 +1,38 @@
---客户端：基础任务管理
-
-UPDATE_COUNT = 30 --循环间隔
+UPDATE_COUNT = 35
 UPDATE_INTERVAL_MS = 200
-
+local cycleNPCs
 function initNPCControl()
 	--addEventHandler("onClientPreRender",root,cycleNPCs)
-	setTimer ( cycleNPCs, UPDATE_COUNT, 0)
+	setTimer ( cycleNPCs, UPDATE_COUNT,1)
+	--cycleNPCs()
 end
-
---客户端：循环NPC任务
---TODO：这里始终在stopAllNPCActions()清空NPC按键，是否合适
-function cycleNPCs()
-	for pednum,npc in ipairs(getElementsByType("ped",root,true)) do
-		if getElementData(npc,"npc_hlc") then
-			if getElementHealth(getPedOccupiedVehicle(npc) or npc) >= 1 then
-				local thistask = getElementData(npc,"npc_hlc:thistask")
-				if thistask then
-					--outputDebugString("cycleNPCs:"..tostring(inspect(getElementData(npc,"npc_hlc:task.1"))))
-					local task = getElementData(npc,"npc_hlc:task."..thistask)
-					if task then
-						if performTask[task[1]](npc,task) then
-							setNPCTaskToNext(npc)
+--Async:setDebug(true)
+Async:setPriority("low")
+--Async:setPriority(500, 33); 
+cycleNPCs = function()
+	local data = getElementsByType("ped",root,true)
+	Async:foreach(data, function(npc,pednum) 
+		if npc ~= nil and isElement(npc) then
+			if getElementData(npc,"npc_hlc") then
+				if getElementHealth(getPedOccupiedVehicle(npc) or npc) >= 1 then
+					local thistask = getElementData(npc,"npc_hlc:thistask")
+					if thistask then
+						local task = getElementData(npc,"npc_hlc:task."..thistask)
+						if task then
+							if performTask[task[1]](npc,task) then
+								setNPCTaskToNext(npc)
+							end
+						else
+							stopAllNPCActions(npc)
 						end
 					else
 						stopAllNPCActions(npc)
 					end
-				else
-					stopAllNPCActions(npc)
 				end
 			end
 		end
-	end
+	end,initNPCControl)
 end
-
 function cycleNPCs_old()
 	local streamed_npcs = {}
 	for pednum,ped in ipairs(getElementsByType("ped",root,true)) do

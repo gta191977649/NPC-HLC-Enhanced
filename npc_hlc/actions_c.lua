@@ -384,33 +384,50 @@ end
 --更多用于车的射线检测
 function createRaycast(element,type)
 	local px,py,pz = getElementPosition(element)
+	local rx,ry,rz = getElementRotation(element)
+	local dist = Vector2(px,py) + Vector2(dist_x,dist_y)
+
+	if debug then 
+		dxDrawLine3D( px,py,pz,dist.x,dist.y,pz,tocolor ( 255, 0, 0, 255 ))
+	end
+
+	local dx = dist.x - px
+	local dy = dist.y - py
+	local a = mathAtan2(dx,dy)
+
+	local angle = 360 -  (a * 180/math.pi)
+	--print(angleWrapping(angle))
+	if math.abs(rz - angle) < 90 then
+		rz = angle
+	end
+
 	local x0, y0, z0, x1, y1, z1 = getElementBoundingBox( element )
 	local vWidth = mathAbs(y0 - y1)
 	local vHeight = mathAbs(x0 -x1)
 	local lx,ly,lz = 0
 	if type == "raycast_l" then
-		lx,ly,lz = getPositionFromElementOffset(element,-AI.config.sensorOffset,vWidth+1,AI.config.sensorOffsetZ)
+		lx,ly,lz = getPositionFromOffsetByPosRot(px,py,pz,rx,ry,rz,-AI.config.sensorOffset,vWidth+1,AI.config.sensorOffsetZ)
 	end
 	if type == "raycast_m" then
-		lx,ly,lz = getPositionFromElementOffset(element,0,vWidth+1.5,AI.config.sensorOffsetZ)
+		lx,ly,lz = getPositionFromOffsetByPosRot(px,py,pz,rx,ry,rz,0,vWidth+1.5,AI.config.sensorOffsetZ)
 	end
 	if type == "raycast_r" then
-		lx,ly,lz = getPositionFromElementOffset(element,AI.config.sensorOffset,vWidth+1,AI.config.sensorOffsetZ)
+		lx,ly,lz = getPositionFromOffsetByPosRot(px,py,pz,rx,ry,rz,AI.config.sensorOffset,vWidth+1,AI.config.sensorOffsetZ)
 	end
 	if type == "raycast_b" then
-		lx,ly,lz = getPositionFromElementOffset(element, 0,-(vWidth/2+1),AI.config.sensorOffsetZ)
+		lx,ly,lz = getPositionFromOffsetByPosRot(px,py,pz,rx,ry,rz, 0,-(vWidth/2+1),AI.config.sensorOffsetZ)
 	end
 	if type == "raycast_sr" then
-		lx,ly,lz = getPositionFromElementOffset(element,vHeight/2 + 1,0,AI.config.sensorOffsetZ)
+		lx,ly,lz = getPositionFromOffsetByPosRot(px,py,pz,rx,ry,rz,vHeight/2 + 1,0,AI.config.sensorOffsetZ)
 	end
 	if type == "raycast_sl" then
-		lx,ly,lz = getPositionFromElementOffset(element,-(vHeight/2 + 1),0,AI.config.sensorOffsetZ)
+		lx,ly,lz = getPositionFromOffsetByPosRot(px,py,pz,rx,ry,rz,-(vHeight/2 + 1),0,AI.config.sensorOffsetZ)
 	end
 	if type == "raycast_bl" then
-		lx,ly,lz = getPositionFromElementOffset(element, AI.config.sensorOffset+0.5,-(vWidth/2+1),AI.config.sensorOffsetZ)
+		lx,ly,lz = getPositionFromOffsetByPosRot(px,py,pz,rx,ry,rz, AI.config.sensorOffset+0.5,-(vWidth/2+1),AI.config.sensorOffsetZ)
 	end
 	if type == "raycast_br" then
-		lx,ly,lz = getPositionFromElementOffset(element, -AI.config.sensorOffset-0.5,-(vWidth/2+1),AI.config.sensorOffsetZ)
+		lx,ly,lz = getPositionFromOffsetByPosRot(px,py,pz,rx,ry,rz, -AI.config.sensorOffset-0.5,-(vWidth/2+1),AI.config.sensorOffsetZ)
 	end
 
 	local ray,_,_,_,hitElement,_,_,_,_,_,_,hitModel = processLineOfSight(px,py,pz+AI.config.sensorOffsetZ,lx,ly,lz,true,true,true,true,false,true,true,false,element,true)
@@ -494,21 +511,21 @@ function makeNPCDriveToPos(npc,x,y,z,light)
 		--]]
 
 		-- left
-		local ray_l = createRaycast(car,"raycast_l")
+		local ray_l = createRaycast(car,"raycast_l",x,y,z)
 		-- mid
-		local ray_m,hitElement = createRaycast(car,"raycast_m")
+		local ray_m,hitElement = createRaycast(car,"raycast_m",x,y,z)
 		-- right
-		local ray_r = createRaycast(car,"raycast_r")
+		local ray_r = createRaycast(car,"raycast_r",x,y,z)
 		-- back
-		local ray_b = createRaycast(car,"raycast_b")
+		local ray_b = createRaycast(car,"raycast_b",x,y,z)
 		-- side right
-		local ray_sr = createRaycast(car,"raycast_sr")
+		local ray_sr = createRaycast(car,"raycast_sr",x,y,z)
 		-- side left
-		local ray_sl = createRaycast(car,"raycast_sl")
+		local ray_sl = createRaycast(car,"raycast_sl",x,y,z)
 		-- back left
-		local ray_bl = createRaycast(car,"raycast_bl")
+		local ray_bl = createRaycast(car,"raycast_bl",x,y,z)
 		-- back right
-		local ray_br = createRaycast(car,"raycast_br")
+		local ray_br = createRaycast(car,"raycast_br",x,y,z)
 		
 		-- logic
 		if AI[npc].task == "driveAroundBend" then
@@ -534,7 +551,7 @@ function makeNPCDriveToPos(npc,x,y,z,light)
 
 			if ray_m then
 				-- check if is vehile & wait for green light
-				local _,hit = createRaycast(car,"raycast_m")
+				local _,hit = createRaycast(car,"raycast_m",x,y,z)
 				if hit ~=nil and isElement(hit) and getElementType(hit) == "vehicle" and light ~= nil and isGreenLight(light) == false and AI[npc].task == "driveAlongLine" then 
 					speed = 0
 					setPedControlState (npc,"handbrake",true)
@@ -546,7 +563,7 @@ function makeNPCDriveToPos(npc,x,y,z,light)
 			end
 			if ray_l then
 				-- check if is vehile & wait for green light
-				local _,hit = createRaycast(car,"raycast_l")
+				local _,hit = createRaycast(car,"raycast_l",x,y,z)
 				if hit ~=nil and isElement(hit) and getElementType(hit) == "vehicle" and light ~= nil and isGreenLight(light) == false and AI[npc].task == "driveAlongLine" then 
 					speed = 0
 					setPedControlState (npc,"handbrake",true)
@@ -558,7 +575,7 @@ function makeNPCDriveToPos(npc,x,y,z,light)
 			end
 			if ray_r then
 				-- check if is vehile & wait for green light
-				local _,hit = createRaycast(car,"raycast_r")
+				local _,hit = createRaycast(car,"raycast_r",x,y,z)
 				if hit ~=nil and isElement(hit) and getElementType(hit) == "vehicle" and light ~= nil and isGreenLight(light) == false and AI[npc].task == "driveAlongLine" then 
 					speed = 0	
 					setPedControlState (npc,"handbrake",true)
@@ -656,7 +673,6 @@ function makeNPCDriveToPos(npc,x,y,z,light)
 		setPedControlState(npc,"accelerate",vry < speed)
 		setPedControlState(npc,"brake_reverse",vry > speed*1.1)
 	end
-
 
 
 end
