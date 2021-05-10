@@ -76,10 +76,10 @@ local normalType = {
 
     --【城市民兵武装】 OK ///////////////////////////////////////////////
     ['cdf_guard']={name="Militia",behaviour="guard",traits={"cdf"},gang=3,skin={73,16,176,179,2,21,278},wep=CampGuardWeapons},--民兵守卫 OK
-    ['cdf_hunter']={name="Militia",behaviour="hunt",traits={"cdf,civilian,male"},gang=3,skin={73,16,176,179,2,21,278},wep=CampGuardWeapons},-- 民兵 OK
-    ['cdf_vendor']={name="Quartermaster",behaviour="guard",traits={"cdf,vendor"},trade=cdfTrade,gang=3,skin={236,131,1,2,21},wep={24}},-- 军需官 OK
-    ['cdf_staff']={name="Citizen",behaviour="default",traits={"cdf,civilian,male"},gang=3,skin={101,133,234,250,16,73,2}},--平民 OK
-    ['cdf_quest']={name="Militia Leader",behaviour="guard",traits={"cdf,questgiver"},gang=3,skin={236,131,1,2,21},},-- 民兵领袖 可能存在特殊类型 CDF Recruiter 招募者  OK
+    ['cdf_hunter']={name="Militia",behaviour="hunt",traits={"cdf","civilian","male"},gang=3,skin={73,16,176,179,2,21,278},wep=CampGuardWeapons},-- 民兵 OK
+    ['cdf_vendor']={name="Quartermaster",behaviour="guard",traits={"cdf","vendor"},trade=cdfTrade,gang=3,skin={236,131,1,2,21},wep={24}},-- 军需官 OK
+    ['cdf_staff']={name="Citizen",behaviour="default",traits={"cdf","civilian","male"},gang=3,skin={101,133,234,250,16,73,2}},--平民 OK
+    ['cdf_quest']={name="Militia Leader",behaviour="guard",traits={"cdf","questgiver"},gang=3,skin={236,131,1,2,21},},-- 民兵领袖 可能存在特殊类型 CDF Recruiter 招募者  OK
 
 
     --【权势军队】 OK /////////////////////////
@@ -123,12 +123,14 @@ local normalType = {
     ['scavenger_syndquest']={name="Syndicate Boss",behaviour="guard",traits={"syndicate","questgiver"},gang=1,skin={294,49},},--SyndQuestgiverSkins
 
     --【强盗】 OK ///////////////////////////
-    ['bandit_guard']={name="Bandit",behaviour="guard",traits={"civilian","male","bandit"},gang=2,skin={28,30,47,104,144,301,241,177,184,102,18,223},wep=banditWeapons}, -- OK
-    ['bandit_hunter']={name="Bandit",behaviour="hunt",traits={"civilian","male","bandit"},gang=2,skin={28,30,47,104,144,301,241,177,184,102,18,223},wep=banditWeapons},-- OK
+    --没有平民类型NPC
+    ['bandit_guard']={name="Bandit",behaviour="guard",traits={"male","bandit"},gang=2,skin={28,30,47,104,144,301,241,177,184,102,18,223},wep=banditWeapons}, -- OK
+    ['bandit_hunter']={name="Bandit",behaviour="hunt",traits={"male","bandit"},gang=2,skin={28,30,47,104,144,301,241,177,184,102,18,223},wep=banditWeapons},-- OK
     ['bandit_quest']={name="Gang Leader",behaviour="guard",traits={"questgiver","bandit"},gang=2,skin={28,30,47,104,144,301,241,177,184,102,18,223},wep=banditWeapons},-- OK
 
     --【自由人】 OK
-    ['neutral_freelance']={name={"Looter","Robber","Vagrant","Drifter","Nomad","Thug"},behaviour="hunt",traits={"civilian","male","freelancer"},gang=0,skin={32,79,134,183,29,100,177,241,28,30,47,104,144,135,137,160,168,182,200,230,223},wep=NeutralFreelancerWeapons,},--NeutralFreelancerSkins
+    -- 永久敌对，无平民类型
+    ['neutral_freelance']={name={"Looter","Robber","Vagrant","Drifter","Nomad","Thug"},behaviour="hunt",traits={"male","freelancer"},gang=0,skin={32,79,134,183,29,100,177,241,28,30,47,104,144,135,137,160,168,182,200,230,223},wep=NeutralFreelancerWeapons,},--NeutralFreelancerSkins
 
     --【测试】
     ['tester_archer']={name="GM",behaviour="guard",traits={},gang=0,skin={0},wep={23},},--NeutralFreelancerSkins
@@ -169,7 +171,7 @@ normal = {
 normal.__index = normal;
 setmetatable( normal,human );
 
---人类的subtype是阵营
+--人类
 function normal:create(x,y,z,r,faction,btype)
 
     --outputDebugString("CREATE normal of "..faction..","..btype..","..z);

@@ -53,14 +53,14 @@ function taskValid.walkAroundBend(task)
 end
 
 function taskValid.walkFollowElement(task)
-	outputDebugString("walkFollowElement")
+	--outputDebugString("walkFollowElement")
 	local element,dist = task[2],task[3]
 	return isElement(element) and getElementPosition(element) and tonumber(dist) and true or false
 end
 
 --2021 NEW
 function taskValid.awayFromElement(task)
-	outputDebugString("walkFollowElement")
+	--outputDebugString("taskValid.awayFromElement")
 	local element,dist,safedist = task[2],task[3],task[4]
 	return isElement(element) and getElementPosition(element) and tonumber(dist) and tonumber(safedist) and true or false
 
@@ -68,7 +68,7 @@ end
 
 --2021 NEW
 function taskValid.panic(task)
-	outputDebugString("taskValid panic")
+	--outputDebugString("taskValid.panic")
 	local element = task[2]
 	return isElement(element) and getElementPosition(element) and true or false
 end

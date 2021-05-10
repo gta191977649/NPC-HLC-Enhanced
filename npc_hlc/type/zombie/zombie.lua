@@ -7,6 +7,7 @@ zombie = {
     accuracy = 0,
     traits = {"zombie"},
     walkingstyle = "zombie", -- 移动模式为动作库:zombie
+    behaviour = "hunt", -- 默认为追杀行为树
 };
 zombie.__index = zombie;
 setmetatable( zombie, creature );

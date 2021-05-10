@@ -14,6 +14,13 @@ function getData(element,key)
 end
 
 function onDataHandler(pElement, pKey, pType, pOldValue, pNewValue, pEvent, pSyncer)
-	outputChatBox("onDataHandler got triggered at key: "..pKey.." ("..pType.." data) - syncer element: "..inspect(pSyncer))
+
+    local eType = getElementType(pElement)
+
+    if eType ~= "ped" then
+        outputChatBox(getElementID(pElement).." onDataChanged key: "..pKey.." ("..pType.." data) - syncer element: "..inspect(pSyncer).." to "..tostring(pNewValue))
+    end
+
+	
 end
-addDataHandler({"player","object"}, {}, {}, onDataHandler, "onDataChanged")
+addDataHandler({"player","object","ped","gang"}, {}, {}, onDataHandler, "onDataChanged")

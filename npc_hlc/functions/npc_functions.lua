@@ -1,3 +1,6 @@
+-------------------------------------------------------
+-- shared file
+-------------------------------------------------------
 
 function isHLCEnabled(npc)
 	return isElement(npc) and getElementData(npc,"npc_hlc") or false

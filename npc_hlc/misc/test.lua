@@ -31,8 +31,9 @@ function initTester()
     ]]
 
     c1 = createCreature("normal",240.1689453125,2500.109375,16.484375,0,"scavenger","syndciv")
-    c1 = createCreature("normal",241.1689453125,2500.109375,16.484375,0,"scavenger","syndciv")
-
+    --c2 = createCreature("normal",241.1689453125,2501.109375,16.484375,30,"cdf","guard")
+    --c3 = createCreature("normal",243.1689453125,2502.109375,16.484375,60,"cdf","guard")
+    c1 = createCreature("normal",241.1689453125,2500.109375,16.484375,0,"cdf","staff")
     --z = createCreature("infected",250.107421875,2505.68359375,16.484375)
     --h = createCreature("hunter",290.1044921875,2525.9169921875,16.792568206787)
 

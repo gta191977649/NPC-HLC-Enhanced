@@ -7,7 +7,6 @@ function initNPCSensor()
 end
 addEventHandler("onClientResourceStart",resourceRoot,initNPCSensor)
 
-
 --[[
 We check the chance for a npc to detect a player based on his
 visibility and sound. The closer the player is to a npc, the 

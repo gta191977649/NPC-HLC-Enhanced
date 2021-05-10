@@ -203,6 +203,8 @@ function performTask.panic(npc,task)
 	local element = task[2];
 	if not isElement(element) then return true end -- 无效威胁，任务完成
 
+	Data:setData(npc,"target",element);
+
 	local distance = getDistance(npc,element);
 	local hisTarget = getPedTarget(element); -- 他的标准目标
 	local heIsAiming = getPedControlState(element,"aim_weapon") -- 他是否瞄准
@@ -216,6 +218,7 @@ function performTask.panic(npc,task)
 	if distance > 10 then
 		--距离过远，恐慌结束
 		IFP:syncAnimationLib(npc) -- 停止动作
+		Data:setData(npc,"target",false);
 		return true
 	else
 
@@ -226,15 +229,16 @@ function performTask.panic(npc,task)
 			if lastBlock == "shop" and lastAnimation == "SHP_Rob_HandsUp" then
 				return false
 			else
+				--triggerEvent("onChatbubblesMessageIncome",npc,Loc:Localization(table.random(threatenRobbingMessages)),0);
 				setElementFaceTo(npc,element);--面向威胁者
-				IFP:syncAnimationLib(npc,"human","handsup")
+				IFP:syncAnimationLib(npc,"human","handsup",-1,true,false)
 			end
 		else
 
 			if lastBlock == "ped" and lastAnimation == "cower" then
 				return false
 			else
-				IFP:syncAnimationLib(npc,"human","panic");
+				IFP:syncAnimationLib(npc,"human","panic",-1,true,false);
 			end
 			
 			-- outputChatBox(inspect(element).." hisTarget "..tostring(hisTarget));
@@ -266,6 +270,7 @@ function performTask.awayFromElement(npc,task)
 	if dx*dx+dy*dy < mindist*mindist then -- 太近了
 
 		-- 如果太靠近
+		-- DO NOTHING..
 
 	elseif dx*dx+dy*dy > safedist*safedist then -- 足够安全了
 		--outputChatBox("I AM SAFE");

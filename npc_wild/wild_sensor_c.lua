@@ -1,103 +1,124 @@
---重要函数，获取二者之间的关系
---参数：英文
-function getRelationship(a,b)
 
-	local rel = "ignore" -- 默认关系，无视
+--玩家/NPC 通知其他人面向玩家
+--TODO 有任务的NPC不应该受到干扰
+function warnOther(npc,target,action)
+	local x,y,z = getElementPosition(npc);
+	local range = 30;
+	local peds = getElementsWithinRange(x,y,z,range,"ped");
 
-	local traitsA = Data:getData(a,"traits");
-	local traitsB = Data:getData(b,"traits");
+	for _,ped in pairs(peds) do
+		if ped ~= npc then -- 过滤我自己
 
-	--------------------------------------------------
-	--任意一方为僵尸，且二者不都为僵尸
-	local aZb = table.haveValue(traitsA,"zombie");
-	local bZb = table.haveValue(traitsB,"zombie");
-	if aZb ~= bZb and (aZb or bZb) then
-		rel = "hostility"
-		return rel;
+			--[[
+			if NPC:isNPCHaveTask(ped) then
+				task = NPC:getNPCCurrentTask(ped)
+				--QUEST:这里task理论上不为空，但是确实存在空
+				if task and task[1] == "killPed" then
+				else
+				end
+			else
+				--没有任务的NPC（基本上不存在）
+			end
+			]]
+
+			--有目标的NPC不理睬警告
+			local pedTarget = Data:getData(ped,"target")
+
+			if not pedTarget then
+				outputChatBox(inspect(ped).." MISS TARGET :"..tostring(pedTarget));
+
+				--先做寻找动作
+				IFP:syncAnimationLib ( ped, "human", "search", -1, false) --KEEP SEARCH
+				--延迟2秒后转过来（2秒差不多正好转头动作做完）
+				setTimer(setElementFaceTo,2000,1,ped,target)
+				wildFind(ped,target,false,action)--发现但是不通知其他人
+			else
+				outputChatBox(inspect(ped).." pedTarget :"..tostring(pedTarget));
+			end
+
+		end
 	end
 
-	---------------------------------------------------
-	--
-
-	return rel
 end
 
+
 --注意，目前的target只可能是玩家
-function wildFind(npc,target)
+-----------------------------------------------
+-- NPC 发现目标
+-- 参数 NPC,目标，是否通知其他人，发现在干什么
+-----------------------------------------------
+function wildFind(npc,target,warn,action)
 
-	local name = Data:getData(npc,"name");
+	if warn == nil then warn = true end -- 默认通知其他人
 
-	--TODO 更好的方式?
-	--只需要判定NPC对玩家是哪种行为，最后执行即可
+	--outputDebugString(tostring(Data:getData(npc,"name")).." warn other "..tostring(warn));
 
-	--根据两者关系决定动物的行为
-	local gang = Data:getData(npc,"gang");
+	local traits = Data:getData(npc,"traits");
+	local relationType = getRelationship(npc,target);
 
-	local gang_target
-	if getElementType(target) =="ped" then
-		gang_target = Data:getData(target,"gang")
-	elseif getElementType(target) =="player" then 
-		gang_target = Player:getPlayerData(target,"Gang");
-	end
-	outputChatBox(tostring(name).." find new target "..tostring(inspect(target)).."gang:"..tostring(gang_target));
+	if relationType == "hostility" then
 
-	triggerEvent("sync.message", npc, npc, 240, 125, 0, "ALERT")
+		--敌对关系
 
-	if gang ~= gang_target then
+		--triggerEvent("onChatbubblesMessageIncome",npc,"I Find "..tostring(getPlayerName(target)..", We are "..tostring(relationType)),0);
+		triggerEvent("sync.message", npc, npc, 240, 125, 0, "ALERT")
+		IFP:syncAnimationLib ( npc, "human", "warn",-1,false); -- 通知其他NPC
+		setElementFaceTo(npc,target)
+		if warn then
+			outputChatBox(tostring(Data:getData(npc,"name")).." find and warn other");
+			warnOther(npc,target);
+		end
 
-		--debug 
-		--if Data:getData(npc,"type") == "goat" then
-		--	triggerServerEvent("npc > setTask",npcRoot,npc,{"awayFromElement",target,0.1,200})
-		--	return 
-		--end
-
-		--二者位于不同帮会
 		local shootdist = Data:getData(npc,"shootdist");
 		local followdist = Data:getData(npc,"followdist");
 		local behaviour = Data:getData(npc,"behaviour");
 
-		outputChatBox("behaviour:"..tostring(behaviour))
+		--outputChatBox("behaviour:"..tostring(behaviour))
 
-		--NPC无组织
-		if gang == 0 then
-			--TODO 僵尸也没有组织
-			if Data:getData(npc,"category") == "zombie" then
-				triggerServerEvent("npc > setTask",npcRoot,npc,{"killPed",target,shootdist,followdist})
-			else
-				triggerEvent("onChatbubblesMessageIncome",npc,"Hello "..tostring(getPlayerName(target).."!"),0);
-			end
-			
-		elseif gang_target == 0 then
-			--玩家无组织
-			triggerEvent("onChatbubblesMessageIncome",npc,"Hello "..tostring(getPlayerName(target).."!"),0);
-			--TODO 注意，这里因为设置了target，守卫任务的NPC还是会攻击，应该修复
+		--根据behaviour判定
+		if behaviour == "guard" then
+			--DO NOTHING CAUSE TASK HANDLE IT
+			triggerEvent("onChatbubblesMessageIncome",npc,Loc:Localization(table.random(regularAlertLines)),0);
+		elseif behaviour == "hunt" then
+			--if not isNPCHaveTask
+			triggerEvent("onChatbubblesMessageIncome",npc,Loc:Localization(table.random(regularAlertLines)),0);
+			triggerServerEvent("npc > setTask",npcRoot,npc,{"killPed",target,shootdist,followdist})
 		else
-
-			--根据behaviour判定
-			if behaviour == "guard" then
-				--DO NOTHING CAUSE TASK HANDLE IT
-			elseif behaviour == "hunt" then
-				--if nott isNPCHaveTask
-				triggerEvent("onChatbubblesMessageIncome",npc,"Kill "..tostring(getPlayerName(target).."!"),0);
-				triggerServerEvent("npc > setTask",npcRoot,npc,{"killPed",target,shootdist,followdist})
-			else
-				triggerServerEvent("npc > setTask",npcRoot,npc,{"awayFromElement",target,0.1,200})
-			end
-			
+			--敌人的默认行为NPC(无特殊action，发现敌人玩家)
+			--PANIC任务 使用NPC恐惧 target
+			triggerServerEvent("npc > setTask",npcRoot,npc,{"panic",target})
 		end
-		
+
+		Data:setData(npc,"target",target);--设置长期目标(仅在充满敌意时)
+
+	elseif relationType == "friendly" then
+		--triggerEvent("onChatbubblesMessageIncome",npc,"Hello "..tostring(getPlayerName(target)..", We are "..tostring(relationType)),0);
+		--友好NPC
 	else
-		--二者帮会相同
-		--triggerServerEvent("npc > setTask",npcRoot,npc,{"awayFromElement",target,0.1,200})
-		triggerEvent("onChatbubblesMessageIncome",npc,"Hello "..tostring(getPlayerName(target).."!"),0);
+		--triggerEvent("onChatbubblesMessageIncome",npc,"This is "..tostring(getPlayerName(target)..", We are "..tostring(relationType)),0);
+		--和平NPC
 	end
 
-	Data:setData(npc,"target",target);--设置长期目标
+	
+	--对特殊行为的反应
+	if action == "shoot" then
+		--当目标在射击时
+		if table.haveValue(traits,"civilian") then
+			--所有的市民都会恐惧开枪
+			triggerServerEvent("npc > setTask",npcRoot,npc,{"panic",target})
+		end
+	end
+
+
+	
 end
 addEvent("npc > findTarget",true)
 addEventHandler("npc > findTarget",root,wildFind,false)
 
 
+-----------------------------------------------
+-- NPC 丢失目标
+-----------------------------------------------
 --注意，目前的target只可能是玩家
 function wildLost(npc,target)
 
@@ -119,20 +140,25 @@ function wildLost(npc,target)
 		elseif task and task[1] == "guardPos" then
 			--守卫任务目标丢失，清空目标
 			--outputChatBox("GUARD wildLost AND TRY TO FORGET");
-			Data:setData(npc,"target",nil);--清理长期目标
+			Data:setData(npc,"target",false);--清理长期目标
+		else
+			--其他情况
+			Data:setData(npc,"target",false);--清理长期目标
 		end
 
 	else
 		--没有任务了，忘记他吧
 		--TODO 这里未执行到过....可能目前丢失玩家的时候基本上都是有任务的状态
 		--outputChatBox("wildLost AND TRY TO FORGET");
-		Data:setData(npc,"target",nil);--清理长期目标
+		Data:setData(npc,"target",false);--清理长期目标
 	end 
 end
-
 addEvent("npc > lostTarget",true)
 addEventHandler("npc > lostTarget",root,wildLost,false)
 
+-----------------------------------------------
+-- NPC 受伤
+-----------------------------------------------
 --客户端受伤后决策判定
 function wildDamageSensor(attacker,weapon,bodypart,loss)
 
@@ -147,13 +173,16 @@ function wildDamageSensor(attacker,weapon,bodypart,loss)
 	--有攻击者
 	if attacker then
 
-		--根据两者关系决定动物的行为
-		local gang = Data:getData(source,"gang");--被攻击者帮会
-		local gang_attacker = Data:getData(attacker,"gang");--攻击者帮会
+		--获取受害者和攻击者之间的关系
+		local relationType = getRelationship(source,attacker);
+		
+		local name = Data:getData(source,"name");
 
-		--误伤是否反击
-		--目前只反击玩家或者非同帮会成员
-		if getElementType(attacker) == "player" or ( gang ~= gang_attacker ) then
+		outputChatBox(tostring(name).." find new attacker "..tostring(inspect(attacker)));
+
+		--误伤是否反击？
+		--目前只反击玩家或者非友好帮会的攻击
+		if getElementType(attacker) == "player" or relationType ~= "friendly" then
 			-----------------
 			---player killer
 			------------------
@@ -161,14 +190,23 @@ function wildDamageSensor(attacker,weapon,bodypart,loss)
 			if NPC:isNPCHaveTask(source) then
 				task = NPC:getNPCCurrentTask(source)
 				--QUEST:这里task理论上不为空，但是确实存在空
-				if task and task[1] == "killPed" and task[2]==target then
+				if task and task[1] == "killPed" and task[2]==attacker then
 					outputChatBox("IGNORE SAME ATTACKER TO FIGHT BACK");
 				else
-					--立刻 反击
-					local shootdist = Data:getData(source,"shootdist");
-					local followdist = Data:getData(source,"followdist");
-					triggerServerEvent("npc > setTask",npcRoot,source,{"killPed",attacker,shootdist,followdist})
-					Data:setData(source,"target",target);--设置长期目标
+					local traits = Data:getData(source,"traits");
+					if table.haveValue(traits,"civilian") then
+						--重要：强制停止之前的动作（比如PANIC时的举手）
+						IFP:syncAnimationLib(source) -- 停止动作
+						triggerServerEvent("npc > setTask",npcRoot,source,{"awayFromElement",attacker,0.1,200})
+						--setNPCTask(ped,{"awayFromElement",task[2],0.1,200})
+					else
+						--立刻 反击
+						local shootdist = Data:getData(source,"shootdist");
+						local followdist = Data:getData(source,"followdist");
+						triggerServerEvent("npc > setTask",npcRoot,source,{"killPed",attacker,shootdist,followdist})
+						Data:setData(source,"target",attacker);--设置长期目标
+					end
+
 				end
 			end
 
@@ -187,4 +225,15 @@ function wildDamageSensor(attacker,weapon,bodypart,loss)
 
 end
 --注意这里getRootElement()需要是NPC的上级
-addEventHandler ( "onClientPedDamage", getRootElement(), wildDamageSensor )
+addEventHandler ( "onClientPedDamage", root, wildDamageSensor )
+
+
+-----------------------------------------------
+-- 玩家开枪
+--
+-----------------------------------------------
+function shootingNoise(weapon, ammo, ammoInClip, hitX, hitY, hitZ, hitElement)
+	warnOther(source,source,"shoot")--source 开枪者
+	--setPedAnimation ( source, "ped", "flee_lkaround_01", -1, true, true, true )
+end
+addEventHandler ( "onClientPlayerWeaponFire", localPlayer, shootingNoise )

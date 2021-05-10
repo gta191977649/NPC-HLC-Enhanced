@@ -46,7 +46,7 @@ function debugCreature()
                     --text = text .. "\n".."Visble:"..tostring(checkVisible(creature))
                     --text = text .. "\n".."Senser:"..tostring(Data:getData(creature,"sensor"))
                     --text = text .. "\n".."targets:"..tostring(inspect(targets))
-                    --text = text .. "\n".."Target:"..tostring(inspect(Data:getData(creature,"target")) or "MISS TARGET")
+                    text = text .. "\n".."Target:"..tostring(inspect(Data:getData(creature,"target")) or "MISS TARGET")
                     --text = text .. "\n".."Traits:"..tostring(inspect(Data:getData(creature,"traits")) or "MISS TRAITS")
                     --text = text .. "\n".."Gang:"..tostring(Data:getData(creature,"gang") or "MISS GANG")
                     --text = text .. "\n".."Distance:"..tostring(math.round(distance))
@@ -54,11 +54,14 @@ function debugCreature()
                     --text = text .. "\n".."Accuracy:"..tostring(Data:getData(creature,"accuracy") or "MISS accuracy")
                     --text = text .. "\n"..inspect(creature).." thistask:"..tostring(getElementData(creature,"npc_hlc:thistask")) 
 
-                    --[[
-                    if(isNPCHaveTask(creature)) then 
-                        text = text .. "\n".."task:"..tostring(inspect(getNPCCurrentTask(creature))) 
+                    
+                    if(isNPCHaveTask(creature)) then
+                        local task = getNPCCurrentTask(creature)
+                        if task and task[1] then
+                            text = text .. "\n".."task:"..tostring(task[1]) 
+                        end
                     end -- 对外的写法
-                    ]]
+                    
 
                     ----------------checkFind
                     --[[
@@ -83,6 +86,7 @@ function debugCreature()
             end
 
             --接下来是 Sensor
+            --[[
             if Data:getData(creature,"sensor") then
 
                 --这里需要从客户端获取服务端的数据
@@ -103,6 +107,7 @@ function debugCreature()
                 end
 
             end
+            ]]
             ----SENSOR STOP
         end
 
