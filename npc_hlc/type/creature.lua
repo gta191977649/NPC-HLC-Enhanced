@@ -3,7 +3,6 @@
 
 local otherElements = getElementByID("otherElements") -- we would need that aswell for binding handlers.
 
-
 --HOLDER
 --KEY:element VALUE:creature
 creatures = {} -- HOLD ALL creature

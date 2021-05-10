@@ -7,6 +7,7 @@ puma = {
     fovDistance = 30, --视野距离（熊瞎子）
     fovAngle = 120, --视野角度
     speed = "sprintfast",
+    traits = {category="animal","tough"}, -- 特性
 };
 puma.__index = puma;
 setmetatable( puma, animal );

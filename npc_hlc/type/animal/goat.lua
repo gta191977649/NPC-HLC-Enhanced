@@ -7,6 +7,7 @@ goat = {
     fovDistance = 30, --视野距离
     fovAngle = 90, --视野角度
     speed = "sprint",
+    traits = {category="animal","weak"}, -- 特性
 };
 goat.__index = goat;
 setmetatable( goat, animal );

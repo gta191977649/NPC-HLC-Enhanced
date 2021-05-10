@@ -7,6 +7,8 @@ hunter = {
     fovDistance = 30, --视野距离
     fovAngle = 120, --视野角度
     speed = "sprint",
+    walkingstyle = 0, -- 移动模式改为CJ从而跑得快且修复走砍BUG
+    traits = {category="zombie"}, -- 特性
 };
 hunter.__index = hunter;
 setmetatable( hunter, zombie );

@@ -7,6 +7,7 @@ wolf = {
     fovDistance = 30, --视野距离
     fovAngle = 90, --视野角度
     speed = "run",
+    traits = {category="animal","tough"}, -- 特性
 };
 wolf.__index = wolf;
 setmetatable( wolf, animal );

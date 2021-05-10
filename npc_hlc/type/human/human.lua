@@ -33,24 +33,26 @@ function human:create(skin,x,y,z,r,holdweapon,walkingstyle)
     --outputDebugString("human weapon:"..tostring(inspect(holdweapon)));
     if holdweapon then
 
-        giveWeapon(humanped,holdweapon,9999,true)--无限子弹
-
-        --
-        local wep = getWeaponFromGID(holdweapon);
-        --outputDebugString("getWeaponFromGID:"..tostring(wep));
+        --同时支持ID和NAME
+        local wep = holdweapon
+        if type(holdweapon)=="number" then
+            wep = getWeaponFromGID(holdweapon);
+        end
+        --outputDebugString("wep:"..tostring(wep));
 
         --如果获取到新武器模型ID，则ATTACH
         if wep then
             local modelID = weapons[wep].model_new
             --outputDebugString(wep.." "..tostring(modelID));
             Attach:attachWeapon(humanped,modelID)
+            giveWeapon(humanped,weapons[wep].gtaid,9999,true)--无限子弹
             o.weapon = wep;
         end
 
     end
 
     --设置动作
-    outputDebugString("skin:"..tostring(skin));
+    --outputDebugString("skin:"..tostring(skin));
     local wk = gtapeds[skin][3]
     --outputDebugString("gtaped wk:"..tostring(wk));
     local walkingstyle = GTAWalkingStyle[wk];

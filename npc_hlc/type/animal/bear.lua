@@ -7,6 +7,7 @@ bear = {
     fovDistance = 15, --视野距离（熊瞎子）
     fovAngle = 120, --视野角度
     speed = "run",
+    traits = {category="animal","normal"}, -- 特性
 };
 bear.__index = bear;
 setmetatable( bear, animal );

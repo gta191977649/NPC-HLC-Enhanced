@@ -7,6 +7,7 @@
     <script src="misc/math.lua" type="shared" cache="false"/>
     <script src="misc/const.lua" type="shared" cache="false"/>
     <script src="misc/words.lua" type="shared" cache="false"/>
+    <script src="misc/async.lua" type="shared" cache="false"/>
 
     <script src="functions/npc_hlc_s.lua" type="server" />
     <script src="functions/npc_hlc_c.lua" type="client" cache="false"/>

@@ -18,8 +18,8 @@ ESTSuitWeapons = {29}
 CampGuardWeapons = {29,25} --camp guards weapons
 banditWeapons = {25,27,29,30,33,34,31}
 SyndicateTriadWeapons = {30,27,29}
-NeutralFreelancerWeapons = {4,5,6,7,8,25,10,11,12,14,15,24} --vagrants and looters weapons
-
+--NeutralFreelancerWeapons = {4,5,6,7,8,25,10,11,12,14,15,24} --vagrants and looters weapons 
+NeutralFreelancerWeapons = {"bottle","nailstick","chopper","sledgehammer","axe","pickaxe","hammer","machete","crowbar","pan","p1911"} --vagrants and looters weapons 
 --商人出售列表（等待转移）
 --TODO 等待完善
 --参数：物品名，几率(乘以100换算成%,1 = 必然刷出)
@@ -155,14 +155,14 @@ normal = {
 
     --人类会使用工具，这里应该由武器决定
     --TODO 武器最大射程 = shootdist
-    shootdist = 30, -- shootdist < followdist 导致在特定距离时NPC会发呆，既不会攻击，也不会靠近
-    followdist = 20,
+    shootdist = 3, -- shootdist < followdist 导致在特定距离时NPC会发呆，既不会攻击，也不会靠近
+    followdist = 1,
     accuracy = 0.975,--0.95,
 
     gang = 0;
     sensor = false;--默认感知能力关闭
     behaviour = "default", -- 默认
-    traits = {}, -- 特性
+    traits = {category="human"}, -- 特性
 
     trade = {}, -- 交易信息
 
@@ -242,9 +242,17 @@ function normal:create(x,y,z,r,faction,btype)
     }
 
 
-    if not weapon or weapon <= 9 then
-        o.shootdist = 3
-        o.followdist = 1
+    if weapon then
+        
+        --处理字符串为数字
+        if type(weapon) == "string" then
+            weapon = weapons[weapon].gtaid;
+        end
+
+        o.shootdist = gta_weapons[weapon].range;
+        if o.shootdist > 10 then
+            o.followdist = o.shootdist;
+        end
     end
 
     --normal表为索引，实际值为o，若无v补位

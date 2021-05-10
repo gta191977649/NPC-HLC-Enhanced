@@ -1,5 +1,10 @@
 --JUNE 的生物DEBUG 显示器
 
+local debuger = {}
+debuger.on = true -- 是否DEBUG
+debuger.target = true -- 是否显示射线
+debuger.sensor = false -- 是否显示视野射线
+
 local otherElements = getElementByID("otherElements") -- we would need that aswell for binding handlers.
 sW,sH = guiGetScreenSize();
 
@@ -48,7 +53,7 @@ function debugCreature()
                     --text = text .. "\n".."targets:"..tostring(inspect(targets))
                     text = text .. "\n".."Target:"..tostring(inspect(Data:getData(creature,"target")) or "MISS TARGET")
                     --text = text .. "\n".."Traits:"..tostring(inspect(Data:getData(creature,"traits")) or "MISS TRAITS")
-                    --text = text .. "\n".."Gang:"..tostring(Data:getData(creature,"gang") or "MISS GANG")
+                    text = text .. "\n".."Gang:"..tostring(Data:getData(creature,"gang") or "MISS GANG")
                     --text = text .. "\n".."Distance:"..tostring(math.round(distance))
                     --text = text .. "\n".."Ammo:"..tostring(getPedTotalAmmo(creature))
                     --text = text .. "\n".."Accuracy:"..tostring(Data:getData(creature,"accuracy") or "MISS accuracy")
@@ -85,33 +90,70 @@ function debugCreature()
                 
             end
 
-            --接下来是 Sensor
-            --[[
-            if Data:getData(creature,"sensor") then
+            if debuger.sensor then
 
-                --这里需要从客户端获取服务端的数据
-                local radius = Data:getData(creature,"fovDistance")
-                local angle = Data:getData(creature,"fovAngle")
+                --接下来是 Sensor
+                if Data:getData(creature,"sensor") then
 
-                if find then
-                    color = tocolor(255,0,0)
-                else
-                    color = tocolor(0,255,0)
+                    --这里需要从客户端获取服务端的数据
+                    local radius = Data:getData(creature,"fovDistance")
+                    local angle = Data:getData(creature,"fovAngle")
+
+                    if find then
+                        color = tocolor(255,0,0)
+                    else
+                        color = tocolor(0,255,0)
+                    end
+                    
+                    local rx,ry,rz = getElementRotation(creature)
+                    for a = -angle/2,angle/2,30 do 
+                        local x,y,z = getPositionFromOffsetByPosRot(cX,cY,cZ,rx,ry,rz+a,0,radius,0)
+                        --outputDebugString("dxDrawLine3D of:"..tostring(Data:getData(creature,"name")))
+                        dxDrawLine3D( cX,cY,cZ, x,y,z,color,1 )
+                    end
+
                 end
-                
-                local rx,ry,rz = getElementRotation(creature)
-                for a = -angle/2,angle/2,30 do 
-                    local x,y,z = getPositionFromOffsetByPosRot(cX,cY,cZ,rx,ry,rz+a,0,radius,0)
-                    --outputDebugString("dxDrawLine3D of:"..tostring(Data:getData(creature,"name")))
-                    dxDrawLine3D( cX,cY,cZ, x,y,z,color,1 )
-                end
-
+            
             end
-            ]]
+
             ----SENSOR STOP
+            if debuger.target then
+
+                --目标线
+                --[[
+                local target = Data:getData(creature,"target");
+                if isElement(target) then
+                    local tX,tY,tZ = getElementPosition(target);
+                    color = tocolor(255,0,0)
+                    dxDrawLine3D( cX,cY,cZ,tX,tY,tZ,color,1 ) 
+                end
+                ]]
+
+                --任务线
+                if(isNPCHaveTask(creature)) then
+                    local task = getNPCCurrentTask(creature)
+                    local tX,tY,tZ
+                    if task then
+                        if task[1]=="walkToPos" then
+                            tX,tY,tZ = task[2],task[3],task[4]
+                            color = tocolor(255,255,0)
+                        elseif task[1]=="killPed" then
+                            outputDebugString(inspect(task[2]))
+                            tX,tY,tZ = getElementPosition(task[2])
+                            color = tocolor(255,0,0)
+                        end
+                        if tonumber(tX) and color then
+                            dxDrawLine3D( cX,cY,cZ,tX,tY,tZ,color,1 )
+                        end
+                    end
+                end
+            end
+
         end
 
     end
 end
 
-addEventHandler ( "onClientRender", root, debugCreature )
+if debuger.on then
+    addEventHandler ( "onClientRender", root, debugCreature )
+end
