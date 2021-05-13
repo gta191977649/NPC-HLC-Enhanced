@@ -26,10 +26,11 @@ function enableHLCForNPC(npc,walkspeed,accuracy,drivespeed)
 			return false
 		end
 	end
-
+	all_npcs[npc] = {}
+	
 	addEventHandler("onElementDataChange",npc,cleanUpDoneTasks)
 	addEventHandler("onElementDestroy",npc,destroyNPCInformationOnDestroy)
-	all_npcs[npc] = true
+
 	setElementData(npc,"npc_hlc",true)
 	addNPCToUnsyncedList(npc)
 	
@@ -45,7 +46,7 @@ function disableHLCForNPC(npc)
 		outputDebugString("Invalid ped argument",2)
 		return false
 	end
-	if not all_npcs[npc] then
+	if all_npcs[npc] == nil then
 		outputDebugString("HLC not enabled",2)
 		return false
 	end
@@ -65,7 +66,7 @@ function disableHLCForNPC(npc)
 end
 
 function setNPCWalkSpeed(npc,speed)
-	if not npc or not all_npcs[npc] then
+	if not npc or all_npcs[npc] == nil then
 		outputDebugString("Invalid ped argument",2)
 		return false
 	end
@@ -78,7 +79,7 @@ function setNPCWalkSpeed(npc,speed)
 end
 
 function setNPCWeaponAccuracy(npc,accuracy)
-	if not npc or not all_npcs[npc] then
+	if not npc or all_npcs[npc] == nil then
 		outputDebugString("Invalid ped argument",2)
 		return false
 	end
@@ -92,7 +93,7 @@ function setNPCWeaponAccuracy(npc,accuracy)
 end
 
 function setNPCDriveSpeed(npc,speed)
-	if not npc or not all_npcs[npc] then
+	if not npc or all_npcs[npc] == nil then
 		outputDebugString("Invalid ped argument",2)
 		return false
 	end
@@ -108,7 +109,7 @@ end
 ------------------------------------------------
 
 function addNPCTask(npc,task)
-	if not npc or not all_npcs[npc] then
+	if not npc or all_npcs[npc] == nil then
 		outputDebugString("Invalid ped argument",2)
 		return false
 	end
@@ -125,11 +126,12 @@ function addNPCTask(npc,task)
 	end
 	setElementData(npc,"npc_hlc:task."..lasttask,task)
 	setElementData(npc,"npc_hlc:lasttask",lasttask)
+
 	return true
 end
 
 function clearNPCTasks(npc)
-	if not npc or not all_npcs[npc] then
+	if not npc or all_npcs[npc] == nil then
 		outputDebugString("Invalid ped argument",2)
 		return false
 	end
@@ -139,13 +141,17 @@ function clearNPCTasks(npc)
 	for task = thistask,lasttask do
 		removeElementData(npc,"npc_hlc:task."..task)
 	end
+	
+
 	removeElementData(npc,"npc_hlc:thistask")
 	removeElementData(npc,"npc_hlc:lasttask")
+
+
 	return true
 end
 
 function setNPCTask(npc,task)
-	if not npc or not all_npcs[npc] then
+	if not npc or all_npcs[npc] == nil then
 		outputDebugString("Invalid ped argument",2)
 		return false
 	end
@@ -159,7 +165,16 @@ function setNPCTask(npc,task)
 	setElementData(npc,"npc_hlc:lasttask",1)
 	return true
 end
-
+function getNpcCurrentTask(npc) 
+	local thistask = getElementData(npc,"npc_hlc:thistask")
+	if thistask then 
+		return getElementData(npc,"npc_hlc:task."..thistask)
+	end
+	return nil
+end
+function getNPCTask(npc) 
+	return getNpcCurrentTask(npc) 
+end
 function isTaskValid(task)
 	local taskFunc = taskValid[task[1]]
 	return taskFunc and taskFunc(task) or false

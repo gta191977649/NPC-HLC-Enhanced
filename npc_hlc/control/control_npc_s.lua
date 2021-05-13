@@ -1,4 +1,4 @@
-UPDATE_INTERVAL_MS = 2000
+UPDATE_INTERVAL_MS = 1000
 UPDATE_INTERVAL_MS_INV = 1/UPDATE_INTERVAL_MS
 UPDATE_INTERVAL_S = UPDATE_INTERVAL_MS*0.001
 UPDATE_INTERVAL_S_INV = 1/UPDATE_INTERVAL_S
@@ -9,7 +9,7 @@ function initNPCControl()
 end
 
 function cycleNPCs()
-	check_cols = get("npc_hlc.server_colchecking") == "true" and "true" or nil
+	check_cols = nil
 	if check_cols then
 		server_coldata = getResourceFromName("server_coldata")
 		if server_coldata and getResourceState(server_coldata) == "running" then
@@ -20,6 +20,7 @@ function cycleNPCs()
 	end
 
 	for npc,exists in pairs(all_npcs) do
+		-- find and filtering the un-synced npcs
 		if isHLCEnabled(npc) then
 			local syncer = getElementSyncer(getPedOccupiedVehicle(npc) or npc)
 			if syncer then
@@ -37,36 +38,35 @@ function cycleNPCs()
 			end
 		end
 	end
+	-- serverside envaluation for unsynced npcs
+	
 	local this_time = getTickCount()
 	local gamespeed = getGameSpeed()
 	for npc,unsynced in pairs(unsynced_npcs) do
 		if getElementHealth(getPedOccupiedVehicle(npc) or npc) >= 1 then
 			local time_diff = (this_time-getNPCLastUpdateTime(npc))*gamespeed
-			while time_diff > 1 do
-				local thistask = getElementData(npc,"npc_hlc:thistask")
-				if thistask then
-					local task = getElementData(npc,"npc_hlc:task."..thistask)
-					if not task then
-						removeElementData(npc,"npc_hlc:thistask")
-						removeElementData(npc,"npc_hlc:lasttask")
-						break
-					else
-						local prev_time_diff,prev_task = time_diff,task
-						time_diff = time_diff-performTask[task[1]](npc,task,time_diff)
-						if time_diff ~= time_diff then
-							break
-						end
-						if time_diff > 1 then
-							setNPCTaskToNext(npc)
-						end
-					end
-				else
+			if time_diff > 1 then
+				local task = getNpcCurrentTask(npc)
+				if not task then
+					removeElementData(npc,"npc_hlc:thistask")
+					removeElementData(npc,"npc_hlc:lasttask")
 					break
+				else
+					local prev_time_diff,prev_task = time_diff,task
+					time_diff = time_diff-performTask[task[1]](npc,task,time_diff)
+					if time_diff ~= time_diff then
+						break
+					end
+					if time_diff > 1 then
+						setNPCTaskToNext(npc)
+					end
 				end
+				
 			end
 			updateNPCLastUpdateTime(npc,this_time)
 		end
 	end
+
 end
 
 function setNPCTaskToNext(npc)

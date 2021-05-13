@@ -72,3 +72,8 @@ end
 function getPositionFromOffsetByRotMatrix(x,y,z,offx,offy,offz,m11,m12,m13,m21,m22,m23,m31,m32,m33)
 	return offx*m11+offy*m21+offz*m31+x,offx*m12+offy*m22+offz*m32+y,offx*m13+offy*m23+offz*m33+z
 end
+
+function findRotation( x1, y1, x2, y2 ) 
+    local t = -math.deg( math.atan2( x2 - x1, y2 - y1 ) )
+    return t < 0 and t + 360 or t
+end

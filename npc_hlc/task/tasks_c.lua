@@ -7,17 +7,24 @@ function performTask.walkToPos(npc,task)
 	local distx,disty = destx-x,desty-y
 	local dist = distx*distx+disty*disty
 	local dest_dist = task[5]
-	if dist < dest_dist*dest_dist then return true end
+	if dist < dest_dist*dest_dist then 
+		stopAllNPCActions(npc)
+		return true 
+	end
 	makeNPCWalkToPos(npc,destx,desty)
 end
 function performTask.enterToVehicle(npc,task)
 	print("[C] performTask.enterToVehicle")
-	if isPedInVehicle(npc) then return true end
+	if isPedInVehicle(npc) then 
+		return true 
+	end
 	makeNPCEnterToVehicle(npc,task[2],task[3])
 end
 function performTask.exitFromVehicle(npc,task)
 	print("[C] performTask.enterToVehicle")
-	if not isPedInVehicle(npc) then return true end
+	if not isPedInVehicle(npc) then
+		return true 
+	end
 	makeNPCExitFromVehicle(npc)
 end
 
@@ -43,7 +50,10 @@ function performTask.walkAroundBend(npc,task)
 	local x,y,z = getElementPosition(npc)
 	local len = getDistanceBetweenPoints2D(x1,y1,x2,y2)*math.pi*0.5
 	local angle = getAngleInBend(x,y,x0,y0,x1,y1,x2,y2)+enddist/len
-	if angle >= math.pi*0.5 then return true end
+	if angle >= math.pi*0.5 then 
+		stopAllNPCActions(npc)
+		return true 
+	end
 
 	
 	makeNPCWalkAroundBend(npc,x0,y0,x1,y1,x2,y2,off)
@@ -96,6 +106,102 @@ function performTask.killPed(npc,task)
 	return false
 end
 
+function performTask.runAvoidTarget(npc,task)
+	if isPedInVehicle(npc) then 
+		stopAllNPCActions(npc)
+		makeNPCExitFromVehicle(npc)
+	end
+
+	local element,safedist = task[2],task[3]
+	if not isElement(element) then return true end
+	local x,y = getElementPosition(npc) -- 获取NPC坐标
+	local fx,fy = getElementPosition(element) --获取远离目标坐标
+	local ax,ay = 0,0; -- 生成一个离玩家比较远的点
+	local dx,dy = fx-x,fy-y -- 获取平面距离
+
+	offset = Vector3(-dx,-dy,0):getNormalized()*safedist; -- 获取远离玩家方向的模向量*安全距离
+	ax = x + offset:getX();
+	ay = y + offset:getY();
+	--outputChatBox("ax:"..tostring(ax).." ay:"..tostring(ay))
+
+
+		-- 如果太靠近
+
+	if dx*dx+dy*dy > safedist*safedist then -- 足够安全了
+		--outputChatBox("I AM SAFE");
+		stopAllNPCActions(npc) -- 我要休息
+		return true -- 任务完成！
+	else
+		makeNPCWalkToPos(npc,ax,ay) -- 继续跑
+	end
+
+end
+-- attack target using any way
+function performTask.attackElement(npc,task)
+	if isPedInVehicle(npc) then 
+		stopAllNPCActions(npc)
+		makeNPCExitFromVehicle(npc)
+	end
+	local target= task[2]
+
+	local veh = getPedOccupiedVehicle(target)
+	if veh then 
+		--stopAllNPCActions(npc)
+		makeNPCEnterToVehicle(npc,veh)
+	end
+	if not isElement(target) or getElementHealth(target) < 1 then 
+		stopAllNPCActions(npc)
+		return true 
+	end
+	if getElementHealth(npc) < 1 then 
+		stopAllNPCActions(npc)
+		return false 
+	end
+
+	local x,y,z = getElementPosition(npc)
+	local tx,ty,tz = getElementPosition(target)
+	local dx,dy = tx-x,ty-y
+	local distsq = dx*dx+dy*dy
+
+
+	local dist = distsq
+
+	followdist = 10
+	shootdist = 10
+	-- perform using weapon, if have one 
+	local hasWeapon = getPedAvaiableWeaponSlot(npc)
+	if hasWeapon ~= 0 then
+
+		if distsq < shootdist*shootdist then
+			setPedWeaponSlot (npc,hasWeapon)
+			makeNPCShootAtElement(npc,target)
+			setPedRotation(npc,-math.deg(math.atan2(dx,dy)))
+		else
+			stopNPCWeaponActions(npc)
+		end
+		if distsq > followdist*followdist then
+			makeNPCWalkToPos(npc,tx,ty)
+		else
+			stopNPCWalkingActions(npc)
+
+		end
+
+	end
+	-- beat player if no weapon
+	if hasWeapon == 0 then
+		setPedWeaponSlot (npc,0)
+		-- perform beating 
+		if dist > 1 then 
+			makeNPCWalkToPos(npc,tx,ty,false)
+		else 
+			--stopNPCWalkingActions(npc)
+			setPedAimTarget(npc,tx,ty,tz)
+			stopAllNPCActions(npc)
+			makeNPCShootAtElement(npc,target)
+		end
+	end
+end
+
 function performTask.driveToPos(npc,task)
 	if isElementStreamedIn (npc)  == false then return end
 	if getPedOccupiedVehicle(npc) == false then return false end
@@ -103,7 +209,10 @@ function performTask.driveToPos(npc,task)
 	local x,y,z = getElementPosition(getPedOccupiedVehicle(npc))
 	local distx,disty,distz = destx-x,desty-y,destz-z
 	local dist = distx*distx+disty*disty+distz*distz
-	if dist < dest_dist*dest_dist then return true end
+	if dist < dest_dist*dest_dist then 
+		stopAllNPCActions(npc)
+		return true 
+	end
 	makeNPCDriveToPos(npc,destx,desty,destz)
 end
 
@@ -114,7 +223,10 @@ function performTask.driveAlongLine(npc,task)
 	local x,y,z = getElementPosition(getPedOccupiedVehicle(npc))
 	local pos = getPercentageInLine(x,y,x1,y1,x2,y2)
 	local len = getDistanceBetweenPoints3D(x1,y1,z1,x2,y2,z2)
-	if pos >= 1-enddist/len then return true end
+	if pos >= 1-enddist/len then 
+		stopAllNPCActions(npc)
+		return true 
+	end
 	makeNPCDriveAlongLine(npc,x1,y1,z1,x2,y2,z2,off,light)
 end
 
@@ -127,7 +239,10 @@ function performTask.driveAroundBend(npc,task)
 	local x,y,z = getElementPosition(getPedOccupiedVehicle(npc))
 	local len = getDistanceBetweenPoints2D(x1,y1,x2,y2)*math.pi*0.5
 	local angle = getAngleInBend(x,y,x0,y0,x1,y1,x2,y2)+enddist/len
-	if angle >= math.pi*0.5 then return true end
+	if angle >= math.pi*0.5 then 
+		stopAllNPCActions(npc)
+		return true 
+	end
 	makeNPCDriveAroundBend(npc,x0,y0,x1,y1,z1,x2,y2,z2,off)
 end
 

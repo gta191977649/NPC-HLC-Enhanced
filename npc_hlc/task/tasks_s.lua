@@ -43,6 +43,15 @@ function performTask.killPed(npc,task,maxtime)
 	return maxtime
 end
 
+function performTask.attackElement(npc,task,maxtime)
+	setElementPosition(npc,getElementPosition(npc))
+	return maxtime
+end
+function performTask.runAvoidTarget(npc,task,maxtime)
+	setElementPosition(npc,getElementPosition(npc))
+	return maxtime
+end
+
 function performTask.driveToPos(npc,task,maxtime)
 	local vehicle = getPedOccupiedVehicle(npc)
 	if not vehicle then return 0 end
