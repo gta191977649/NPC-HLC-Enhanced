@@ -389,7 +389,7 @@ addEventHandler("onPlayerQuit", root,
 addEventHandler("onPedWasted", root,
 	function ()
 		local spawnpoint = getElementData(source,"botSpawnCol")
-		outputDebugString("onPedWasted: "..tostring(type(spawnpoint)));
+		outputDebugString("onPedWasted: "..tostring(inspect(spawnpoint)));
 		if spawnpoint then
 			local respawntimer = getElementData(spawnpoint,"respawnTimer")
 			if respawntimer and isTimer(respawntimer) then 

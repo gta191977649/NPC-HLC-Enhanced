@@ -18,10 +18,10 @@ function creatureDied(totalAmmo,killer,killerWeapon,bodypart,stealth)
     if killer and isElement(killer) then
         if getElementType(killer) == "player" then
 
-            local targetname = Data:getData(source,"name");
-            local killerwep = getWeaponInHand(killer) or "MISS WEAPON NAME"; -- NEED FIX WEAPON NAME
+            local targetname = Loc:Localization("zombie",killer);
+            local killerwep = "WEAPON NAME"; -- NEED FIX WEAPON NAME
 
-            Player:givePlayerData(killer,"Kill",1);
+            Player:givePlayerData(killer,"ZombieKill",1);
 
             local killtype = "kill2";
             if (bodypart == 9) then 
@@ -30,18 +30,6 @@ function creatureDied(totalAmmo,killer,killerWeapon,bodypart,stealth)
                 Player:givePlayerData(killer,"HeadShot",1);
             end 
             triggerClientEvent(killer,"showkill",killer,killtype,"you",Loc:Localization(killerwep,killer),targetname,0);
-
-
-            --杀死后调整关系
-            --relation change
-            if getElementType(killer) == "player" then
-                local gang = Data:getData(source,"gang");
-                outputDebugString("set player gang relation:"..tostring(gang));
-                if gang > 0 then
-                    triggerEvent("relation > take",root,killer,gang,5);
-                end
-            end
-
         end
     end
 

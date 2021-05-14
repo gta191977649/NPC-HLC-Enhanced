@@ -104,10 +104,9 @@ end
 
 --NEW 2021
 --守卫坐标
---TODO 守卫需要返回默认的方向，不然会丧失对外的警戒
 function performTask.guardPos(npc,task)
 
-	local x,y,z,r = task[2],task[3],task[4],task[5];
+	local x,y,z = task[2],task[3],task[4];
 	local nX,nY,nZ = getElementPosition(npc);
 	local Guarddist = getDistanceBetweenPoints3D(nX,nY,nZ,x,y,z); -- 距离任务点的位置，无用
 
@@ -129,8 +128,6 @@ function performTask.guardPos(npc,task)
 
 	else
 
-		--守卫不存在目标
-
 		stopNPCWeaponActions(npc)--STOP SHOT
 
 		if Guarddist > 1 then
@@ -138,40 +135,8 @@ function performTask.guardPos(npc,task)
 			makeNPCWalkToPos(npc,x,y)
 		end
 
-
-		--TODO 2.没有任务的时候沿着目的地旋转角度..扇形检测
-		-- 代码未完成
-		local rx,ry,rz = getElementRotation(npc)
-		--outputChatBox("rz:"..tostring(rz).." vs task r:"..tostring(r));
-		--[[
-		if rz > r then 
-			--rz = rz - 1
-			--setElementRotation(npc,rx,ry,r)
-		elseif rz < r then
-			--rz = rz + 1
-			--setElementRotation(npc,rx,ry,r)
-		end
-		]]
-
-		--DONE 延迟6秒返回默认的方向
-		local resetRotation = getElementData(npc,"resetRotation")
-		if rz ~= r and resetRotation == false then
-
-			--DONE 6秒后NPC可能不在了
-			--outputChatBox("resetRotation");
-
-			setElementData(npc,"resetRotation",true,false);
-			setTimer(function(npc,rx,ry,r)
-				if isElement(npc) then
-					setElementData(npc,"resetRotation",false,false)
-					setElementRotation(npc,rx,ry,r)
-				end
-			end,6000,1,npc,rx,ry,r)
-
-		else
-			--setElementData(npc,"resetRotation",false,false);
-		end
-		
+		--TODO
+		--没有任务的时候随机旋转角度?
 	end
 	--不能返回true，不然任务就结束了
 

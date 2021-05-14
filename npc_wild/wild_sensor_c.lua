@@ -1,6 +1,5 @@
 --重要函数，获取二者之间的关系
 --参数：英文
---[[
 function getRelationship(a,b)
 
 	local rel = "ignore" -- 默认关系，无视
@@ -55,7 +54,7 @@ function getRelationship(a,b)
 	else
 		--rValue = basicRelation[aGang][bGang]
 		--两者都是NPC，固定关系
-		rel = "friendly"
+		rel = "npc relationship"
 	end
 
 	if tonumber(rValue) >= 10 then
@@ -68,12 +67,11 @@ function getRelationship(a,b)
 
 	return rel
 end
-]]
+
 
 --玩家/NPC 通知其他人面向玩家
 --DONE 有目标的NPC不受到干扰
---DONE 不同物种之间能否相互通知(玩家除外)
---TODO 玩家不能获取到 traits ...
+--TODO 不同物种之间能否相互通知
 function warnOther(npc,target,action)
 	local x,y,z = getElementPosition(npc);
 	local range = 30;
@@ -83,14 +81,13 @@ function warnOther(npc,target,action)
 		if ped ~= npc then -- 过滤我自己
 
 			local pedTraits = Data:getData(ped,"traits")
-			local pedCategory = pedTraits and pedTraits.category or getElementGameType(ped);
+			local pedCategory = pedTraits.category;
 
 			local npcTraits = Data:getData(npc,"traits")
-			local npcCategory = npcTraits and npcTraits.category or getElementGameType(npc);
+			local npcCategory = npcTraits.category;
 
 			--相同物种之间才能沟通
-			--但是注意玩家永远可以通知其他目标
-			if pedCategory == npcCategory or getElementType(npc)=="player" then
+			if pedCategory == npcCategory then
 
 				--[[
 					if NPC:isNPCHaveTask(ped) then
@@ -108,7 +105,7 @@ function warnOther(npc,target,action)
 				local pedTarget = Data:getData(ped,"target")
 
 				if not pedTarget then
-					outputChatBox(inspect(ped).." MISS TARGET :"..tostring(pedTarget));
+					--outputChatBox(inspect(ped).." MISS TARGET :"..tostring(pedTarget));
 
 					--先做寻找动作
 					IFP:syncAnimationLib ( ped, "human", "search", -1, false) --KEEP SEARCH
@@ -116,7 +113,7 @@ function warnOther(npc,target,action)
 					setTimer(setElementFaceTo,2000,1,ped,target)
 					wildFind(ped,target,false,action)--发现但是不通知其他人
 				else
-					outputChatBox(inspect(ped).." pedTarget :"..tostring(pedTarget));
+					--outputChatBox(inspect(ped).." pedTarget :"..tostring(pedTarget));
 				end
 				
 			end
@@ -144,7 +141,7 @@ function wildFind(npc,target,warn,action)
 	local isZombie = table.haveValue(traits,"zombie"); -- 是僵尸
 	--关系
 	local relationType = getRelationship(npc,target);
-	--outputDebugString(inspect(npc).." relationType:"..tostring(relationType));
+	outputDebugString(inspect(npc).." relationType:"..tostring(relationType));
 
 	if relationType == "hostility" then
 
@@ -220,6 +217,8 @@ function wildFind(npc,target,warn,action)
 			triggerServerEvent("npc > setTask",npcRoot,npc,{"panic",target})
 		end
 	end
+
+
 	
 end
 addEvent("npc > findTarget",true)
@@ -283,66 +282,52 @@ function wildDamageSensor(attacker,weapon,bodypart,loss)
 	--有攻击者
 	if attacker then
 
-		if getElementType(attacker)=="vehicle" then
-			outputChatBox("fix attacker from veh to dirver:"..tostring(inspect(attacker)));
-			attacker = getVehicleOccupant(attacker);
-		end
-
-		--detail
-		local traits = Data:getData(source,"traits");
-		local isWeak = table.haveValue(traits,"weak");
-		local isCiv = table.haveValue(traits,"civilian");
-
 		--获取受害者和攻击者之间的关系
 		local relationType = getRelationship(source,attacker);
-
 		
 		local name = Data:getData(source,"name");
-		outputChatBox(tostring(name).." find new attacker "..tostring(inspect(attacker)).." and relationType"..tostring(relationType));
+
+		outputChatBox(tostring(name).." find new attacker "..tostring(inspect(attacker)));
 
 		--误伤是否反击？
-		--目前只反击玩家的行为 或 非同盟NPC
+		--目前只反击玩家或者非友好帮会的攻击
 		if getElementType(attacker) == "player" or relationType ~= "friendly" then
-
+			-----------------
+			---player killer
+			------------------
 			--如果已有attacker作为目标，就不要再执行了
 			if NPC:isNPCHaveTask(source) then
 				task = NPC:getNPCCurrentTask(source)
-				outputChatBox(inspect(task));
 				--QUEST:这里task理论上不为空，但是确实存在空
 				if task and task[1] == "killPed" and task[2]==attacker then
 					outputChatBox("IGNORE SAME ATTACKER TO FIGHT BACK");
-				elseif task and task[1] == "guardPos" and Data:getData(source,"target") == attacker then
-					outputChatBox("IGNORE GUARD TASK");
 				else
-
-					if isWeak or isCiv then
+					local traits = Data:getData(source,"traits");
+					if table.haveValue(traits,"civilian") then
 						--重要：强制停止之前的动作（比如PANIC时的举手）
 						IFP:syncAnimationLib(source) -- 停止动作
 						triggerServerEvent("npc > setTask",npcRoot,source,{"awayFromElement",attacker,0.1,200})
 						--setNPCTask(ped,{"awayFromElement",task[2],0.1,200})
 					else
-						if task and task[1] == "guardPos" then
-							Data:setData(source,"target",attacker)
-						else
-							--立刻 反击
-							local shootdist = Data:getData(source,"shootdist");
-							local followdist = Data:getData(source,"followdist");
-							triggerServerEvent("npc > setTask",npcRoot,source,{"killPed",attacker,shootdist,followdist})
-							Data:setData(source,"target",attacker);--设置长期目标
-						end
+						--立刻 反击
+						local shootdist = Data:getData(source,"shootdist");
+						local followdist = Data:getData(source,"followdist");
+						triggerServerEvent("npc > setTask",npcRoot,source,{"killPed",attacker,shootdist,followdist})
+						Data:setData(source,"target",attacker);--设置长期目标
 					end
 
 				end
 			end
 
+		elseif getElementType(attacker) == "vehicle" then
+			-----------------
+			---veh killer
+			-----------------
+
 		end
 
-		
 
 	else
-
-		--无伤害者
-
 	end
 
 	--TODO 如果NPC被2个以上玩家顺序攻击，会频繁的改变目标，需要增加一个仇恨值判断，例如新目标是否比旧目标仇恨值更高

@@ -204,7 +204,7 @@ Walk straight towards the specified point until the distance is short enough.
 
 ```
 
-{"guardPos",x,y,z,r} 守卫坐标和方向
+{"guardPos",x,y,z} 闲逛
  x,y,z为坐标 
 ```
 

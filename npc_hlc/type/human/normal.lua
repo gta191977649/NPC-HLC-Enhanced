@@ -1,5 +1,6 @@
 --皮肤对照表
-
+slaveSkin = {63,145,146,213,238,257,310}
+meatSkin = {252,154,97,}--裸男
 cultSkin = {32,33,132,157,158,159,160,200}-- NOT USED
 
 
@@ -19,7 +20,6 @@ banditWeapons = {25,27,29,30,33,34,31}
 SyndicateTriadWeapons = {30,27,29}
 --NeutralFreelancerWeapons = {4,5,6,7,8,25,10,11,12,14,15,24} --vagrants and looters weapons 
 NeutralFreelancerWeapons = {"bottle","nailstick","chopper","sledgehammer","axe","pickaxe","hammer","machete","crowbar","pan","p1911"} --vagrants and looters weapons 
-
 --商人出售列表（等待转移）
 --TODO 等待完善
 --参数：物品名，几率(乘以100换算成%,1 = 必然刷出)
@@ -58,23 +58,21 @@ commonTrade = {
     {"baked_beans",1},
 }
 
-
 local normalType = {
 
     --questgiver/vendor 应该包括guard行为，或者同时具有civilian属性
 
     --【食人族/猎头者】 OK //////////////////////////////////////////////
-    ['raider_guard']={name="Raider Barker",behaviour="guard",traits={"raider"},gang=5,skin=raiderSkin,wep=CampGuardWeapons}, -- 食人族守卫 OK
-    ['raider_hunter']={name="Raider Mongrel",behaviour="hunt",traits={"civilian,male","raider"},gang=5,skin=raiderSkin,wep=raiderWeapons}, -- 食人族 OK
+    ['raider_guard']={name="Raider Barker",behaviour="guard",traits={"raider"},gang=5,skin={108,109,181,247,248,242,293},wep=CampGuardWeapons}, -- 食人族守卫 OK
+    ['raider_hunter']={name="Raider Mongrel",behaviour="hunt",traits={"civilian,male","raider"},gang=5,skin={108,109,181,247,248,242,293},wep=raiderWeapons}, -- 食人族 OK
     ['raider_slave']={name="Slave",behaviour="default",traits={"civilian,male,raiderslave"},gang=5,skin=slaveSkin}, -- 食人族奴隶 OK
     ['raider_meat']={name="Meat",behaviour="default",traits={"raidermeat"},gang=5,skin=meatSkin},--拥有随机4种动作 OK
-    --MEAT ANIMAL
     --"BEACH","ParkSit_M_Loop",-1, true
     --"SWEET","Sweet_injuredloop",-1, true
     --"CRACK", "crckidle2", -1, false
     --"GRAVEYARD", "mrnF_loop", -1, true
-    ['raider_vendor']={name="Trader",behaviour="guard",traits={"vendor","raider"},trade=raiderTrade,gang=5,skin=raiderSkin,wep=randomMelee}, --商人 OK
-    ['raider_quest']={name="Warchief",behaviour="guard",traits={"questgiver","raider"},gang=5,skin=raiderSkin,wep=raiderBossWeapons}, -- 酋长 OK
+    ['raider_vendor']={name="Trader",behaviour="guard",traits={"vendor","raider"},trade=raiderTrade,gang=5,skin={108,109,181,247,248,242,293},wep=randomMelee}, --商人 OK
+    ['raider_quest']={name="Warchief",behaviour="guard",traits={"questgiver","raider"},gang=5,skin={108,109,181,247,248,242,293},wep=raiderBossWeapons}, -- 酋长 OK
 
     --【城市民兵武装】 OK ///////////////////////////////////////////////
     ['cdf_guard']={name="Militia",behaviour="guard",traits={"cdf"},gang=3,skin={73,16,176,179,2,21,278},wep=CampGuardWeapons},--民兵守卫 OK
@@ -138,6 +136,9 @@ local normalType = {
     ['tester_archer']={name="GM",behaviour="guard",traits={},gang=0,skin={0},wep={23},},--NeutralFreelancerSkins
 
 };
+
+
+femaleSkins = {9, 10, 11, 12, 13, 31, 38, 39, 40, 41, 53, 54, 55, 56, 63, 64, 69, 75, 76, 77, 85, 87, 88, 89, 90, 91, 92, 93, 129, 130, 131, 138, 139, 140, 141, 145, 148, 150, 151, 152, 157, 169, 172, 178, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 201, 205, 207, 211, 214, 215, 216, 218, 219, 224, 225, 226, 231, 232, 233, 237, 238, 243, 244, 245, 246, 251, 256, 257, 263, 298, 304}
 
 
 
