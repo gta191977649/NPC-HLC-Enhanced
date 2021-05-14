@@ -55,7 +55,6 @@ function aimAtNPC(ped)
 		if taskName == "panic" then
 			--已经是panic状态了
 			if getElementData(ped,"talking") or isPedDead(ped) then return end; -- 过滤正在说话状态
-
 			
 			setElementData(ped, "talking", true)
 			setTimer(function()
@@ -67,31 +66,27 @@ function aimAtNPC(ped)
 
 		else
 
-			if getElementData(ped,"talking") or isPedDead(ped) then return end; -- 过滤正在说话状态
+			--瞄准市民 触发panic 
+			--只有市民会投降
+			--这里是突发事件，不要被谈话过滤掉
+			--注意 这里检测慢一些，所以总是会先触发后续代码
+			if aiming and civ then
+				
+				outputDebugString("make ped panic!");
+				
+				exports.npc_hlc:setNPCTask(ped,{"panic",source}) -- 使用NPC恐惧source
+				triggerClientEvent("onChatbubblesMessageIncome",ped,Loc:Localization(table.random(threatenRobbingMessages),source),0);
+				triggerClientEvent(root, "sync.message", ped, ped, 255, 255, 255, "SCARED")
+
+			end
+
+			-- 过滤正在说话状态
+			if getElementData(ped,"talking") or isPedDead(ped) then return end;
 
 			setElementData(ped, "talking", true)
 			setTimer(function() 
 				setElementData(ped, "talking", false)
 			end,5000,1)	
-
-
-			--瞄准市民 触发panic 
-			--只有市民会投降
-			if aiming and civ then
-				
-				--outputDebugString("make ped panic!"..tostring(inspect(getNPCCurrentTask(ped))));
-				
-				--如果目前task不是panic，设置任务为panic
-				--if taskName ~= "panic" then
-				exports.npc_hlc:setNPCTask(ped,{"panic",source}) -- 使用NPC恐惧source
-				--if getElementData(ped,"talking") or isPedDead(ped) then return end; -- 过滤正在说话状态
-				triggerClientEvent("onChatbubblesMessageIncome",ped,Loc:Localization(table.random(threatenRobbingMessages),source),0);
-				triggerClientEvent(root, "sync.message", ped, ped, 255, 255, 255, "SCARED")
-				--end
-				
-				return --触发后不再执行后续部分！
-
-			end
 
 			-----------------------------
 
@@ -111,10 +106,9 @@ function aimAtNPC(ped)
 					triggerClientEvent(root, "sync.message", ped, ped, 255, 255, 255, "ALERT")
 				end
 
-			end
+			elseif relation == "hostility" then
 
-			--敌对关系，条件成立
-			if relation == "hostility" then
+				--敌对关系，条件成立
 
 				--当玩家举起格斗武器时 惧怕玩家的动作
 				--outputChatBox("aiming:"..tostring(aiming));
