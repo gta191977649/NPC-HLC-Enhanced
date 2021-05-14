@@ -2,7 +2,7 @@
 --这里是NPC的最基础行为
 
 DGS = exports.dgs
-local AI = {}
+AI = {}
 AI.config = {
 	sensorOffset = 2,
 	sensorOffsetZ = 0,
@@ -22,7 +22,8 @@ AI.decisions = {
 	"WALK_OBSTCLE_LEFT",
 	"WALK_OBSTCLE_BACK",
 }
-local debug = false
+--调试模式
+debug = false
 local mathCos = math.cos
 local mathSin = math.sin
 local mathAtan = math.atan
@@ -32,7 +33,7 @@ local radToDeg = 180/math.pi
 local degToRad = math.pi/180
 local mathRandom = math.random
 
-local function mathAbs(x)
+function mathAbs(x)
 	return x < 0 and -x or x
 end
 
@@ -52,15 +53,13 @@ function stopAllNPCActions(npc)
 	stopNPCWalkingActions(npc)
 	stopNPCWeaponActions(npc)
 	stopNPCDrivingActions(npc)
+
 	setPedControlState(npc,"vehicle_fire",false)
 	setPedControlState(npc,"vehicle_secondary_fire",false)
 	setPedControlState(npc,"steer_forward",false)
 	setPedControlState(npc,"steer_back",false)
 	setPedControlState(npc,"horn",false)
 	setPedControlState(npc,"handbrake",false)
-	if AI[npc] ~= nil then
-		AI[npc].decision = AI.decisions[1]
-	end
 end
 
 
@@ -130,8 +129,30 @@ function createPedRaycast(element,type)
 	end
 end
 
-function makeNPCWalkToPos(npc,x,y,ingnoreRaycast)
-	ingnoreRaycast = ingnoreRaycast or false
+--2021 改进
+--客户端：让NPC边做动作边移动到（X,Y）
+--这里的循环速度非常快
+--目前主要是用于僵尸，支持walk/run/sprint
+function makeNPCAnimToPos(npc,x,y)
+
+	local speed = getNPCWalkSpeed(npc) -- 默认速度
+	local walkingstyle = Data:getData(npc,"walkingstyle");
+	--outputChatBox("speed "..tostring(speed))
+
+	--设置NPC朝向
+	setElementFaceToPos(npc,x,y)
+
+	local block,anim = getPedAnimation(npc)
+
+	--TODO block not in table(zb_walk,run..etc)
+	if not block then
+		IFP:syncAnimationLib ( npc, walkingstyle, speed, -1, true, true, true) --KEEP WALKING
+	end
+
+end
+
+--客户端：让NPC移动到坐标（X,Y）通过操纵按键的方式而不是设置动作
+function makeNPCWalkToPos(npc,x,y)
 	local speed = getNPCWalkSpeed(npc)
 	
 	-- injected ai logic 初始化AI参数
@@ -141,16 +162,10 @@ function makeNPCWalkToPos(npc,x,y,ingnoreRaycast)
 	local cameraAngle = math.deg(mathAtan2(x-px,y-py))
 	setPedCameraRotation(npc,cameraAngle) -- 设置NPC转向？
 
-	local ray_eye_l = false
-	local ray_eye_m = false
-	local ray_eye_r = false
-
-
-	if ingnoreRaycast == false then
-		ray_eye_l = createPedRaycast(npc,"raycast_eye_l")
-		ray_eye_m = createPedRaycast(npc,"raycast_eye_m")
-		ray_eye_r = createPedRaycast(npc,"raycast_eye_r")
-	end
+	--检测三个方向的射线碰撞情况
+	local ray_eye_l = createPedRaycast(npc,"raycast_eye_l")
+	local ray_eye_m = createPedRaycast(npc,"raycast_eye_m")
+	local ray_eye_r = createPedRaycast(npc,"raycast_eye_r")
 
 	local currentTick = getTickCount()
 
@@ -218,9 +233,7 @@ function makeNPCWalkToPos(npc,x,y,ingnoreRaycast)
 
 	-- render debug text
 	if debug then
-		local group = getElementData(npc,"npchlc:group") == false and "DEFAULT" or getElementData(npc,"npchlc:group")
-
-			DGS:dgsSetProperty(AI[npc].text,"text",string.format("%s\nGROUP:%s\nOBSTALE:%s\nLIGHT:%s",AI[npc].task,group,AI[npc].decision,light ~= nil and light or "N/A"))
+		DGS:dgsSetProperty(AI[npc].text,"text",string.format("%s\nDECISION:%s\nLIGHT:%s",AI[npc].task,AI[npc].decision,light ~= nil and light or "N/A"))
 	end
 
 	setPedControlState(npc,"forwards",true)
@@ -231,33 +244,18 @@ function makeNPCWalkToPos(npc,x,y,ingnoreRaycast)
 	)
 end
 
-function makeNPCEnterToVehicle(npc,vehicle,seat_enter)
+--客户端：NPC步行到车边后上车
+function makeNPCEnterToVehicle(npc,vehicle,seat)
 	print("[C] Set setPedEnterVehicle")
 	local x,y,z = getElementPosition(npc)
 	local vx,vy,vz = getElementPosition(vehicle)
 
 	local dis = getDistanceBetweenPoints3D(x,y,z,vx,vy,vz)
 	if dis <= 3 then
-		setPedEnterVehicle (npc,vehicle,false)
+		setPedEnterVehicle (npc,vehicle,seat)
 	else
 		makeNPCWalkToPos(npc,vx,vy)
 	end
-end
--- Runing inverse the target
-function makeNpcRunAvoidTarget(npc,target,dist)
-	local nx,ny,nz = getElementPosition(npc)
-	local tx,ty,tz = getElementPosition(target)
-	local d = getDistanceBetweenPoints3D (nx,ny,nz,tx,ty,tz)
-	if d < dist then  
-		local x,y,z = getPositionFromElementOffset(target,0,dist,0)
-		makeNPCWalkToPos(npc,x,y)
-		if debug then 
-			dxDrawLine3D(tx,ty,tz, x,y,z,tocolor ( 255, 0, 0, 255 ))
-		end
-	end
-end
-function makeNPCStopMovement(npc)
-	setPedControlState(npc,"forwards",false)
 end
 
 --客户端：NPC离开车
@@ -301,18 +299,12 @@ function makeNPCShootAtPos(npc,x,y,z)
 	yx,yy,yz = yx*ymult,yy*ymult,yz*ymult
 	x,y,z = x*mult,y*mult,z*mult
 
-
-	setPedAimTarget(npc,sx+xx+yx+x,sy+xy+yy+y,sz+xz+yz+z)
-	local rz = findRotation(sx,sy, sx+xx+yx+x,sy+xy+yy+y ) 
-	setElementRotation(npc,0,0,rz)
+	setPedAimTarget(npc,sx+xx+yx+x,sy+xy+yy+y,sz+xz+yz+z) -- 射击坐标
 	if isPedInVehicle(npc) then
 		setPedControlState(npc,"vehicle_fire",not getPedControlState(npc,"vehicle_fire"))
-	else	
+	else
 		setPedControlState(npc,"aim_weapon",true)
 		setPedControlState(npc,"fire",not getPedControlState(npc,"fire"))
-	end
-	if debug == true then
-		dxDrawLine3D(sx,sy,sz,sx+xx+yx+x,sy+xy+yy+y,sz+xz+yz+z,tocolor ( 255, 0, 0, 255 ))
 	end
 end
 
@@ -344,17 +336,8 @@ function makeNPCShootAtElement(npc,target)
 	vx,vy,vz = vx*6,vy*6,vz*6
 	makeNPCShootAtPos(npc,x+vx,y+vy,z+vz)
 end
-local function onVehicleHit(collider, damageImpulseMag, bodyPart, x, y, z, nx, ny, nz,hitElementforce,model)
-	
-	if collider ~= nil and tonumber(model) then return end
-	if isModelObstcle(model) then
-		--print(model)
-		if AI[npc] ~= nil and AI[npc].decision == AI.decisions[2] and bodyPart == 4 or AI[npc] ~= nil and collider == nil then
-			AI[npc].decision = AI.decisions[3]
-			AI[npc].lastDecisionTick = getTickCount()
-		end
-	end		
-end
+
+--客户端：设置AI参数
 function initalAIParameter(npc)
 	if AI[npc] == nil then
 		AI[npc] = {}
@@ -367,16 +350,8 @@ function initalAIParameter(npc)
 			DGS:dgs3DTextAttachToElement(AI[npc].text,npc,0,0)
 			--DGS:dgsAttachToAutoDestroy(npc,AI[npc].text)
 		end
-		local veh = getPedOccupiedVehicle(npc)
-		if veh then
-			addEventHandler("onClientVehicleCollision", veh,onVehicleHit)
-			addEventHandler("onClientElementDestroy", veh, function ()
-				removeEventHandler("onClientVehicleCollision", veh,onVehicleHit)
-			end)
-		end
 		addEventHandler("onClientElementDestroy", npc, function ()
 			if isTimer(AI[source].timer) then killTimer(AI[source].timer) end
-			
 			if debug then
 				destroyElement(AI[source].text)
 			end
@@ -561,9 +536,7 @@ function makeNPCDriveToPos(npc,x,y,z,light)
 		-- logic for idle
 		-- render debug text
 		if debug then
-			local group = getElementData(npc,"npchlc:group") == false and "DEFAULT" or getElementData(npc,"npchlc:group")
-
-			DGS:dgsSetProperty(AI[npc].text,"text",string.format("%s\nGROUP:%s\nOBSTALE:%s\nLIGHT:%s",AI[npc].task,group,AI[npc].decision,light ~= nil and light or "N/A"))
+			DGS:dgsSetProperty(AI[npc].text,"text",string.format("%s\nDECISION:%s\nLIGHT:%s",AI[npc].task,AI[npc].decision,light ~= nil and light or "N/A"))
 		end
 
 		-- check if is train then stop do nothing
@@ -704,7 +677,7 @@ function makeNPCDriveToPos(npc,x,y,z,light)
 
 end
 
---[[
+
 addEventHandler("onClientVehicleCollision", root,
 	function(collider, damageImpulseMag, bodyPart, x, y, z, nx, ny, nz,hitElementforce,model)
 		if collider ~= nil then return end
@@ -718,7 +691,7 @@ addEventHandler("onClientVehicleCollision", root,
 		end		
 	end
 )
-]]
+
 function makeNPCDriveAlongLine(npc,x1,y1,z1,x2,y2,z2,off,light)
 	local car = getPedOccupiedVehicle(npc)
 	local x,y,z = getElementPosition(car)
@@ -749,9 +722,7 @@ function makeNPCwaitForGreenLight(npc)
 	end
 	if debug and AI[npc] ~= nil then
 		
-		local group = getElementData(npc,"npchlc:group") == false and "DEFAULT" or getElementData(npc,"npchlc:group")
-
-			DGS:dgsSetProperty(AI[npc].text,"text",string.format("%s\nGROUP:%s\nOBSTALE:%s\nLIGHT:%s",AI[npc].task,group,AI[npc].decision,light ~= nil and light or "N/A"))
+		DGS:dgsSetProperty(AI[npc].text,"text",string.format("%s\nDECISION:%s",AI[npc].task,AI[npc].decision))
 	end
 end
 

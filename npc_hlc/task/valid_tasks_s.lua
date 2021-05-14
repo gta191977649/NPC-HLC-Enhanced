@@ -96,16 +96,6 @@ function taskValid.killPed(task)
 		tonumber(shootdist) and tonumber(followdist) and true or false
 end
 
--- using any way try to kill target
-function taskValid.attackElement(task)
-	local target = task[2]
-	return isElement(target)
-end
-function taskValid.runAvoidTarget(task)
-	local target,dist = task[2],task[3]
-	return isElement(target) and tonumber(dist) 
-end
-
 taskValid.driveToPos = taskValid.walkToPos
 taskValid.driveAlongLine = taskValid.walkAlongLine
 taskValid.driveAroundBend = taskValid.walkAroundBend
