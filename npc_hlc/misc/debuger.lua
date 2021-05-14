@@ -1,7 +1,7 @@
 --JUNE 的生物DEBUG 显示器
 
 local debuger = {}
-debuger.on = true -- 是否DEBUG
+debuger.on = false -- 是否DEBUG
 debuger.target = true -- 是否显示射线
 debuger.sensor = false -- 是否显示视野射线
 
