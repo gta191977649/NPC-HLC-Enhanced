@@ -154,7 +154,7 @@ function handleVehicleDamage(attacker, weapon, loss, x, y, z, tire)
 	for seat, player in pairs(getVehicleOccupants(source)) do
 		local npc = player
 		--and bodyPart == 3
-		if ai[npc] ~= nil and attacker == getLocalPlayer ( ) then
+		if ai[npc] ~= nil and attacker == localPlayer then
 			if ai[npc]["status"] ~= status[4] then
 				ai[npc]["status"] = status[4]
 				print("Ai set agrresive due hit by player")

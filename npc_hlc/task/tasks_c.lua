@@ -11,6 +11,7 @@ function performTask.walkToPos(npc,task)
 		stopAllNPCActions(npc)
 		return true 
 	end
+	stopNPCWeaponActions(npc)
 	makeNPCWalkToPos(npc,destx,desty)
 end
 function performTask.enterToVehicle(npc,task)
@@ -18,6 +19,7 @@ function performTask.enterToVehicle(npc,task)
 	if isPedInVehicle(npc) then 
 		return true 
 	end
+	stopNPCWeaponActions(npc)
 	makeNPCEnterToVehicle(npc,task[2],task[3])
 end
 function performTask.exitFromVehicle(npc,task)
@@ -25,6 +27,7 @@ function performTask.exitFromVehicle(npc,task)
 	if not isPedInVehicle(npc) then
 		return true 
 	end
+	stopNPCWeaponActions(npc)
 	makeNPCExitFromVehicle(npc)
 end
 
@@ -38,6 +41,7 @@ function performTask.walkAlongLine(npc,task)
 	if pos >= 1-enddist/len then return true end
 	--随机偏移node位置，防止NPC撞一起
 	--local offset = math.random(0,1) 
+	stopNPCWeaponActions(npc)
 	makeNPCWalkAlongLine(npc,x1,y1,z1,x2,y2,z2,off)
 end
 
@@ -55,7 +59,7 @@ function performTask.walkAroundBend(npc,task)
 		return true 
 	end
 
-	
+	stopNPCWeaponActions(npc)
 	makeNPCWalkAroundBend(npc,x0,y0,x1,y1,x2,y2,off)
 end
 
@@ -67,6 +71,7 @@ function performTask.walkFollowElement(npc,task)
 	local fx,fy = getElementPosition(followed)
 	local dx,dy = fx-x,fy-y
 	if dx*dx+dy*dy > mindist*mindist then
+		stopNPCWeaponActions(npc)
 		makeNPCWalkToPos(npc,fx,fy)
 	else
 		stopAllNPCActions(npc)

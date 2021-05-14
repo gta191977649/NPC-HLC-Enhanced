@@ -48,8 +48,8 @@ function performTask.attackElement(npc,task,maxtime)
 	return maxtime
 end
 function performTask.runAvoidTarget(npc,task,maxtime)
-	setElementPosition(npc,getElementPosition(npc))
-	return maxtime
+	if getElementSyncer(npc) then return maxtime end
+	return makeNPCWalkToPos(npc,task[2],task[3],task[4],maxtime)
 end
 
 function performTask.driveToPos(npc,task,maxtime)

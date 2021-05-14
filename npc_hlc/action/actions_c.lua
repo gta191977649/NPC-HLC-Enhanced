@@ -313,8 +313,10 @@ function makeNPCShootAtElement(npc,target)
 	makeNPCShootAtPos(npc,x+vx,y+vy,z+vz)
 end
 local function onVehicleHit(collider, damageImpulseMag, bodyPart, x, y, z, nx, ny, nz,hitElementforce,model)
-	if collider ~= nil then return end
+	
+	if collider ~= nil and tonumber(model) then return end
 	if isModelObstcle(model) then
+		--print(model)
 		if AI[npc] ~= nil and AI[npc].decision == AI.decisions[2] and bodyPart == 4 or AI[npc] ~= nil and collider == nil then
 			AI[npc].decision = AI.decisions[3]
 			AI[npc].lastDecisionTick = getTickCount()

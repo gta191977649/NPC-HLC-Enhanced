@@ -1,7 +1,6 @@
 UPDATE_COUNT = 35
 UPDATE_INTERVAL_MS = 2000
 
-local streamed_npcs = {}
 Async:setDebug(false)
 
 --Async:setPriority(500, 33); 
@@ -9,7 +8,11 @@ addEventHandler( "onClientElementStreamIn", root,
     function ( )
         if getElementType( source ) == "ped" then
             if isHLCEnabled(source) then
-				streamed_npcs[source] = true
+				streamed_npcs[source] = {
+					thistask = nil,
+					lasttask = nil,
+					tasks = {},
+				}
 			end
         end
     end

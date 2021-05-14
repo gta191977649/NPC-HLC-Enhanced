@@ -7,11 +7,10 @@
     <script src="vendor/common.lua" type="shared" cache="false"/>
     <script src="vendor/async.lua" type="shared" cache="false"/>
     <script src="vendor/ped.lua" type="shared" cache="false"/>
-    <script src="function/npc_functions_s.lua" type="server" />
-    <script src="function/npc_functions.lua" type="server" />
-    <script src="function/npc_functions.lua" type="client" cache="false"/>
     <script src="function/npc_hlc_s.lua" type="server" />
     <script src="function/npc_hlc_c.lua" type="client" cache="false"/>
+    <script src="function/npc_functions_s.lua" type="server" />
+    <script src="function/npc_functions.lua" type="client" cache="false"/>
     <script src="control/control_npc_s.lua" type="server" />
     <script src="control/control_npc_c.lua" type="client" cache="false"/>
     <script src="task/valid_tasks_s.lua" type="server" />
