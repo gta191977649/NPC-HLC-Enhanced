@@ -56,6 +56,17 @@ function getNPCCurrentTask(npc)
 	return getElementData(npc,"npc_hlc:task."..thistask) 
 end
 
+--获取当前任务名
+function getNPCTaskName(npc)
+	if not isHLCEnabled(npc) then
+		outputDebugString("Invalid ped argument",2)
+		return false
+	end
+	local thistask = getElementData(npc,"npc_hlc:thistask")
+	local task = getElementData(npc,"npc_hlc:task."..thistask);
+	return task[1]
+end
+
 --2021
 --服务器/客户端 复原应有的速度
 --PS:该文件同时被客户端和用户端使用，我很纳闷

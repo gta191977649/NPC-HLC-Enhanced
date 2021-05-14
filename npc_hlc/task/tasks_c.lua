@@ -51,7 +51,8 @@ function performTask.hangOut(npc,task)
 		--移动遇到障碍物就休息
 		local ray_eye_m = createPedRaycast(npc,"raycast_eye_m")
 
-		if getTickCount() - getElementData(npc,"hangOut:tick") > 3000 or ray_eye_m then
+		--DONE 增加交谈时停止移动
+		if getTickCount() - getElementData(npc,"hangOut:tick") > 3000 or ray_eye_m or getElementData(npc,"talking") then
 
 			--outputChatBox(Data:getData(npc,"name").."REST NOW!");
 			
@@ -64,6 +65,12 @@ function performTask.hangOut(npc,task)
 			else
 				--停止按键模式
 				stopNPCWalkingActions(npc)
+
+				--如果在说话转向玩家
+				if getElementData(npc,"talking") then
+					setElementFaceTo(npc,localPlayer)
+				end
+
 			end
 
 			setElementData(npc,"hangOut:action","rest",false);
@@ -104,9 +111,10 @@ end
 
 --NEW 2021
 --守卫坐标
+--TODO 守卫需要返回默认的方向，不然会丧失对外的警戒
 function performTask.guardPos(npc,task)
 
-	local x,y,z = task[2],task[3],task[4];
+	local x,y,z,r = task[2],task[3],task[4],task[5];
 	local nX,nY,nZ = getElementPosition(npc);
 	local Guarddist = getDistanceBetweenPoints3D(nX,nY,nZ,x,y,z); -- 距离任务点的位置，无用
 
@@ -128,6 +136,8 @@ function performTask.guardPos(npc,task)
 
 	else
 
+		--守卫不存在目标
+
 		stopNPCWeaponActions(npc)--STOP SHOT
 
 		if Guarddist > 1 then
@@ -135,8 +145,41 @@ function performTask.guardPos(npc,task)
 			makeNPCWalkToPos(npc,x,y)
 		end
 
-		--TODO
-		--没有任务的时候随机旋转角度?
+
+		--TODO 2.没有任务的时候沿着目的地旋转角度..扇形检测
+		-- 代码未完成
+		local rx,ry,rz = getElementRotation(npc)
+		--outputChatBox("rz:"..tostring(rz).." vs task r:"..tostring(r));
+		--[[
+		if rz > r then 
+			--rz = rz - 1
+			--setElementRotation(npc,rx,ry,r)
+		elseif rz < r then
+			--rz = rz + 1
+			--setElementRotation(npc,rx,ry,r)
+		end
+		]]
+
+		--DONE 延迟6秒返回默认的方向
+		local resetRotation = getElementData(npc,"resetRotation")
+		if rz ~= r and resetRotation == false then
+
+			-- 交谈的时候不要转回去
+			if getElementData(npc,"talking") then return false end
+
+			--DONE 6秒后NPC可能不在了
+			setElementData(npc,"resetRotation",true,false);
+			setTimer(function(npc,rx,ry,r)
+				if isElement(npc) then
+					setElementData(npc,"resetRotation",false,false)
+					setElementRotation(npc,rx,ry,r)
+				end
+			end,6000,1,npc,rx,ry,r)
+
+		else
+			--setElementData(npc,"resetRotation",false,false);
+		end
+		
 	end
 	--不能返回true，不然任务就结束了
 
@@ -222,11 +265,13 @@ function performTask.panic(npc,task)
 		return true
 	else
 
-		lastBlock,lastAnimation = getPedAnimation(npc)
+		local ifp = getElementData(npc,"ifp");
+		--lastBlock,lastAnimation = getPedAnimation(npc)
 		--outputDebugString(tostring(lastBlock)..","..tostring(lastAnimation));
 
 		if targetMe then
-			if lastBlock == "shop" and lastAnimation == "SHP_Rob_HandsUp" then
+			if ifp == "handsup" then
+			--if lastBlock == "shop" and lastAnimation == "SHP_Rob_HandsUp" then
 				return false
 			else
 				--triggerEvent("onChatbubblesMessageIncome",npc,Loc:Localization(table.random(threatenRobbingMessages)),0);
@@ -234,8 +279,8 @@ function performTask.panic(npc,task)
 				IFP:syncAnimationLib(npc,"human","handsup",-1,true,false)
 			end
 		else
-
-			if lastBlock == "ped" and lastAnimation == "cower" then
+			if ifp == "panic" then
+			--if lastBlock == "ped" and lastAnimation == "cower" then
 				return false
 			else
 				IFP:syncAnimationLib(npc,"human","panic",-1,true,false);

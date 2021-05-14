@@ -78,16 +78,30 @@ function warnOther(npc,target,action)
 	local peds = getElementsWithinRange(x,y,z,range,"ped");
 
 	for _,ped in pairs(peds) do
-		if ped ~= npc then -- 过滤我自己
+		if ped ~= npc then -- 过滤NPC我自己
 
+			--NPC
 			local pedTraits = Data:getData(ped,"traits")
 			local pedCategory = pedTraits.category;
 
-			local npcTraits = Data:getData(npc,"traits")
-			local npcCategory = npcTraits.category;
+			--CALLER IS PLAYER OR NPC
+			local npcTraits
+			local npcCategory
+
+			if getElementType(npc)=="player" then
+				npcCategory = "human" -- 玩家属于human物种，所以没有种间隔离
+			else
+				npcTraits = Data:getData(npc,"traits")
+				npcCategory = npcTraits.category;
+			end
+
+			--outputDebugString("pedTraits:"..tostring(inspect(pedTraits)));
+			outputDebugString("pedCategory:"..tostring(pedCategory));
+			outputDebugString("npcCategory:"..tostring(npcCategory));
 
 			--相同物种之间才能沟通
-			if pedCategory == npcCategory then
+			--DONE 射击能通知到其他物种
+			if pedCategory == npcCategory or action == "shoot" then
 
 				--[[
 					if NPC:isNPCHaveTask(ped) then

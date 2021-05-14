@@ -7,7 +7,7 @@ infected = {
     fovDistance = 30, --视野距离
     fovAngle = 120, --视野角度
     speed = "run",
-    traits = {category="zombie"}, -- 特性
+    traits = {category="zombie","tough"}, -- 特性
 };
 infected.__index = infected;
 setmetatable( infected, zombie );
