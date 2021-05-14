@@ -96,8 +96,8 @@ function warnOther(npc,target,action)
 			end
 
 			--outputDebugString("pedTraits:"..tostring(inspect(pedTraits)));
-			outputDebugString("pedCategory:"..tostring(pedCategory));
-			outputDebugString("npcCategory:"..tostring(npcCategory));
+			--outputDebugString("pedCategory:"..tostring(pedCategory));
+			--outputDebugString("npcCategory:"..tostring(npcCategory));
 
 			--相同物种之间才能沟通
 			--DONE 射击能通知到其他物种
@@ -155,7 +155,7 @@ function wildFind(npc,target,warn,action)
 	local isZombie = table.haveValue(traits,"zombie"); -- 是僵尸
 	--关系
 	local relationType = getRelationship(npc,target);
-	outputDebugString(inspect(npc).." relationType:"..tostring(relationType));
+	--outputDebugString(inspect(npc).." relationType:"..tostring(relationType));
 
 	if relationType == "hostility" then
 

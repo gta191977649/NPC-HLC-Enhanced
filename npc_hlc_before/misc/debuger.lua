@@ -2,7 +2,7 @@
 
 local debuger = {}
 debuger.on = false -- 是否DEBUG
-debuger.target = false -- 是否显示射线
+debuger.target = true -- 是否显示射线
 debuger.sensor = false -- 是否显示视野射线
 
 local otherElements = getElementByID("otherElements") -- we would need that aswell for binding handlers.

@@ -1,8 +1,28 @@
 <meta>
     <info author="CrystalMV" version="0.1" name="NPC high-level control" description="Higher level control over peds" type="script" />
     <min_mta_version server="1.5.5-9.14060"></min_mta_version>
-	<include resource="Data"/>
     <oop>true</oop>
+
+    <script src="common.lua" type="shared" cache="false"/>
+    <script src="misc/math.lua" type="shared" cache="false"/>
+    <script src="misc/const.lua" type="shared" cache="false"/>
+    <script src="misc/words.lua" type="shared" cache="false"/>
+    <script src="misc/async.lua" type="shared" cache="false"/>
+
+    <script src="functions/npc_hlc_s.lua" type="server" />
+    <script src="functions/npc_hlc_c.lua" type="client" cache="false"/>
+    <script src="functions/npc_functions_s.lua" type="server" />
+    <script src="functions/npc_functions.lua" type="server" />
+    <script src="functions/npc_functions.lua" type="client" cache="false"/>
+    <script src="task/control_npc_s.lua" type="server" />
+    <script src="task/control_npc_c.lua" type="client" cache="false"/>
+    <script src="task/valid_tasks_s.lua" type="server" />
+    <script src="task/tasks_s.lua" type="server" />
+    <script src="task/tasks_c.lua" type="client" cache="false"/>
+    <script src="sensor/sensor_c.lua" type="client" cache="false"/><!--视听觉-->
+    <script src="sensor/sensor_s.lua" type="server" /><!--任务完成检测-->
+    <script src="actions_s.lua" type="server" />
+    <script src="actions_c.lua" type="client" cache="false"/>
 
     <!--
         <script src="actions_c_v2bak.lua" type="client" />
@@ -24,32 +44,12 @@
         <script src="type/zombie/zombie.lua" type="server" />
         <script src="type/zombie/Infected.lua" type="server" />
         <script src="type/zombie/hunter.lua" type="server" />
-		
+
         <script src="misc/test.lua" type="server" />
         <script src="misc/debuger.lua" type="client" cache="false" />
 
     <!-- EVENMOV BRANCH END -->
-	<script src="common.lua" type="shared" cache="false"/>
-    <script src="misc/math.lua" type="shared" cache="false"/>
-    <script src="misc/const.lua" type="shared" cache="false"/>
-    <script src="misc/words.lua" type="shared" cache="false"/>
-    <script src="misc/async.lua" type="shared" cache="false"/>
 
-    <script src="functions/npc_hlc_s.lua" type="server" />
-    <script src="functions/npc_hlc_c.lua" type="client" cache="false"/>
-    <script src="functions/npc_functions_s.lua" type="server" />
-    <script src="functions/npc_functions.lua" type="client" cache="false"/>
-    <script src="task/control_npc_s.lua" type="server" />
-    <script src="task/control_npc_c.lua" type="client" cache="false"/>
-    <script src="task/valid_tasks_s.lua" type="server" />
-    <script src="task/tasks_s.lua" type="server" />
-    <script src="task/tasks_c.lua" type="client" cache="false"/>
-    <script src="sensor/sensor_c.lua" type="client" cache="false"/><!--视听觉-->
-    <script src="sensor/sensor_s.lua" type="server" /><!--任务完成检测-->
-    <script src="actions_s.lua" type="server" />
-    <script src="actions_c.lua" type="client" cache="false"/>
-	
-	
     <export function="enableHLCForNPC" type="server" http="false" />
     <export function="disableHLCForNPC" type="server" http="false" />
     <export function="isHLCEnabled" type="server" http="false" />
@@ -72,6 +72,7 @@
 
     <export function="isNPCHaveTask" type="shared" http="false" />
     <export function="getNPCCurrentTask" type="shared" http="false" />
+    <export function="getNPCTaskName" type="shared" http="false" />
 
     <settings>
         <setting name="*server_colchecking" value="false" />

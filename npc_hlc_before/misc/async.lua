@@ -423,32 +423,6 @@ class "_Async" {
 
         self:switch();
     end,
-
-    forkey = function(self, array, func, callback)
-        self:add(function()
-            local a = getTickCount();
-            local lastresume = getTickCount();
-            for k,v in pairs(array) do
-                func(k,v);
-
-                -- int getTickCount() 
-                -- (GTA:MTA server scripting function)
-                -- For other environments use alternatives.
-                if getTickCount() > lastresume + self.maxtime then
-                    coroutine.yield()
-                    lastresume = getTickCount()
-                end
-            end
-            if (self.debug) then
-                print("[DEBUG]Async forkey: " .. (getTickCount() - a) .. "ms");
-            end
-            if (callback) then
-                callback();
-            end
-        end);
-
-        self:switch();
-    end,
 }
 
 -- Async Singleton wrapper
@@ -480,7 +454,4 @@ end
 
 function Async:foreach(...)
     getInstance():foreach(...);
-end
-function Async:forkey(...)
-    getInstance():forkey(...);
 end
