@@ -3,7 +3,9 @@
 	<include resource="npc_hlc"/>
 	<include resource="server_coldata"/>
 
-	<script src="async.lua" type="shared"/>
+	<script src="common/async.lua" type="shared"/>
+	<script src="config.lua" type="shared" cache="false"/>
+
 	<script src="traffic.lua" cache="false"/>
 	<script src="load_paths.lua" cache="false"/>
 	<script src="node_lanes.lua" cache="false"/>
@@ -12,7 +14,7 @@
 	<script src="ai.lua" cache="false"/>
 	<script src="zoffsets.lua" cache="false"/>
 
-	<script src="bytedata.lua" cache="false"/>
+	<script src="common/bytedata.lua" cache="false"/>
 
 	<script src="f_density.lua" cache="false"/>
 

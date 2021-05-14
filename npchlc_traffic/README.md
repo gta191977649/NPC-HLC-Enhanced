@@ -7,6 +7,7 @@ NPC HLC traffic generates peds which walk and drive around. They are not intelli
 NPC HLC traffic density controller (npchlc_traffic_denctrl) is an example script which shows how to use NPC HLC traffic exported functions. You can use it to control density via command:
 ```
     /density [type] density: changes the density multiplier of the traffic type [type] (peds, cars, boats, planes), or all types, if skipped, to density.
+    改变密度
 ```
 
 ## Meta.xml settings

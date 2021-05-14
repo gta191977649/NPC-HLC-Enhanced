@@ -1,6 +1,7 @@
 <meta>
     <info author="CrystalMV" version="0.1" name="NPC high-level control" description="Higher level control over peds" type="script" />
     <min_mta_version server="1.5.5-9.14060"></min_mta_version>
+    <oop>true</oop>
     <script src="vendor/math.lua" type="shared" />
     <script src="vendor/const.lua" type="server" />
     <script src="vendor/const.lua" type="client" cache="false"/>
@@ -24,8 +25,30 @@
     <script src="sync/sync_s.lua" type="server" cache="false"/>
     <!--
         <script src="actions_c_v2bak.lua" type="client" />
-    
     -->
+
+    <!-- EVENMOV BRANCH START -->
+        <script src="misc/import.lua" type="shared" cache="false" />
+        <script src="type/creature.lua" type="server" />
+
+        <script src="type/animal/animal.lua" type="server" />
+        <script src="type/animal/wolf.lua" type="server" />
+        <script src="type/animal/bear.lua" type="server" />
+        <script src="type/animal/puma.lua" type="server" />
+        <script src="type/animal/goat.lua" type="server" />
+
+        <script src="type/human/human.lua" type="server" />
+        <script src="type/human/normal.lua" type="server" />
+
+        <script src="type/zombie/zombie.lua" type="server" />
+        <script src="type/zombie/Infected.lua" type="server" />
+        <script src="type/zombie/hunter.lua" type="server" />
+
+        <script src="misc/test.lua" type="server" />
+        <script src="misc/debuger.lua" type="client" cache="false" />
+
+    <!-- EVENMOV BRANCH END -->
+
     <export function="enableHLCForNPC" type="server" http="false" />
     <export function="disableHLCForNPC" type="server" http="false" />
     <export function="isHLCEnabled" type="server" http="false" />
@@ -44,6 +67,12 @@
     <export function="setNPCTask" type="server" http="false" />
     <export function="getNPCTask" type="server" http="false" />
     
+    <export function="createCreature" type="server" http="false" />
+    <export function="destroyCreature" type="server" http="false" />
+
+    <export function="isNPCHaveTask" type="shared" http="false" />
+    <export function="getNPCCurrentTask" type="shared" http="false" />
+
     <settings>
         <setting name="*server_colchecking" value="false" />
     </settings>

@@ -1,9 +1,24 @@
+--服务器：验证任务参数是否正确
+
 taskValid = {}
 
 function taskValid.walkToPos(task)
 	local x,y,z,dist = task[2],task[3],task[4],task[5]
 	return tonumber(x) and tonumber(y) and tonumber(z) and tonumber(dist) and true or false
 end
+
+--2021
+--TODO CHECK TASK
+function taskValid.hangOut(task)
+	return true
+end
+
+--2021
+--TODO CHECK TASK
+function taskValid.guardPos(task)
+	return true
+end
+
 function taskValid.enterToVehicle(task)
 	--print("[S] enterToVehicle task check")
 	local vehicle,seat = task[2],task[3]
@@ -38,8 +53,30 @@ function taskValid.walkAroundBend(task)
 end
 
 function taskValid.walkFollowElement(task)
+	--outputDebugString("walkFollowElement")
 	local element,dist = task[2],task[3]
 	return isElement(element) and getElementPosition(element) and tonumber(dist) and true or false
+end
+
+--2021 NEW
+function taskValid.awayFromElement(task)
+	--outputDebugString("taskValid.awayFromElement")
+	local element,dist,safedist = task[2],task[3],task[4]
+	return isElement(element) and getElementPosition(element) and tonumber(dist) and tonumber(safedist) and true or false
+
+end
+
+--2021 NEW
+function taskValid.panic(task)
+	--outputDebugString("taskValid.panic")
+	local element = task[2]
+	return isElement(element) and getElementPosition(element) and true or false
+end
+
+--2021 NEW
+function taskValid.doAnim(task)
+	local aType,aName = task[2],task[3]
+	return tostring(aType) and tostring(aName) and true or false
 end
 
 function taskValid.shootPoint(task)
@@ -55,7 +92,7 @@ end
 function taskValid.killPed(task)
 	local element,shootdist,followdist = task[2],task[3],task[4]
 	return
-		isElement(element) and getElementType(element) == "ped" and
+		isElement(element) and ( getElementType(element) == "ped" or getElementType(element) == "player" ) and
 		tonumber(shootdist) and tonumber(followdist) and true or false
 end
 

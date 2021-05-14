@@ -1,3 +1,6 @@
+--服务器端：执行任务
+--如果NPC存在同步者，则跳过服务器执行部分，因为于客户端执行
+
 performTask = {}
 
 function performTask.enterToVehicle(npc,task,maxtime)
@@ -13,6 +16,31 @@ function performTask.walkToPos(npc,task,maxtime)
 	return makeNPCWalkToPos(npc,task[2],task[3],task[4],maxtime)
 end
 
+--2021 NEW
+function performTask.hangOut(npc,task,maxtime)
+
+	--S 设置闲逛速度
+	if getNPCWalkSpeed(npc) ~= "walk" then
+		--outputChatBox("set walk for hangOut");
+		IFP:syncAnimation(npc);--强制清理一次动作
+		getNPCWalkSpeed(npc,"walk")
+	end
+
+	--DO NOTHING 
+	if getElementSyncer(npc) then return maxtime end
+	--return makeNPCWalkToPos(npc,task[2],task[3],task[4],maxtime)
+	return maxtime
+end
+
+--守卫某地
+function performTask.guardPos(npc,task,maxtime)
+	--DO NOTHING 
+
+	if getElementSyncer(npc) then return maxtime end
+	--return makeNPCWalkToPos(npc,task[2],task[3],task[4],maxtime)
+	return maxtime
+end
+
 function performTask.walkAlongLine(npc,task,maxtime)
 	if getElementSyncer(npc) then return maxtime end
 	return makeNPCWalkAlongLine(npc,task[2],task[3],task[4],task[5],task[6],task[7],task[8],maxtime)
@@ -25,6 +53,28 @@ end
 
 function performTask.walkFollowElement(npc,task,maxtime)
 	setElementPosition(npc,getElementPosition(npc))
+	return maxtime
+end
+
+--2021 NEW
+--TODO 不是很明白含义
+function performTask.awayFromElement(npc,task,maxtime)
+	--setElementPosition(npc,getElementPosition(npc))
+	return maxtime
+end
+
+--2021 NEW
+--TODO 不是很明白含义
+function performTask.panic(npc,task,maxtime)
+	--setElementPosition(npc,getElementPosition(npc))
+	return maxtime
+end
+
+
+--2021 NEW
+--TODO 不是很明白含义
+function performTask.doAnim(npc,task,maxtime)
+	--setElementPosition(npc,getElementPosition(npc))
 	return maxtime
 end
 

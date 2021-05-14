@@ -1,0 +1,18 @@
+<meta>
+	<info author="JUNE" version="0.1" name="NPC WILD" description="Adds ANIMAL to the game" type="script"/>
+	<include resource="npc_hlc"/>
+	<script src="imports.lua" type="shared" cache="false" />
+	<script src="wild_s.lua" type="server"/>
+	<script src="wild_wasted_s.lua" type="server"/>
+	<script src="wild_sensor_s.lua" type="server"/>
+
+	<script src="client/wild_nametag_c.lua" type="client" cache="false"/>
+	<script src="client/wild_damaged_c.lua" type="client" cache="false"/>
+
+	<script src="server/spawn_s.lua" type="server"/>
+	<script src="server/target_s.lua" type="server"/>
+
+	<script src="wild_c.lua"  type="client" cache="false"/>
+	<script src="wild_sensor_c.lua"  type="client" cache="false"/>
+	
+</meta>

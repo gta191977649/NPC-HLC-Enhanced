@@ -1,0 +1,19 @@
+<meta>
+	<info author="VSCode MTA:SA Lua" type="script" name="Data" />
+
+	<script src="CElementData.lua" type="client" cache="false"/>
+	<script src="SElementData.lua" type="server"/>
+	
+	<script src="c_Data.lua" type="client" cache="false" />
+	<script src="s_Data.lua" type="server" />
+	<export function="getData" type="shared"/>
+	<export function="setData" type="shared"/>
+	<!--Trd part-->
+	<export function="getCustomData" type="shared"/>
+	<export function="getElementsByKey" type="shared"/>
+	<export function="setCustomData" type="shared"/>
+	<export function="forceBatchDataSync" type="server"/>
+	<export function="addDataHandler" type="client"/>
+	
+
+</meta>
