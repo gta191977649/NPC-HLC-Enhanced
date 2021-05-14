@@ -25,10 +25,12 @@ function delayTest()
     hunter1 = createCreature("hunter",220,2500,16)
     --ANIMAL
     bear1 = createCreature("bear",230,2500,16)
-    puma1 = createCreature("puma",240,2500,16)
+    --puma1 = createCreature("puma",240,2500,16)
     --CIV
-    --c1 = createCreature("normal",240.1689453125,2500.109375,16.484375,0,"scavenger","syndciv")
-    --c1 = createCreature("normal",241.1689453125,2500.109375,16.484375,0,"cdf","staff")
+    --c1 = createCreature("normal",250,2500,16,0,"scavenger","syndciv")
+    --c1 = createCreature("normal",260,2500,16,0,"cdf","staff")
+    --GUARD
+    g1 = createCreature("normal",270,2500,16,0,"raider","guard")
 end
 
 function initTester()

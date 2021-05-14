@@ -253,7 +253,7 @@ function createCreature(type,x,y,z,r,subtype,btype)
 	--DEBUG 不存在的类型创建为僵尸
 	--outputDebugString("table have key "..tostring(cType[type]))
 	--outputDebugString("not table have key "..tostring(not cType[type]))
-	--outputDebugString("TRY CALL createCreature:"..tostring(type));
+	--outputDebugString("TRY CALL createCreature:"..tostring(type).." r:"..tostring(r));
 
 	local c = nil;
 
@@ -280,19 +280,21 @@ function createCreature(type,x,y,z,r,subtype,btype)
 
 	--默认任务
 	if behaviour == "guard" then
-		Data:setData(cElement,"sensor",true); -- 开启感知
 		accuracy = 1 -- 守卫设计准确度很高
-		setNPCTask(cElement, {"guardPos",x,y,z})--loop false to sequence random animation
+		Data:setData(cElement,"sensor",true); -- 开启感知
+		setNPCTask(cElement, {"guardPos",x,y,z,r})--loop false to sequence random animation
+
 	elseif behaviour == "hunt" then
 		--追杀
 		Data:setData(cElement,"sensor",true); -- 开启感知
+		setNPCTask(cElement,{"hangOut",x,y,x,y}) -- 默认闲逛任务
+
 	elseif behaviour == "default" then
-		--闲逛市民
+		--闲逛市民/僵尸
 		setNPCTask(cElement,{"hangOut",x,y,x,y})
 	else
-		--trade
-		--僵尸
-		setNPCTask(cElement,{"hangOut",x,y,x,y})
+		--trade NOT MOVE
+		--setNPCTask(cElement,{"hangOut",x,y,x,y})
 	end
 	
 	--outputDebugString("createCreature to:"..tostring(table.nums(creatures)));

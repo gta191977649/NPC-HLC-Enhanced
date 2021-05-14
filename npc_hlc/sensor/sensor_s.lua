@@ -32,7 +32,13 @@ function taskDone(task)
 			setNPCTask(ped,{"awayFromElement",task[2],0.1,200})
 		end,100,1,source)
 
+	elseif task[1]== "guard" then
+
+		--守卫任务结束
+
 	else
+
+		--其他任务结束变为闲逛
 
 		setTimer(function(ped)
 			local x,y = getElementPosition(ped);
@@ -66,11 +72,19 @@ function aimAtNPC(ped)
 	if not ped then return end
 	if getElementType(ped)~= "ped" then return end -- 目前只检测PED
 
+	-- Detail
+	local traits = Data:getData(ped,"traits") 
+	local isAnimal = table.haveValue(traits,"animal"); -- 是动物
+	local isZombie = table.haveValue(traits,"zombie"); -- 是僵尸
+	--
+
+	if isAnimal or isZombie then return end -- 动物和僵尸不会对玩家关注做出回应
+
 	local aiming = getControlState(source,"aim_weapon") -- 区分冷兵器还是热武器用？
 	local validPed = false -- ped 
 	local armed -- 是否使用武器瞄准
 
-	--特定武器才触发
+	--特定武器才触发(似乎只有热武器)
 	local slot = getSlotFromWeapon(getPedWeapon(source))
 	if slot > 1 and slot ~= 10 then 
 		armed = true 
@@ -82,7 +96,7 @@ function aimAtNPC(ped)
 
 	--过滤未被威胁过的NPC
 	--确保距离够近
-	if ped and getElementType(ped) == "ped" and armed then
+	if ped and armed then
 		local distance = getDistance(ped,source);
 		if distance < 5 then
 			validPed = true
@@ -93,21 +107,22 @@ function aimAtNPC(ped)
 
 	--执行
 	if validPed then
-
-		local traits = Data:getData(ped,"traits")
+		
 		--outputDebugString("traits:"..tostring(traits))
 		local civ = table.haveValue(traits,"civilian");
 		--outputDebugString("civ:"..tostring(civ));
 
-		local relation = getRelationship(source,ped);
-
-		setElementData(ped,"threatened",true) -- 设置威胁状态（防止频繁检测威胁）
-		setTimer(setElementData,10000,1,ped,"threatened",false) -- 清除威胁状态（10秒）
-
+		--防止频繁检测
 		if not getElementData(ped,"threatened") then
 
+			local relation = getRelationship(source,ped);
+			outputChatBox("relation:"..tostring(relation));
+
+			setElementData(ped,"threatened",true) -- 设置威胁状态（防止频繁检测威胁）
+			setTimer(setElementData,5000,1,ped,"threatened",false) -- 清除威胁状态（5秒）
+	
 			--友好关系，条件成立
-			if relation == "friendly" then
+			if relation == "friendly" or relation == "ignore" then
 
 				if aiming then
 					--武器瞄准时的信息
@@ -124,12 +139,20 @@ function aimAtNPC(ped)
 			--敌对关系，条件成立
 			if relation == "hostility" then
 
-				--if aiming and (getSlotFromWeapon(getPedWeapon(ped)) < 2 or getSlotFromWeapon(getPedWeapon(ped)) == 10) then
+				--当玩家举起格斗武器时 惧怕玩家的动作
+				--outputChatBox("aiming:"..tostring(aiming));
+				--outputChatBox("getSlotFromWeapon(getPedWeapon(ped):"..tostring(getSlotFromWeapon(getPedWeapon(ped))));
+
+				-- 没瞄准CIV的时候惊吓他们
+				-- 非CIV的其他敌人已经攻击玩家了，不在这里处理
+				if civ and not aiming then -- and (getSlotFromWeapon(getPedWeapon(ped)) < 2 or getSlotFromWeapon(getPedWeapon(ped)) == 10) then
 					setElementFaceTo(ped,source)
 					setPedAnimation(ped,"ped","handscower",4000,false,true,false,false) -- 被瞄准惊吓
 					triggerClientEvent("onChatbubblesMessageIncome",ped,Loc:Localization(table.random(meleeThreatenedMessages),source),0);
 					triggerClientEvent(root, "sync.message", root, ped, 255, 255, 255, "INTIMIDATED")
-				--end
+				end
+
+				--否则，不想搭理玩家...
 			end
 
 		end

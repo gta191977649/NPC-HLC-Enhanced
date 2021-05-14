@@ -5,9 +5,8 @@ zombie = {
     shootdist = 3,--小于这个距离攻击
     followdist = 1,--大于这个距离跟随
     accuracy = 0,
-    traits = {"zombie"},
     walkingstyle = "zombie", -- 移动模式为动作库:zombie
-    behaviour = "hunt", -- 默认为追杀行为树
+    behaviour = "default", -- 默认为闲逛
 };
 zombie.__index = zombie;
 setmetatable( zombie, creature );

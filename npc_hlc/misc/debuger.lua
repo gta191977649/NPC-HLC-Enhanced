@@ -1,7 +1,7 @@
 --JUNE 的生物DEBUG 显示器
 
 local debuger = {}
-debuger.on = true -- 是否DEBUG
+debuger.on = false -- 是否DEBUG
 debuger.target = true -- 是否显示射线
 debuger.sensor = false -- 是否显示视野射线
 
@@ -53,12 +53,12 @@ function debugCreature()
                     --text = text .. "\n".."targets:"..tostring(inspect(targets))
                     text = text .. "\n".."Target:"..tostring(inspect(Data:getData(creature,"target")) or "MISS TARGET")
                     --text = text .. "\n".."Traits:"..tostring(inspect(Data:getData(creature,"traits")) or "MISS TRAITS")
-                    text = text .. "\n".."Gang:"..tostring(Data:getData(creature,"gang") or "MISS GANG")
+                    --text = text .. "\n".."Gang:"..tostring(Data:getData(creature,"gang") or "MISS GANG")
                     --text = text .. "\n".."Distance:"..tostring(math.round(distance))
                     --text = text .. "\n".."Ammo:"..tostring(getPedTotalAmmo(creature))
                     --text = text .. "\n".."Accuracy:"..tostring(Data:getData(creature,"accuracy") or "MISS accuracy")
                     --text = text .. "\n"..inspect(creature).." thistask:"..tostring(getElementData(creature,"npc_hlc:thistask")) 
-
+                    --text = text .. "\n".."Rotation:"..tostring(inspect({getElementRotation(creature)}))
                     
                     if(isNPCHaveTask(creature)) then
                         local task = getNPCCurrentTask(creature)
@@ -138,10 +138,13 @@ function debugCreature()
                             tX,tY,tZ = task[2],task[3],task[4]
                             color = tocolor(255,255,0)
                         elseif task[1]=="killPed" then
-                            outputDebugString(inspect(task[2]))
+                            --outputDebugString(inspect(task[2]))
                             tX,tY,tZ = getElementPosition(task[2])
                             color = tocolor(255,0,0)
+                        elseif task[1]=="guardPos" then
+
                         end
+
                         if tonumber(tX) and color then
                             dxDrawLine3D( cX,cY,cZ,tX,tY,tZ,color,1 )
                         end
