@@ -51,7 +51,7 @@ function aimAtNPC(ped)
 		local civ = table.haveValue(traits,"civilian");
 		--outputDebugString("civ:"..tostring(civ));
 
-		local taskName = getNPCTaskName(ped);
+		local taskName = exports.npc_hlc:getNPCTaskName(ped);
 		if taskName == "panic" then
 			--已经是panic状态了
 			if getElementData(ped,"talking") or isPedDead(ped) then return end; -- 过滤正在说话状态
@@ -83,7 +83,7 @@ function aimAtNPC(ped)
 				
 				--如果目前task不是panic，设置任务为panic
 				--if taskName ~= "panic" then
-				setNPCTask(ped,{"panic",source}) -- 使用NPC恐惧source
+				exports.npc_hlc:setNPCTask(ped,{"panic",source}) -- 使用NPC恐惧source
 				--if getElementData(ped,"talking") or isPedDead(ped) then return end; -- 过滤正在说话状态
 				triggerClientEvent("onChatbubblesMessageIncome",ped,Loc:Localization(table.random(threatenRobbingMessages),source),0);
 				triggerClientEvent(root, "sync.message", ped, ped, 255, 255, 255, "SCARED")

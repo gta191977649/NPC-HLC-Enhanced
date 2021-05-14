@@ -1,0 +1,25 @@
+<meta>
+  <info author="Saml1er" version="1.0.0" description="Demo for testing various IFP animations with synchronization."/>
+  <min_mta_version client="1.5" server="1.5"/>
+  <file src="Animations/parkour.ifp"/>
+  <file src="Animations/Assassins_creed_ped.ifp"/>
+  <file src="Animations/zombie_ped.ifp"/>
+  <file src="Animations/gta3_ped.ifp"/>
+  <file src="Animations/gtavc_stories_ped.ifp"/>
+  <file src="Animations/gtavc_modded_ped.ifp"/>
+  <file src="Animations/gta4_ped.ifp"/>
+  <file src="Animations/gta5_ped.ifp"/>
+  <file src="Animations/fortnite.ifp"/><!--前线-->
+  <file src="Animations/nh_ped.ifp"/><!--自制玩家动作-->
+  <file src="Animations/nh_zombie.ifp"/><!--自制僵尸动作-->
+  <file src="Animations/StandingWebsterAerialBack360.ifp"/>
+
+  <script src="g_ifp_lib.lua" type="shared" cache="false"/>
+
+  <script src="animations_client.lua" type="client"/>
+  <script src="client.lua" type="client"/>
+  <script src="sync_animations_server.lua" type="server"/>
+  <script src="c_ifp_main.lua" type="client"/>
+  <export function="syncAnimation" type="shared"/><!--新增，同步动作-->
+  <export function="syncAnimationLib" type="shared"/><!--新增，同步动作库-->
+</meta>
