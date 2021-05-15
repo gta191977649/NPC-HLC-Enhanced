@@ -41,23 +41,22 @@ function wildDamage(attacker,weapon,bodypart,loss)
 			if weapon == 63 or weapon == 51 or weapon == 19 then -- holy kill
 
 				--秒杀
-				killPed(source,attacker) -- 击杀玩家传入
+				setElementHealth(source,0);
 
 			elseif weapon ~= 0 then
 
 				--不同武器伤害
 				if bodypart == 9 then
 
-					--秒杀
-					killPed(source,attacker) -- 击杀玩家传入
-					--setPedHeadless(source,false)
+					setElementHealth(source,0);
+					setPedHeadless(source,false)
 				
 				end
 
 
 			elseif weapon == 0 then
 				--拳头伤害
-				cancelEvent();
+				--cancelEvent();
 			end
 		end
 
@@ -74,7 +73,7 @@ function wildDamage(attacker,weapon,bodypart,loss)
 				--汽车爆炸 爆炸 火箭弹 Rammed
 
 				--秒杀
-				killPed(source,attacker) -- 击杀车辆信息传入
+				setElementHealth(source,0);
 				--triggerServerEvent("wild > Killed",source,attacker,headshot,weapon)
 				
 			end
@@ -117,4 +116,6 @@ function panicCheck(attacker,weapon,bodypart,loss)
 
 end
 addEventHandler ( "onClientPedDamage", root, panicCheck )
+
+
 

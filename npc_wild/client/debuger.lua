@@ -1,7 +1,7 @@
 --JUNE 的生物DEBUG 显示器
 
 local debuger = {}
-debuger.on = false -- 是否DEBUG
+debuger.on = true -- 是否DEBUG
 debuger.target = false -- 是否显示射线
 debuger.sensor = false -- 是否显示视野射线
 
@@ -30,7 +30,7 @@ function debugCreature()
             if distance < 45 then 
 
                 ------------------DEBUG VISIBLE/HEAR -----------------
-                find,s,v = checkFind(creature) -- TODO 优化：这里应该直接提取本地的NPC数据，否则每帧执行一次复杂的checkFind函数
+                find,s,v = NPC:checkFind(creature) -- TODO 优化：这里应该直接提取本地的NPC数据，否则每帧执行一次复杂的checkFind函数
                 -----------
 
                 local textcolor = tocolor(255,255,255)
@@ -52,6 +52,7 @@ function debugCreature()
                     --text = text .. "\n".."Senser:"..tostring(Data:getData(creature,"sensor"))
                     --text = text .. "\n".."targets:"..tostring(inspect(targets))
                     text = text .. "\n".."Target:"..tostring(inspect(Data:getData(creature,"target")) or "MISS TARGET")
+                    text = text .. "\n".."Weapon:"..tostring(inspect(Data:getData(creature,"weapon")) or "MISS WEAPON")
                     --text = text .. "\n".."Traits:"..tostring(inspect(Data:getData(creature,"traits")) or "MISS TRAITS")
                     --text = text .. "\n".."Gang:"..tostring(Data:getData(creature,"gang") or "MISS GANG")
                     --text = text .. "\n".."Distance:"..tostring(math.round(distance))
@@ -61,8 +62,8 @@ function debugCreature()
                     --text = text .. "\n".."Rotation:"..tostring(inspect({getElementRotation(creature)}))
                     text = text .. "\n".."IFP:"..tostring(getElementData(creature,"ifp")) or "MISS IFP";
 
-                    if(isNPCHaveTask(creature)) then
-                        local task = getNPCCurrentTask(creature)
+                    if(NPC:isNPCHaveTask(creature)) then
+                        local task = NPC:getNPCCurrentTask(creature)
                         if task and task[1] then
                             text = text .. "\n".."task:"..tostring(task[1]) 
                         end

@@ -53,7 +53,7 @@
     <export function="isNPCHaveTask" type="shared" http="false" />
     <export function="getNPCCurrentTask" type="shared" http="false" />
     <export function="getNPCTaskName" type="shared" http="false" />
-
+    <export function="checkFind" type="client" http="false" />
     <settings>
         <setting name="*server_colchecking" value="false" />
     </settings>

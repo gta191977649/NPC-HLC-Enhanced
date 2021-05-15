@@ -300,10 +300,31 @@ function makeNPCShootAtPos(npc,x,y,z)
 	yx,yy,yz = yx*ymult,yy*ymult,yz*ymult
 	x,y,z = x*mult,y*mult,z*mult
 
-	local lastShoot = Data:getData(npc,"lastshoot")
 	local weapon = Data:getData(npc,"weapon")
 	local firedelay = weapons[weapon].firedelay;
-	if not lastShoot or ticks - lastShoot > tonumber(firedelay) then
+
+	--不是所有武器都有延迟
+	if firedelay and firedelay > 50 then
+
+		local lastShoot = Data:getData(npc,"lastshoot")
+		
+		if not lastShoot or ticks - lastShoot > tonumber(firedelay) then
+	
+			setPedAimTarget(npc,sx+xx+yx+x,sy+xy+yy+y,sz+xz+yz+z) -- 射击坐标
+			if isPedInVehicle(npc) then
+				setPedControlState(npc,"vehicle_fire",not getPedControlState(npc,"vehicle_fire"))
+			else
+				setPedControlState(npc,"aim_weapon",true)
+				setPedControlState(npc,"fire",not getPedControlState(npc,"fire"))
+			end
+	
+			Data:setData(npc,"lastshoot",ticks)
+		else
+			stopNPCWeaponActions(npc)
+		end
+
+	else
+		--不计算延迟/GTA原版武器，直接开枪
 
 		setPedAimTarget(npc,sx+xx+yx+x,sy+xy+yy+y,sz+xz+yz+z) -- 射击坐标
 		if isPedInVehicle(npc) then
@@ -313,9 +334,6 @@ function makeNPCShootAtPos(npc,x,y,z)
 			setPedControlState(npc,"fire",not getPedControlState(npc,"fire"))
 		end
 
-		Data:setData(npc,"lastshoot",ticks)
-	else
-		stopNPCWeaponActions(npc)
 	end
 
 end
