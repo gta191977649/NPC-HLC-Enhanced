@@ -300,13 +300,24 @@ function makeNPCShootAtPos(npc,x,y,z)
 	yx,yy,yz = yx*ymult,yy*ymult,yz*ymult
 	x,y,z = x*mult,y*mult,z*mult
 
-	setPedAimTarget(npc,sx+xx+yx+x,sy+xy+yy+y,sz+xz+yz+z) -- 射击坐标
-	if isPedInVehicle(npc) then
-		setPedControlState(npc,"vehicle_fire",not getPedControlState(npc,"vehicle_fire"))
+	local lastShoot = Data:getData(npc,"lastshoot")
+	local weapon = Data:getData(npc,"weapon")
+	local firedelay = weapons[weapon].firedelay;
+	if not lastShoot or ticks - lastShoot > tonumber(firedelay) then
+
+		setPedAimTarget(npc,sx+xx+yx+x,sy+xy+yy+y,sz+xz+yz+z) -- 射击坐标
+		if isPedInVehicle(npc) then
+			setPedControlState(npc,"vehicle_fire",not getPedControlState(npc,"vehicle_fire"))
+		else
+			setPedControlState(npc,"aim_weapon",true)
+			setPedControlState(npc,"fire",not getPedControlState(npc,"fire"))
+		end
+
+		Data:setData(npc,"lastshoot",ticks)
 	else
-		setPedControlState(npc,"aim_weapon",true)
-		setPedControlState(npc,"fire",not getPedControlState(npc,"fire"))
+		stopNPCWeaponActions(npc)
 	end
+
 end
 
 --客户端：NPC设计element
