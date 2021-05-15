@@ -13,7 +13,7 @@ function taskDone(task)
 			local x,y = getElementPosition(ped);
 			local xcoord,ycoord = math.randomCoord(5,10)
 			local tx,ty = x+xcoord,y+ycoord
-			setNPCTask(ped,{"hangOut",x,y,tx,ty})
+			NPC:setNPCTask(ped,{"hangOut",x,y,tx,ty})
 		end,100,1,source)
 		
 	elseif task[1]== "hangOut" then
@@ -21,7 +21,7 @@ function taskDone(task)
 
 		setTimer(function(ped)
 			local category = Data:getData(source,"category");
-			setNPCTask(ped, {"doAnim",getTickCount(),category,"idle",-1,false,false,true})
+			NPC:setNPCTask(ped, {"doAnim",getTickCount(),category,"idle",-1,false,false,true})
 		end,100,1,source)
 
 	elseif task[1]== "panic" then
@@ -29,7 +29,7 @@ function taskDone(task)
 		--恐慌结束->默认转为逃离状态
 
 		setTimer(function(ped)
-			setNPCTask(ped,{"awayFromElement",task[2],0.1,200})
+			NPC:setNPCTask(ped,{"awayFromElement",task[2],0.1,200})
 		end,100,1,source)
 
 	elseif task[1]== "guard" then
@@ -44,7 +44,7 @@ function taskDone(task)
 			local x,y = getElementPosition(ped);
 			local xcoord,ycoord = math.randomCoord(5,10)
 			local tx,ty = x+xcoord,y+ycoord
-			setNPCTask(ped,{"hangOut",x,y,tx,ty})
+			NPC:setNPCTask(ped,{"hangOut",x,y,tx,ty})
 		end,100,1,source)
 
 	end

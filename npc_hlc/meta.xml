@@ -10,23 +10,6 @@
 
     <!-- EVENMOV BRANCH START -->
         <script src="misc/import.lua" type="shared" cache="false" />
-        <script src="type/creature.lua" type="server" />
-
-        <script src="type/animal/animal.lua" type="server" />
-        <script src="type/animal/wolf.lua" type="server" />
-        <script src="type/animal/bear.lua" type="server" />
-        <script src="type/animal/puma.lua" type="server" />
-        <script src="type/animal/goat.lua" type="server" />
-
-        <script src="type/human/human.lua" type="server" />
-        <script src="type/human/normal.lua" type="server" />
-
-        <script src="type/zombie/zombie.lua" type="server" />
-        <script src="type/zombie/Infected.lua" type="server" />
-        <script src="type/zombie/hunter.lua" type="server" />
-		
-        <script src="misc/test.lua" type="server" />
-        <script src="misc/debuger.lua" type="client" cache="false" />
 
     <!-- EVENMOV BRANCH END -->
 	<script src="common.lua" type="shared" cache="false"/>
