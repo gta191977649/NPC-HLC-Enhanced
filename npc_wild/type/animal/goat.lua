@@ -1,6 +1,6 @@
 --THIRD LEVEL TYPE : WOLF
 goat = {
-    name = "white goat", --名
+    name = "goat", --名
     type = "goat", --原型
     skin = 13,
     attack = 10,

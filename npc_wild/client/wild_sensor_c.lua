@@ -291,10 +291,11 @@ function wildDamageSensor(attacker,weapon,bodypart,loss)
 		return;
 	end
 	--source:ped that got damaged
-	--outputChatBox(inspect(attacker).." attack "..inspect(source));
 
 	--有攻击者
 	if attacker then
+
+		outputDebugString(inspect(attacker).." attack "..inspect(source));
 
 		--获取受害者和攻击者之间的关系
 		local relationType = getRelationship(source,attacker);
@@ -353,7 +354,6 @@ addEventHandler ( "onClientPedDamage", root, wildDamageSensor )
 
 -----------------------------------------------
 -- 玩家开枪
---
 -----------------------------------------------
 function shootingNoise(weapon, ammo, ammoInClip, hitX, hitY, hitZ, hitElement)
 	warnOther(source,source,"shoot")--source 开枪者

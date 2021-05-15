@@ -19,6 +19,14 @@ function pedFire(weapon, ammo, ammoInClip, hitX, hitY, hitZ, hitElement)
 		setElementDimension(sound,1);
 		setSoundVolume(sound,wepProperty.voice); -- 似乎设置了不影响衰减!
 		--setSoundMaxDistance(sound,10000); -- 不要用该选项，最大距离导致声音无衰减
+
+		setTimer(
+			function(sound)
+				if isElement(sound) then
+					destroyElement(sound)
+				end
+		end,2000,1,sound)
+
 	end
    --end
 

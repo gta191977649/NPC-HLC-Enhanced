@@ -1,7 +1,7 @@
 --JUNE 的生物DEBUG 显示器
 
 local debuger = {}
-debuger.on = true -- 是否DEBUG
+debuger.on = false -- 是否DEBUG
 debuger.target = false -- 是否显示射线
 debuger.sensor = false -- 是否显示视野射线
 
@@ -51,8 +51,8 @@ function debugCreature()
                     --text = text .. "\n".."Visble:"..tostring(checkVisible(creature))
                     --text = text .. "\n".."Senser:"..tostring(Data:getData(creature,"sensor"))
                     --text = text .. "\n".."targets:"..tostring(inspect(targets))
-                    text = text .. "\n".."Target:"..tostring(inspect(Data:getData(creature,"target")) or "MISS TARGET")
-                    text = text .. "\n".."Weapon:"..tostring(inspect(Data:getData(creature,"weapon")) or "MISS WEAPON")
+                    --text = text .. "\n".."Target:"..tostring(inspect(Data:getData(creature,"target")) or "MISS TARGET")
+                    --text = text .. "\n".."Weapon:"..tostring(inspect(Data:getData(creature,"weapon")) or "MISS WEAPON")
                     --text = text .. "\n".."Traits:"..tostring(inspect(Data:getData(creature,"traits")) or "MISS TRAITS")
                     --text = text .. "\n".."Gang:"..tostring(Data:getData(creature,"gang") or "MISS GANG")
                     --text = text .. "\n".."Distance:"..tostring(math.round(distance))
@@ -60,16 +60,18 @@ function debugCreature()
                     --text = text .. "\n".."Accuracy:"..tostring(Data:getData(creature,"accuracy") or "MISS accuracy")
                     --text = text .. "\n"..inspect(creature).." thistask:"..tostring(getElementData(creature,"npc_hlc:thistask")) 
                     --text = text .. "\n".."Rotation:"..tostring(inspect({getElementRotation(creature)}))
-                    text = text .. "\n".."IFP:"..tostring(getElementData(creature,"ifp")) or "MISS IFP";
+                    --text = text .. "\n".."IFP:"..tostring(getElementData(creature,"ifp")) or "MISS IFP";
+                    text = text .. "\n".."Skin:"..tostring(getElementModel(creature));
 
+                    --[[
                     if(NPC:isNPCHaveTask(creature)) then
                         local task = NPC:getNPCCurrentTask(creature)
                         if task and task[1] then
-                            text = text .. "\n".."task:"..tostring(task[1]) 
+                            --text = text .. "\n".."task:"..tostring(task[1]) 
+                            text = text .. "\n".."task:"..tostring(inspect(task)) 
                         end
                     end -- 对外的写法
-                    
-
+                    ]]
                     ----------------checkFind
                     --[[
                     if s or v then 
@@ -132,8 +134,8 @@ function debugCreature()
                 ]]
 
                 --任务线
-                if(isNPCHaveTask(creature)) then
-                    local task = getNPCCurrentTask(creature)
+                if(NPC:isNPCHaveTask(creature)) then
+                    local task = NPC:getNPCCurrentTask(creature)
                     local tX,tY,tZ
                     if task then
                         if task[1]=="walkToPos" then

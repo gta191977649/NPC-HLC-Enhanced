@@ -69,6 +69,7 @@ function makeNPCExitFromVehicle(npc,maxtime)
 end
 
 function makeNPCWalkToPos(npc,x,y,z,maxtime)
+	--outputDebugString("makeNPCWalkToPos S");
 	local px,py,pz = getElementPosition(npc)
 	local walk_dist = NPC_SPEED_ONFOOT[getNPCWalkSpeed(npc)]*maxtime*0.001
 	local dx,dy,dz = x-px,y-py,z-pz

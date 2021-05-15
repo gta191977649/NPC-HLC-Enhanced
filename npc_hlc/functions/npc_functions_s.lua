@@ -182,7 +182,6 @@ function clearNPCTasks(npc)
 
 	--outputDebugString("clearNPCTasks thistask:"..tostring(thistask));--获取的是ID
 	--outputDebugString("clearNPCTasks lasttask:"..tostring(lasttask));--获取的是ID
-
 	-- if thistask > lasttask then thistask = lasttask end -- TRY UGLY FIX
 
 	--循环清空所有任务
@@ -211,7 +210,7 @@ function setNPCTask(npc,task)
 		return false
 	end
 	if not isTaskValid(task) then
-		outputDebugString("Invalid task argument",2)
+		outputDebugString("Invalid task argument:"..tostring(inspect(task)),2)
 		return false
 	end
 

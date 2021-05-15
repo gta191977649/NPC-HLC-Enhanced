@@ -12,6 +12,7 @@ function creatureDied(totalAmmo,killer,killerWeapon,bodypart,stealth)
 
         local itemdata = {}
         itemdata.char_type = "Loot";
+        outputDebugString("npcWep:"..tostring(npcWep))
         itemdata.itemid = getItemID(npcWep);
         itemdata.amount = 1;
         itemdata.equip = 0;
@@ -26,6 +27,7 @@ function creatureDied(totalAmmo,killer,killerWeapon,bodypart,stealth)
         if npcAmmo then
             local itemdata = {}
             itemdata.char_type = "Loot";
+            outputDebugString("npcAmmo:"..tostring(npcAmmo))
             itemdata.itemid = getItemID(npcAmmo);
             itemdata.amount = math.random(1,4);
             itemdata.equip = 0;
@@ -45,6 +47,7 @@ function creatureDied(totalAmmo,killer,killerWeapon,bodypart,stealth)
     --刷出所有战利品
     for _,loot in ipairs(loots)do
         --CREATE LOOT
+        -- outputDebugString("loot:"..tostring(inspect(loot)));
         Item:createLootObject(loot,x,y,z-0.875,1,loot.char_type);
     end 
 
@@ -54,10 +57,11 @@ function creatureDied(totalAmmo,killer,killerWeapon,bodypart,stealth)
     if killer and isElement(killer) then
         if getElementType(killer) == "player" then
 
-            local targetname = Loc:Localization(Data:getData(source,"name"),killer);
-            local killerwep = getWeaponInHand(killer); -- NEED FIX WEAPON NAME
+            local targetname = Loc:Localization("NAME:"..tostring(Data:getData(source,"name")),killer);
+            local killerwep = getWeaponInHand(killer) or "hand"; -- NEED FIX WEAPON NAME
 
-            local kills = Player:givePlayerData(killer,"Kill",1);
+            Player:givePlayerData(killer,"Kill",1);
+            local kills = Player:getPlayerData(killer,"Kill");
             outputDebugString("kills:"..tostring(kills));
 
             local killtype = "kill2";
@@ -67,6 +71,8 @@ function creatureDied(totalAmmo,killer,killerWeapon,bodypart,stealth)
                 Player:givePlayerData(killer,"HeadShot",1);
             end 
             triggerClientEvent(killer,"showkill",killer,killtype,"you",Loc:Localization(killerwep,killer),targetname,kills);
+        else
+            outputChatBox("killer:"..tostring(inspect(killer)));
         end
     end
 

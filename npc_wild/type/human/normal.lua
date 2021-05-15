@@ -36,7 +36,9 @@ cdfTrade = {
     {"backpack_small",0.05},
     {"armor1",0.05},
 }
-establishmentTrade = {}
+establishmentTrade = {
+    {"mre",0.5},
+}
 scavengerTrade = {
     {"fertilizer",1},
     {"improvised_compass",0.1},
@@ -54,8 +56,19 @@ syndTrade = {
     {"swizzle",0.1},
 }
 --都有可能出售的物品（贸易物品）
+--增加食物
+--增加基本医疗用品
 commonTrade = {
     {"baked_beans",1},
+    {"pasta",1},
+    {"sardines",1},
+    {"frank_beans",1},
+    {"pistachios",0.5},
+    {"trail_mix",0.5},
+    --
+    {"first_aid",0.5},
+    {"medkit",0.1},
+    {"bandage",0.75},
 }
 
 
@@ -105,7 +118,7 @@ local normalType = {
     ['scavenger_civ']={name="Survivor",behaviour="default",traits={"male","civilian","scavenger"},gang=1,skin={10,15,77,78,79},},-- dumpSkins 拾荒阵营幸存者
     ['scavenger_scavguard']={name="Guard",behaviour="guard",traits={"scavenger"},gang=1,skin={143,160,180,183,24,220,272,25,135},wep=CampGuardWeapons},--ScavengerGuardSkins 守卫
     ['scavenger_freelance']={name="Scavenger",behaviour="hunt",traits={"male","civilian","freelancer"},gang=1,skin={183,29,202,24,25,112},wep=banditWeapons},--ScavengerFreelancerSkins 拾荒者
-    ['scavenger_scavvendor']={name="Trader",behaviour="default",traits={"scavenger","vendor"},trade=scavengerTrade,gang=1,skin={132,95,44},wep={24},},--ScavengersVendorSkins 
+    ['scavenger_scavvendor']={name="Trader",behaviour="guard",traits={"scavenger","vendor"},trade=scavengerTrade,gang=1,skin={132,95,44},wep={24},},--ScavengersVendorSkins 
     ['scavenger_scavquest']={name="Scavenger Leader",behaviour="guard",traits={"scavenger","questgiver"},gang=1,skin={183,29,202,24,25,112},},--ScavengerFreelancerSkins
     --猪，转移到动物？猪也有派系...
     ['scavenger_pig']={name="Pig",gang=1,skin={81},},--animalFarmSkins 应该被转移到动物!
@@ -113,15 +126,15 @@ local normalType = {
     --【拾荒者】 废土阵营
     ['scavenger_wasteguard']={name="Wastelander",behaviour="guard",traits={"wastelander"},gang=1,skin={34,133,134,198,201,202,261,26},wep=CampGuardWeapons},--wastelandersSkin 荒地者
     ['scavenger_wastefreelance']={name="Wastelander",behaviour="hunt",traits={"male","freelancer"},gang=1,skin={100,133,143,13,202,26,223},wep=banditWeapons},--WastelanderFreelancerSkins
-    ['scavenger_wastevendor']={name="Trader",behaviour="default",traits={"wastelander","vendor"},trade=wasteTrade,gang=1,skin={201,197,196,160,131,132,134,129,31,10},wep={24},},--wastelanderCivSkin
-    ['scavenger_wasteciv']={name="Wastelander",behaviour="civilian",traits={"male","civilian","wastelander"},gang=1,skin={201,197,196,160,131,132,134,129,31,10},},--wastelanderCivSkin 荒野求生者
+    ['scavenger_wastevendor']={name="Trader",behaviour="guard",traits={"wastelander","vendor"},trade=wasteTrade,gang=1,skin={201,197,196,160,131,132,134,129,31,10},wep={24},},--wastelanderCivSkin
+    ['scavenger_wasteciv']={name="Wastelander",behaviour="default",traits={"male","civilian","wastelander"},gang=1,skin={201,197,196,160,131,132,134,129,31,10},},--wastelanderCivSkin 荒野求生者
     ['scavenger_wastequest']={name="Wastelander Leader",behaviour="guard",traits={"wastelander","questgiver"},gang=1,skin={100,133,143,13,202,26,223},},--WastelanderFreelancerSkins 领袖
 
     --【拾荒者】 黑社会 syndicate
     ['scavenger_nang']={name="Guard",behaviour="guard",traits={"syndicate"},gang=1,skin={121,122,123},wep=CampGuardWeapons},--黑社会Nang OK
     ['scavenger_triad']={name="Guard",behaviour="guard",traits={"syndicate"},gang=1,skin={117,118},wep=SyndicateTriadWeapons},--黑社会Traid OK
     ['scavenger_syndciv']={name="Survivor",behaviour="default",traits={"male","civilian","syndicate"},gang=1,skin={210,54,58,57,123,170,224,225,227,263},},--黑社会平民 OK
-    ['scavenger_syndvendor']={name="Trader",behaviour="trade",traits={"syndicate","vendor"},gang=1,trade=syndTrade,skin={210,54,58,57,123,170,224,225,227,263},wep={24},},--SyndicateCivSkin
+    ['scavenger_syndvendor']={name="Trader",behaviour="guard",traits={"syndicate","vendor"},gang=1,trade=syndTrade,skin={210,54,58,57,123,170,224,225,227,263},wep={24},},--SyndicateCivSkin
     ['scavenger_syndquest']={name="Syndicate Boss",behaviour="guard",traits={"syndicate","questgiver"},gang=1,skin={294,49},},--SyndQuestgiverSkins
 
     --【强盗】 OK ///////////////////////////
@@ -138,9 +151,6 @@ local normalType = {
     ['tester_archer']={name="GM",behaviour="guard",traits={},gang=0,skin={0},wep={23},},--NeutralFreelancerSkins
 
 };
-
-
-
 
 --THIRD LEVEL TYPE : WOLF
 normal = {

@@ -16,6 +16,8 @@ function performTask.walkToPos(npc,task)
 	--获取我的属性
 	local walkingstyle = Data:getData(npc,"walkingstyle");
 
+	--outputDebugString(inspect(npc).." walkToPos C"..tostring(Data:getData(npc,"name")));
+
 	if walkingstyle and type(walkingstyle)=="string" then
 		makeNPCAnimToPos(npc,destx,desty) -- 动作移动
 	else
@@ -407,6 +409,8 @@ function performTask.killPed(npc,task)
 	if not isElement(target) or getElementHealth(target) == 0 then return true end -- 注意这里有个生命值检测
 	local x,y,z = getElementPosition(npc)
 	local tx,ty,tz = getElementPosition(target)
+
+	--outputDebugString(inspect(npc).." performTask.killPed "..tostring(Data:getData(npc,"name")));
 
 	--local dx,dy = tx-x,ty-y
 	--local distsq = dx*dx+dy*dy

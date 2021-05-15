@@ -22,12 +22,12 @@ function delayTest()
     --freelance = createCreature("normal",250,2500,16,0,"neutral","freelance")
 
     --ZB
-    --infected1 = createCreature("infected",210,2500,16)
-    --hunter1 = createCreature("hunter",220,2500,16)
+    infected1 = createCreature("infected",210,2500,16)
+    hunter1 = createCreature("hunter",220,2500,16)
 
     --ANIMAL
-    --bear1 = createCreature("bear",230,2500,16)
-    --puma1 = createCreature("puma",240,2500,16)
+    bear1 = createCreature("bear",230,2500,16)
+    puma1 = createCreature("puma",240,2500,16)
 
     --CIV
     c1 = createCreature("normal",250,2500,16,0,"scavenger","syndciv")

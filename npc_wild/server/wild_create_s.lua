@@ -19,7 +19,7 @@ function createCreature(type,x,y,z,r,subtype,btype)
 	--DEBUG 不存在的类型创建为僵尸
 	--outputDebugString("table have key "..tostring(cType[type]))
 	--outputDebugString("not table have key "..tostring(not cType[type]))
-	--outputDebugString("TRY CALL createCreature:"..tostring(type).." r:"..tostring(r));
+	--outputDebugString("TRY CALL createCreature:"..tostring(subtype).." "..tostring(btype));
 
 	local c = nil;
 

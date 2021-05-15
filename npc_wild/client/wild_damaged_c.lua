@@ -1,5 +1,5 @@
-
 --客户端受伤判定
+--决策不再这里判定
 function wildDamage(attacker,weapon,bodypart,loss)
 
 	if not getElementData(source,"creature") then
@@ -8,16 +8,10 @@ function wildDamage(attacker,weapon,bodypart,loss)
 		return;
 	end
 	--source:ped that got damaged
-	outputChatBox(inspect(attacker).." attack "..inspect(source).."by "..tostring(weapon));
 
 	--有攻击者
 	if attacker then
-
-		--根据两者关系决定动物的行为
-		local gang = Data:getData(source,"gang");--被攻击者帮会
-		local gang_attacker = Data:getData(attacker,"gang");--攻击者帮会
-
-	else
+		--outputDebugString(inspect(attacker).." wildDamage "..inspect(source).."by "..tostring(weapon));
 	end
 
 	--通用，无效伤害
@@ -25,7 +19,7 @@ function wildDamage(attacker,weapon,bodypart,loss)
 		--火焰 坠落 未知
 		--setElementHealth(source,100)
 		cancelEvent();
-		outputChatBox("fall by vehicle is harmless");
+		--outputChatBox("fall / vehicle is harmless");
 		return;
 	end
 
@@ -83,7 +77,7 @@ function wildDamage(attacker,weapon,bodypart,loss)
 	end 
 
 	--车压伤
-	if weapon ~= 50 then
+	if getElementType(attacker)~="ped" and weapon ~= 50 then
 		Sound:playSoundLib("zombie","hit");
 	end
 

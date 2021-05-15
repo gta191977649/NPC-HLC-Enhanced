@@ -1,13 +1,15 @@
 wilds = {} --记录所有野生动物
 
 function InitWildCreature()
-    --setTimer ( SpawnWildCreature, 5000, 0 ) --直接开启在玩家周围随机产生动物
-    --setTimer ( clearFarCreature, 5000, 0) --KEEPS ALL THE CRETURES CLOSE TO PLAYERS
+    setTimer ( SpawnWildCreature, 5000, 0 ) --直接开启在玩家周围随机产生动物
+    setTimer ( clearFarCreature, 5000, 0) --KEEPS ALL THE CRETURES CLOSE TO PLAYERS
 end
 addEventHandler("onResourceStart", getRootElement(), InitWildCreature)
 
+
 --服务器端:获取区域内的动物数量
 --TODO:每次都要搜索一次所有的PED嘛？
+--[[
 function getCreatureInZone(zone)
     count = 0
     if #wilds > 0 then
@@ -25,13 +27,14 @@ function getCreatureInZone(zone)
 	--outputChatBox("getCreatureInZone:"..tostring(count));
 	return count
 end
+]]
 
 --服务器：产生一个生物
 function spawnCreature(x,y,z)
-    --outputChatBox("spawnCreature");
     --create
 
     hour = getTime();
+
     if table.haveValue({21,22,23,0,1,2,3,4,5},hour) then
         --night
         local random = math.random(1,5)
@@ -45,6 +48,8 @@ function spawnCreature(x,y,z)
         local city = getZoneName(x, y, z,true)
         if city == "Los Santos" or city == "Las Venturas" or city == "San Fierro" then
             spawn_type = "normal"
+            subtype = "neutral"
+            btype = "freelance"
         else
             --animal
             local random = math.random(1,5)
@@ -63,29 +68,16 @@ function spawnCreature(x,y,z)
 
     end
 
-    local c = createCreature(spawn_type,x,y,z)
-    table.insert(wilds,c)
+    outputChatBox("spawnCreature "..tostring(spawn_type).." "..tostring(subtype).." "..tostring(btype));
 
-    --减少区域库存
-    local zone = getZoneName(x, y, z)
-    local zoneElement = getElementByID(zone);
-    if zoneElement then
-        local left = Data:getData(zoneElement,"leftZombie"); --获取区域剩余
-        left = left - 1 
-        if left < 0 then left = 0 end
-        Data:setData(zoneElement, "leftZombie", tonumber(left))
-        --outputChatBox("CREATURE ZONE TO DECRESE "..tostring(zone).." to "..tostring(left));
-    else 
-        --outputChatBox("CREATURE ERROR ZONE TO DECRESE "..tostring(zone));
-    end
+    local c = createCreature(spawn_type,x,y,z,math.random(1,360),subtype,btype)
+    table.insert(wilds,c)
 
 end
 addEvent("wild > serverSpawn",true);
 addEventHandler( "wild > serverSpawn", getRootElement(), spawnCreature )
 
---旧的写法（为每一位玩家刷新僵尸）
---TODO:每一位玩家都会成为刷新对象，也许可以挑选一下？
---TODO:假如100人在线，会刷新100只生物出来导致卡顿
+--服务器：为每一位玩家刷新
 function SpawnWildCreature()
     --outputChatBox("TRY SpawnWildCreature");
 
@@ -95,7 +87,6 @@ function SpawnWildCreature()
 
         --循环所有战局玩家
         --目前的写法是每个玩家都会作为刷新检测，玩家越多，刷新越多
-        --TODO 是否需要改为按照区域刷新
         for PKey,thePlayer in ipairs(liveplayers) do
 
             --限制非大厅玩家
@@ -103,40 +94,19 @@ function SpawnWildCreature()
 
                 spawn = true
 
-                --计算当前区域是否已经最大值
+                x, y, z = getElementPosition(thePlayer) -- 获取玩家坐标
+                local npcs = getElementsWithinRange(x,y,z,100,"ped"); -- 获取玩家范围内的NPC列表
+                --outputDebugString("npcs checked:"..tostring(#npcs));
 
-				--玩家当前区域最大值检测
-				x, y, z = getElementPosition(thePlayer)
-				zone = getZoneName(x, y, z)
-
-				local zoneElement = getElementByID(zone);
-				if zoneElement then 
-
-                    local count = getCreatureInZone(zone);
-					local leftCreature = Data:getCustomData(zoneElement,"leftZombie","synced"); --获取区域剩余
-
-					if leftCreature > 0 then -- 存在库存
-						--检测是否达到上限
-						local maxCreature = Data:getCustomData(zoneElement,"maxZombie","synced"); --获取区域上限
-						--outputChatBox(tostring(count).."+"..tostring(count).." vs maxZombie:"..tostring(maxCreature));
-						if count >= maxCreature then 
-							spawn = false
-							--outputChatBox("MAX CREATURE , WE ARE SAFE NOW")
-						end
-					else 
-						--库存耗尽，不再产生僵尸
-                        --outputChatBox("NO LEFT , WE ARE SAFE NOW")
-						spawn = false
-					end
-
-				else
-                    --outputChatBox("NO ZONE , WE ARE SAFE NOW")
-                    --丢失zone信息
+                -- 限制每个玩家附近最多10个NPC
+				if #npcs > 10 then 
                     spawn = false
-                end 
+                end
 
             end
+
             --outputDebugString("spawn:"..tostring(spawn))
+
             if spawn and isElement(thePlayer) then
 
                 --TODO 用复用函数替换
@@ -167,30 +137,6 @@ function SpawnWildCreature()
     end
 
 end
-
---新的写法(按照区域刷新僵尸)
-
-
-    --放弃原因：就算确定了需要刷新的区域，还要计算区域内的玩家，并且为每一位玩家循环进行刷新，似乎效率没有改善
-    --[[
-
-    --服务器:更新区域中的玩家数量
-    function countPlayersInZone(zone)
-    end
-
-    function SpawnWildCreature()
-        --outputChatBox("TRY SpawnWildCreature");
-        zones = getElementsByType("zone");
-        if table.getn(zones) > 0 then
-            outputChatBox("TRY SpawnWildCreature in Zone:"..tostring(table.getn(zones)));
-            for key,zone in ipairs(zones) do 
-                local playerOfZone = 0
-                if playerOfZone > 0 then
-                end
-            end
-        end
-    end
-    ]]
 
 --服务器：清理周围无玩家的生物
 function clearFarCreature()
@@ -223,17 +169,11 @@ function clearFarCreature()
 		for key,theCreature in ipairs(farCreatures) do
 			if getElementData (theCreature, "creature") == true then
 
-				--返还被清空的库存
-				local zx,zy,zz = getElementPosition(theCreature);
-				zcode = getZoneName(zx,zy,zz);
-				Zone:addZoneData(zcode,"leftZombie",1)
+                destroyCreature(theCreature);
 
-				--Zomb_delete (theCreature)
-                destroyElement(theCreature)
                 table.remove(wilds,key)
 
                 outputChatBox("clearFarCreature left:"..tostring(#wilds));
-
 			end
 		end
 	end

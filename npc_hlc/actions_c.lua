@@ -140,6 +140,8 @@ function makeNPCAnimToPos(npc,x,y)
 	local walkingstyle = Data:getData(npc,"walkingstyle");
 	--outputChatBox("speed "..tostring(speed))
 
+	--outputDebugString(inspect(npc).." makeNPCAnimToPos")
+
 	--设置NPC朝向
 	setElementFaceToPos(npc,x,y)
 
@@ -154,6 +156,9 @@ end
 
 --客户端：让NPC移动到坐标（X,Y）通过操纵按键的方式而不是设置动作
 function makeNPCWalkToPos(npc,x,y)
+
+	--outputDebugString(inspect(npc).." makeNPCWalkToPos C"..tostring(Data:getData(npc,"name")));
+
 	local speed = getNPCWalkSpeed(npc)
 	
 	-- injected ai logic 初始化AI参数
@@ -243,6 +248,8 @@ function makeNPCWalkToPos(npc,x,y)
 		speed == "sprint" or
 				speed == "sprintfast" and not getPedControlState(npc,"sprint")
 	)
+
+	--outputDebugString("makeNPCWalkToPos C FINISHED"..tostring(Data:getData(npc,"name")));
 end
 
 --客户端：NPC步行到车边后上车
@@ -301,7 +308,14 @@ function makeNPCShootAtPos(npc,x,y,z)
 	x,y,z = x*mult,y*mult,z*mult
 
 	local weapon = Data:getData(npc,"weapon")
-	local firedelay = weapons[weapon].firedelay;
+	if weapon then
+		firedelay = weapons[weapon].firedelay;
+	else
+		--如果没有武器，可能是拳头...
+		firedelay = math.random(1000,3000); -- 拳头攻速
+	end
+
+	--outputDebugString("weapon:"..tostring(weapon).." firedelay:"..tostring(firedelay));
 
 	--不是所有武器都有延迟
 	if firedelay and firedelay > 50 then
