@@ -64,6 +64,7 @@ end
 
 
 function stopNPCWalkingActions(npc)
+	--outputChatBox("stopNPCWalkingActions");
 	setPedControlState(npc,"forwards",false)
 	setPedControlState(npc,"backwards",false)
 	setPedControlState(npc,"sprint",false)

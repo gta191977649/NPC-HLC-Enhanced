@@ -59,18 +59,16 @@ function performTask.hangOut(npc,task)
 			--特殊类型的idle动作
 			if walkingstyle and type(walkingstyle)=="string" then
 				--停止动作移动
-
-				--闲置动作
 				IFP:syncAnimationLib ( npc, walkingstyle, "idle", -1, true, true, true) --KEEP WALKING
 			else
+				--outputChatBox("TRY stopNPCWalkingActions");
 				--停止按键模式
 				stopNPCWalkingActions(npc)
+			end
 
-				--如果在说话转向玩家
-				if getElementData(npc,"talking") then
-					setElementFaceTo(npc,localPlayer)
-				end
-
+			--如果在说话转向玩家
+			if getElementData(npc,"talking") then
+				setElementFaceTo(npc,localPlayer)
 			end
 
 			setElementData(npc,"hangOut:action","rest",false);

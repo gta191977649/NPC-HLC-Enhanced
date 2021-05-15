@@ -164,7 +164,6 @@ normal = {
     traits = {category="human"}, -- 特性
 
     trade = {}, -- 交易信息
-
 };
 
 normal.__index = normal;
@@ -191,7 +190,6 @@ function normal:create(x,y,z,r,faction,btype)
     end
     --traits
     local traits = normalType[faction.."_"..btype].traits
-
     local weapon = nil;
 
     --随机武器，已挪到人类
@@ -214,7 +212,10 @@ function normal:create(x,y,z,r,faction,btype)
     o.gang = gang
     o.sensor = false; -- 感知能力默认开启
     o.behaviour = behaviour; -- 默认行为
-    o.traits = table.merge(o.traits,traits);--注意是合并属性
+    o.traits = table.merge(traits,normal.traits);--注意是合并normal的属性
+    --outputDebugString("normal.traits:"..tostring(inspect(normal.traits)));
+    --outputDebugString("o.traits:"..tostring(inspect(o.traits)));
+
 
     local tradelist = {}
     --构建商人库存

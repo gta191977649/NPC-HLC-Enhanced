@@ -81,3 +81,14 @@ function isNPCHaveTask(npc)
 		return true
 	end 
 end
+
+--客户端：获取当前任务名
+function getNPCTaskName(npc)
+	if not isHLCEnabled(npc) then
+		outputDebugString("Invalid ped argument",2)
+		return false
+	end
+	local thistask = getElementData(npc,"npc_hlc:thistask")
+	local task = getElementData(npc,"npc_hlc:task."..thistask);
+	return task[1]
+end
