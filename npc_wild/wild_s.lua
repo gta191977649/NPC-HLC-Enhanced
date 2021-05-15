@@ -63,7 +63,7 @@ function spawnCreature(x,y,z)
 
     end
 
-    local c = NPC:createCreature(spawn_type,x,y,z)
+    local c = createCreature(spawn_type,x,y,z)
     table.insert(wilds,c)
 
     --减少区域库存

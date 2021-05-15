@@ -324,7 +324,7 @@ function onHitF(hitElem,dim)
         --local ped = createPed(0,x,y,z) -- NPC:createCreature("bear",x,y,z)
         --setElementDimension(ped,1)
 
-        local ped = NPC:createCreature(cType,x,y,z,r,faction,botType and string.lower(botType))
+        local ped = createCreature(cType,x,y,z,r,faction,botType and string.lower(botType))
         setElementData(source,"theSpawnedBotPed", ped) -- 设置当前COL产生的BOT为这个PED
 
         setElementData(source,"botWasSpawned", true) -- 设置当前COL已经产生NPC
@@ -353,7 +353,7 @@ function onLeaveF (leaveElem,dim)
     --这个COL里没有其他玩家了
     botToDelete = getElementData(source,"theSpawnedBotPed")
     if isElement(botToDelete) then 
-		NPC:destroyCreature(botToDelete);
+		destroyCreature(botToDelete);
 	end -- spits an error if you kill the bot, wait until the body gets removed and then leave the area
     setElementData(source,"botWasSpawned", false)
     setElementData(source,"theSpawnedBotPed", false)
@@ -374,7 +374,7 @@ addEventHandler("onPlayerQuit", root,
                     --TODO：删除NPC改为通过NPC系统删除
 					local bot = getElementData(colshape, "theSpawnedBotPed")
 					if isElement(bot) then
-						NPC:destroyCreature(bot);
+						destroyCreature(bot);
 						setElementData(colshape,"botWasSpawned", false)
 						setElementData(colshape,"theSpawnedBotPed", false)
 						--print ("Destroyed")

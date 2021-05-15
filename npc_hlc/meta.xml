@@ -28,7 +28,6 @@
     <script src="task/tasks_s.lua" type="server" />
     <script src="task/tasks_c.lua" type="client" cache="false"/>
     <script src="sensor/sensor_c.lua" type="client" cache="false"/><!--视听觉-->
-    <script src="sensor/sensor_s.lua" type="server" /><!--任务完成检测-->
     <script src="actions_s.lua" type="server" />
     <script src="actions_c.lua" type="client" cache="false"/>
 	
@@ -49,9 +48,7 @@
     <export function="addNPCTask" type="server" http="false" />
     <export function="clearNPCTasks" type="server" http="false" />
     <export function="setNPCTask" type="server" http="false" />
-    
-    <export function="createCreature" type="server" http="false" />
-    <export function="destroyCreature" type="server" http="false" />
+
 
     <export function="isNPCHaveTask" type="shared" http="false" />
     <export function="getNPCCurrentTask" type="shared" http="false" />

@@ -36,5 +36,8 @@
 
 	<script src="wild_c.lua"  type="client" cache="false"/>
 	<script src="wild_sensor_c.lua"  type="client" cache="false"/>
+
+    <export function="createCreature" type="server" http="false" />
+    <export function="destroyCreature" type="server" http="false" />
 	
 </meta>
