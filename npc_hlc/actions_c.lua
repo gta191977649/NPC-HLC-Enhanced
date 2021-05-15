@@ -320,6 +320,7 @@ function makeNPCShootAtPos(npc,x,y,z)
 	
 			Data:setData(npc,"lastshoot",ticks)
 		else
+			--因为动作的原因，会频繁的限制武器的射速
 			stopNPCWeaponActions(npc)
 		end
 

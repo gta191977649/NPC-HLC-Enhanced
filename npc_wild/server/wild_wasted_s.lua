@@ -1,10 +1,12 @@
 function creatureDied(totalAmmo,killer,killerWeapon,bodypart,stealth)
-    outputDebugString("Your Ped is dead now!")
+
+    outputDebugString("Your Ped is SERVER-SIDE dead now!")
 
     local x,y,z = getElementPosition(source)
 
     local loots = {}
 
+    --构建 武器战利品
     local npcWep = Data:getData(source,"weapon")
     if npcWep then
 
@@ -40,6 +42,7 @@ function creatureDied(totalAmmo,killer,killerWeapon,bodypart,stealth)
     itemdata.equip = 0;
     table.insert(loots,itemdata)
 
+    --刷出所有战利品
     for _,loot in ipairs(loots)do
         --CREATE LOOT
         Item:createLootObject(loot,x,y,z-0.875,1,loot.char_type);
@@ -55,6 +58,7 @@ function creatureDied(totalAmmo,killer,killerWeapon,bodypart,stealth)
             local killerwep = getWeaponInHand(killer); -- NEED FIX WEAPON NAME
 
             local kills = Player:givePlayerData(killer,"Kill",1);
+            outputDebugString("kills:"..tostring(kills));
 
             local killtype = "kill2";
             if (bodypart == 9) then 
@@ -67,6 +71,12 @@ function creatureDied(totalAmmo,killer,killerWeapon,bodypart,stealth)
     end
 
     --TIME FOR DEAD
+
+    --REMOVE ATTACHED WEAPON
+    local gang = Data:getData(source,"gang");
+    if gang > 0 then
+        triggerEvent("relation > take",root,killer,gang,5);
+    end
 
 end
 addEventHandler("onPedWasted",root, creatureDied) --Add the Event when ped1 dies
