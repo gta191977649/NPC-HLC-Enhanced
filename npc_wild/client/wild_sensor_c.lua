@@ -295,7 +295,7 @@ function wildDamageSensor(attacker,weapon,bodypart,loss)
 	--有攻击者
 	if attacker then
 
-		outputDebugString(inspect(attacker).." attack "..inspect(source));
+		--outputDebugString(inspect(attacker).." attack "..inspect(source));
 
 		--获取受害者和攻击者之间的关系
 		local relationType = getRelationship(source,attacker);
@@ -315,7 +315,7 @@ function wildDamageSensor(attacker,weapon,bodypart,loss)
 				task = NPC:getNPCCurrentTask(source)
 				--QUEST:这里task理论上不为空，但是确实存在空
 				if task and task[1] == "killPed" and task[2]==attacker then
-					outputChatBox("IGNORE SAME ATTACKER TO FIGHT BACK");
+					--outputChatBox("IGNORE SAME ATTACKER TO FIGHT BACK");
 				else
 					local traits = Data:getData(source,"traits");
 					if table.haveValue(traits,"civilian") then

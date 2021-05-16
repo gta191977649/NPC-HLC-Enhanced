@@ -17,6 +17,7 @@
 	<script src="type/zombie/zombie.lua" type="server" />
 	<script src="type/zombie/Infected.lua" type="server" />
 	<script src="type/zombie/hunter.lua" type="server" />
+
 <!--SCRIPT-->
     <script src="server/wild_test_s.lua" type="server" />
     <script src="server/wild_task_s.lua" type="server" /><!--任务完成检测-->

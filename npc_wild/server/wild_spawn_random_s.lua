@@ -1,7 +1,7 @@
 wilds = {} --记录所有野生动物
 
 function InitWildCreature()
-    setTimer ( SpawnWildCreature, 5000, 0 ) --直接开启在玩家周围随机产生动物
+    setTimer ( SpawnWildCreature, NPC_WILD_SPAWN_TIME, 0 ) --直接开启在玩家周围随机产生动物
     setTimer ( clearFarCreature, 5000, 0) --KEEPS ALL THE CRETURES CLOSE TO PLAYERS
 end
 addEventHandler("onResourceStart", getRootElement(), InitWildCreature)
@@ -99,7 +99,7 @@ function SpawnWildCreature()
                 --outputDebugString("npcs checked:"..tostring(#npcs));
 
                 -- 限制每个玩家附近最多10个NPC
-				if #npcs > 10 then 
+				if #npcs > NPC_WILD_SPAWN_MAX then 
                     spawn = false
                 end
 
